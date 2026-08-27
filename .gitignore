@@ -1,0 +1,19 @@
+.quarto/
+**/*.quarto_ipynb
+_book/
+_site/
+
+# Quarto/R/Python local state
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.ipynb_checkpoints/
+__pycache__/
+.venv/
+venv/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
