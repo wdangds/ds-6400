@@ -2,8 +2,6 @@
 
 This repository collects weekly writing for DS 6400 in Quarto book format.
 
-Each weekly chapter lives in `weeks/`. Add notes, reflections, citations, figures, and code as needed, then render the book with:
-
 ```bash
 quarto render
 ```

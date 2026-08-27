@@ -1,17 +1,5 @@
-# DS 6400 Weekly Writing
-
+# DS 6400
 This is a Quarto book repository for weekly class writing.
-
-## Structure
-
-- `_quarto.yml`: book configuration and chapter order
-- `index.qmd`: unnumbered preface
-- `weeks/`: weekly writing chapters
-- `references.qmd`: bibliography page
-- `references.bib`: BibTeX references
-- `cover.png`: book cover image
-
-## Common Commands
 
 ```bash
 quarto render
@@ -21,4 +9,3 @@ quarto render
 quarto preview
 ```
 
-Quarto build output and local project cache files are ignored by Git.
