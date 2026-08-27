@@ -1,0 +1,25 @@
+project:
+  type: book
+
+book:
+  title: "ds-6400"
+  author: "Norah Jones"
+  date: "8/27/2026"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - summary.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+  pdf:
+    documentclass: scrreprt
+
+
+
