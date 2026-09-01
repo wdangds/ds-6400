@@ -1,6 +1,8 @@
 project:
   type: book
 
+jupyter: ds-6400
+
 book:
   title: "DS 6400 Weekly Writing"
   author: "Wan Dang"
@@ -21,5 +23,7 @@ format:
       - cosmo
       - brand
     toc: true
+    code-fold: true
+    code-summary: "Show code"
   pdf:
     documentclass: scrreprt
