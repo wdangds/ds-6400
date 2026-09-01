@@ -2,7 +2,6 @@
 **/*.quarto_ipynb
 **/*.quarto_ipynb_*
 **/*_files/
-_book/
 _site/
 
 # Quarto/R/Python local state
