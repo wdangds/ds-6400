@@ -175,8 +175,8 @@ plt.ylabel('S2')
 plt.title('Simulated Data')
 plt.legend()
 plt.show()
-
 ```
+
 Under this construction, $P(Y_i=1\mid S_i)$ follows a logistic model with $t_i^\top = (1, S_i^\top)$ and true coefficient vector $\alpha = (0, 1, 0)^\top$. Each simulated dataset contains only $n=20$ observations. Efron then generates 100 datasets, fits logistic regression to each one, and uses $C_0=$ 0.5 for classification. 
 
 The average results reported in the paper are approximately:
@@ -321,4 +321,473 @@ def generate_efron_dgp(n, rng):
     pi_true = expit(x1) 
 
     return X, y, pi_true
+```
+
+```{python}
+X, y, pi_true = generate_efron_dgp(n=20, rng=rng)
+
+data_example = pd.DataFrame(
+    {
+        "x1": X[:, 0],
+        "x2": X[:, 1],
+        "y": y,
+        "pi_true": pi_true
+    }
+)
+
+data_example.head()
+
+plt.figure(figsize=(7,5))
+
+for label in [0, 1]:
+    mask = y == label
+    plt.scatter(
+        X[mask, 0],
+        X[mask, 1],
+        label=f"Y={label}",
+        alpha=0.5
+    )
+
+plt.axvline(
+    0,
+    linestyle="--",
+    alpha=0.6
+)
+
+plt.xlabel("x1")
+plt.ylabel("x2")
+plt.legend()
+plt.show()
+```
+
+For the orginal replication, we need only logistic regression. Later we will add LDA, 1-NN, and random forest.
+
+```{python}
+def make_model(model_name, seed=None):
+    """
+    Construct a prediction model.
+    """
+
+    if model_name == "logistic":
+        return LogisticRegression(
+            penalty=None,
+            solver="lbfgs",
+            random_state=seed
+        )
+    elif model_name == "lda":
+        return LinearDiscriminantAnalysis()
+    elif model_name == "1nn":
+        return KNeighborsClassifier(n_neighbors=1)
+    elif model_name == "rf":
+        return RandomForestClassifier(
+            n_estimators=300,
+            max_depth=None,
+            random_state=seed
+        )
+    else:
+        raise ValueError(f"Unknown model name: {model_name}")
+```
+
+We then fit the model on Efron dataset. The fitted logistic model is 
+
+$$
+\mathrm{logit}\mathbb P(Y=1\mid X)=\hat \beta_0 + \hat \beta_1 X_1 + \hat \beta_2 X_2
+$$
+
+```{python}
+model = make_model("logistic", seed=SEED)
+model.fit(X, y)
+
+model.intercept_, model.coef_
+```
+
+We then define the apparent error, true error, and optimism. 
+
+```{python}
+def apparent_error(model, X, y):
+    """
+    Compute the apparent error of a fitted model on the training data.
+    """
+    y_pred = model.predict(X)
+    return np.mean(y_pred != y)
+
+err_apparent = apparent_error(model, X, y)
+err_apparent
+```
+
+This computes Efron's apparent error 
+
+$$
+\overline{\text{err}} = \frac{1}{n}\sum_{i=1}^n \mathbf{1}\{Y_i \neq \hat{Y}_i\}.
+$$
+
+The problem is that $Y_i$ was used to fit the model, determining $\hat{\beta}$, which then determines $\hat{Y}_i$. 
+
+Because we know the true probability 
+
+$$
+\pi_i = \mathbb{P}(Y_i=1\mid X_i),
+$$
+
+We can calculate the exact expected error of the fitted classifier.
+
+```{python}
+def true_fixed_x_error(model, X, pi_true):
+    """
+    Compute the true error of a fitted model on the training data.
+    """
+    y_hat = model.predict(X)
+
+    error_probability = np.where(y_hat == 1, 1-pi_true, pi_true)
+    return np.mean(error_probability)
+
+err_true = true_fixed_x_error(model, X, pi_true)
+err_true
+```
+
+Suppose the classifier predicts $\hat{Y}_i=1$. It will make an error if a new response equals zero. The probability of that is $1-\pi_i$. If instead $\hat{Y}_i=0$, the probability of an error is $\pi_i$. Therefore 
+
+$$
+Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
+$$
+
+For this particular sample, $op=Err - \overline{err}$
+```{python}
+actual_optimism = err_true - err_apparent
+actual_optimism
+```
+
+But Efron's target is its expectation over repeated datasets: 
+
+$$
+\omega = \mathbb{E}[\text{op}] 
+$$
+
+For logistic regression and counting error, Efron proposes @eq-logistic-optimism. 
+
+```{python}
+def efron_optimism(model, X, cutoff=0.5):
+    """
+    Compute Efron's analytic optimism estimate for logistic regression.
+    """
+
+    n = len(X)
+
+    # t_i = (1, x_i1, x_i2)
+    T = np.column_stack((np.ones(n), X))
+
+    # beta_hat = (intercept, coef)
+    beta_hat = np.concatenate([model.intercept_, model.coef_.ravel()])
+
+    # fitted probabilities
+    pi_hat = model.predict_proba(X)[:, 1]
+
+    # Bernoulli variance 
+    w = pi_hat * (1 - pi_hat)
+
+    # fisher information matrix 
+    Xi_hat = (T.T @ (w[:, None] * T))
+
+    Xi_inv = np.linalg.inv(Xi_hat)
+
+    # d_i = t_i' Xi^{-1} t_i
+    d_hat = np.einsum('ij,jk,ik->i', T, Xi_inv, T)
+    d_hat = np.maximum(d_hat, 1e-10)  # avoid numerical issues
+
+    # c_i = logit(C0) - t_i' beta_hat
+    logit_cutoff = np.log(cutoff / (1 - cutoff))
+    c_hat = logit_cutoff - T @ beta_hat
+
+    # equation (2.4) in paper
+    omega_hat = (2/n) * np.sum(w * norm.pdf(c_hat / np.sqrt(d_hat)) * np.sqrt(d_hat))
+
+    return omega_hat
+```
+
+```{python}
+omega_efron = efron_optimism(model, X)
+omega_efron
+```
+
+We will construct Efron's corrected error estimate 
+
+$$
+\widehat{\text{Err}} = \overline{\text{err}} + \widehat{\omega}
+$$
+
+```{python}
+err_efron = err_apparent + omega_efron
+err_efron
+```
+
+For one dataset, it may not equal the true error. That is why we need Monte Carlo simulation rather than single run.
+
+```{python}
+def loo_cv_error(model, X, y):
+    """
+    LOO cross-validation error
+    """
+    loo = LeaveOneOut()
+    scores = cross_val_score(model, X, y, cv=loo, scoring='accuracy')
+    return 1 - scores.mean()
+
+err_loo = loo_cv_error(model, X, y)
+err_loo
+```
+
+For observation $i$, LOO fits $\hat{f}^{(-i)}$ using every observation except $i$, and then it predicts $\hat Y_i$. Therefore $Y_i$ cannot directly influence its own fitted prediction. The LOO estimate is 
+
+$$
+\widehat{Err}_{\text{LOO}} = \frac{1}{n}\sum_{i=1}^n \mathbf{1}\{Y_i \neq \hat{f}^{(-i)}(X_i)\}
+$$
+
+```{python}
+def one_efron_replication(n, rng):
+    """
+    One MC replication of the Efron experiment.
+    """
+
+    # generate data
+    X, y, pi_true = generate_efron_dgp(n, rng)
+    if len(np.unique(y)) < 2:
+        # skip if only one class is present
+        return None
+    model = make_model("logistic", seed=SEED)
+    try:
+        model.fit(X, y)
+    except Exception:
+        return None
+    
+    # apparent error
+    apparent = apparent_error(model, X, y)
+    # true fitted error
+    true_error = true_fixed_x_error(model, X, pi_true)
+    # actual optimism 
+    actual_op = true_error - apparent
+    # Efron's analytic optimism
+    efron_op = efron_optimism(model, X)
+    # Efron's corrected error
+    efron_err = apparent + efron_op
+    # LOO CV error
+    loo_err = loo_cv_error(model, X, y)
+
+    return {
+        "n": n,
+        "true_error": true_error,
+        "apparent_error": apparent,
+        "actual_optimism": actual_op,
+        "efron_optimism": efron_op,
+        "efron_error": efron_err,
+        "loo_error": loo_err
+    }
+```
+
+First we reproduce the paper using $n=20$.
+
+```{python}
+def run_efron_simulation(R=1000, n=20, seed=0):
+    """
+    Run Efron's simulation experiment.
+    """
+
+    rng = np.random.default_rng(seed)
+    rows = []
+    while len(rows) < R:
+        result = one_efron_replication(n, rng)
+        if result is not None:
+            rows.append(result)
+    return pd.DataFrame(rows)
+```
+
+```{python}
+efron_replication = run_efron_simulation(R=1000, n=20, seed=SEED)
+efron_replication.head()
+```
+
+```{python}
+replication_summary = (
+    efron_replication[
+        [
+            "true_error",
+            "apparent_error",
+            "actual_optimism",
+            "efron_optimism",
+            "efron_error",
+            "loo_error"
+        ]
+    ]
+    .agg(["mean", "std"])
+    .T
+)
+
+replication_summary
+```
+
+```{python}
+true_mean = (efron_replication["true_error"].mean())
+
+bias_summary = pd.DataFrame({
+    "Estimator": ["Apparent", "Efron", "LOO"],
+    "Mean estimate": [efron_replication["apparent_error"].mean(),
+                        efron_replication["efron_error"].mean(),
+                        efron_replication["loo_error"].mean()]
+})
+
+bias_summary["Bias"] = (bias_summary["Mean estimate"]- true_mean)
+
+bias_summary
+```
+
+We now reproduce the figure 1 from the paper. we can make a cleaner version.
+
+```{python} 
+plt.figure(figsize=(8, 5))
+
+plt.hist(
+    efron_replication["true_error"] - efron_replication["apparent_error"],
+    bins=30,
+    alpha=0.5,
+    label="True error - apparent error"
+)
+
+plt.hist(
+    efron_replication["true_error"] - efron_replication["efron_error"],
+    bins=30,
+    alpha=0.5,
+    label="True error - corrected error"
+)
+
+plt.axvline(0,linestyle="--")
+
+plt.xlabel("Estimation error")
+plt.ylabel("Frequency")
+plt.title("Effect of Efron's optimism correction")
+plt.legend()
+
+plt.show()
+```
+
+Now that the replication works, we will change the number of observations. Use $N\in \{20, 30, 50, 75, 100, 150, 200\}$ to see how the bias changes with sample size.
+
+```{python}
+SAMPLE_SIZES = [20, 30, 50, 75, 100, 150, 200]
+```
+
+The hypothesis is that as $N$ grows, each observation has less influence on the fitted model.
+
+```{python}
+def run_sample_size_study(sample_sizes, R=500, seed=0):
+    """
+    Run the simulation study for different sample sizes.
+    """
+
+    rows = []
+    for n in sample_sizes:
+        df_n = run_efron_simulation(R=R, n=n, seed=seed+n)
+        rows.append(df_n)
+    return pd.concat(rows, ignore_index=True)
+```
+
+```{python}
+sample_size_results = run_sample_size_study(SAMPLE_SIZES, R=500, seed=SEED)
+```
+
+For every $N$, we generate 500 independent training datasets. 
+
+```{python}
+optimism_by_n = (
+    sample_size_results
+    .groupby("n")
+    .agg(
+        actual_optimism=("actual_optimism", "mean"),
+        estimated_optimism=("efron_optimism", "mean"),
+        apparent_error=("apparent_error", "mean"),
+        true_error=("true_error", "mean"),
+    )
+    .reset_index()
+)
+
+optimism_by_n
+```
+
+```{python}
+plt.figure(figsize=(8, 5))
+
+plt.plot(
+    optimism_by_n["n"],
+    optimism_by_n["actual_optimism"],
+    marker="o",
+    label="Actual optimism"
+)
+
+plt.plot(
+    optimism_by_n["n"],
+    optimism_by_n["estimated_optimism"],
+    marker="o",
+    label="Efron estimate"
+)
+
+plt.axhline(0, linestyle="--", alpha=0.5)
+
+plt.xlabel("Training sample size N")
+plt.ylabel("Optimism")
+plt.title("Prediction-error optimism versus sample size")
+plt.legend()
+
+plt.show()
+```
+
+```{python}
+def summarize_bias_by_n(df):
+    rows = []
+    for n, g in df.groupby("n"):
+
+        truth = g["true_error"]
+
+        for estimator in ["apparent_error", "efron_error", "loo_error"]:
+            estimate = g[estimator]
+            valid = (estimate.notna() & truth.notna())
+            error = (estimate[valid] - truth[valid])
+
+            rows.append({
+                "n": n,
+                "estimator": estimator,
+                "bias": error.mean(),
+                "mse": np.mean(error**2),
+                "variance": estimate[valid].var()
+            })
+    return pd.DataFrame(rows)
+```
+
+```{python}
+bias_by_n = summarize_bias_by_n(sample_size_results)
+bias_by_n.head()
+```
+
+```{python}
+plt.figure(figsize=(8, 5))
+
+for estimator, g in (
+    bias_by_n
+    .groupby("estimator")
+):
+
+    plt.plot(
+        g["n"],
+        g["bias"],
+        marker="o",
+        label=estimator
+    )
+
+plt.axhline(
+    0,
+    linestyle="--"
+)
+
+plt.xlabel("Training sample size N")
+plt.ylabel("Monte Carlo bias")
+plt.title("Bias of prediction-error estimators")
+plt.legend()
+
+plt.show()
 ```
