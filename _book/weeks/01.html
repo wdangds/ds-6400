@@ -410,7 +410,7 @@ window.Quarto = {
 S_i \mid Y_i \sim N_2\left(\begin{pmatrix}Y_i-\frac{1}{2}\\ 0\end{pmatrix}, I\right).
 \]</span></p>
 <p>Thus <span class="math inline">\(Y_i=\)</span> 1 has predictor distribution centered around (0.5, 0), while <span class="math inline">\(Y_i=\)</span> 0 has predictor distribution centered around (-0.5, 0).</p>
-<div id="e018c5a9" class="cell" data-execution_count="1">
+<div id="38d22a67" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
@@ -559,7 +559,7 @@ D=D_{\text{train}} z\cup D_{\text{validation}} \cup D_{\text{test}}
 <section id="simulation-study" class="level2" data-number="1.5">
 <h2 data-number="1.5" class="anchored" data-anchor-id="simulation-study"><span class="header-section-number">1.5</span> Simulation Study</h2>
 <p>This study has two layers. First, we reproduce the main sampling experiment in Efron’s paper. Then we extend the experiment by changing sample size, data generating process, and model complexity. This let us move beyond the specific example in the paper and explore how optimism behaves in a more general setting.</p>
-<div id="54f95e7d" class="cell" data-execution_count="2">
+<div id="050c1fbc" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np                  <span class="co"># RNG and numerical calculations</span></span>
@@ -583,14 +583,14 @@ D=D_{\text{train}} z\cup D_{\text{validation}} \cup D_{\text{test}}
 </div>
 <section id="reproduce-efrons-experiment" class="level3" data-number="1.5.1">
 <h3 data-number="1.5.1" class="anchored" data-anchor-id="reproduce-efrons-experiment"><span class="header-section-number">1.5.1</span> Reproduce Efron’s experiment</h3>
-<div id="89da2356" class="cell" data-execution_count="3">
+<div id="ef0dfe09" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> <span class="dv">6400</span> </span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(SEED)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="856b3db5" class="cell" data-execution_count="4">
+<div id="43a0cb71" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate_efron_dgp(n, rng):</span>
@@ -616,7 +616,7 @@ D=D_{\text{train}} z\cup D_{\text{validation}} \cup D_{\text{test}}
 <span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> X, y, pi_true</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="18687d53" class="cell" data-execution_count="5">
+<div id="fd3c38b4" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>X, y, pi_true <span class="op">=</span> generate_efron_dgp(n<span class="op">=</span><span class="dv">20</span>, rng<span class="op">=</span>rng)</span>
@@ -663,7 +663,7 @@ D=D_{\text{train}} z\cup D_{\text{validation}} \cup D_{\text{test}}
 </div>
 </div>
 <p>For the orginal replication, we need only logistic regression. Later we will add LDA, 1-NN, and random forest.</p>
-<div id="5e7727d2" class="cell" data-execution_count="6">
+<div id="42850e48" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_model(model_name, seed<span class="op">=</span><span class="va">None</span>):</span>
@@ -695,7 +695,7 @@ D=D_{\text{train}} z\cup D_{\text{validation}} \cup D_{\text{test}}
 <p><span class="math display">\[
 \mathrm{logit}\mathbb P(Y=1\mid X)=\hat \beta_0 + \hat \beta_1 X_1 + \hat \beta_2 X_2
 \]</span></p>
-<div id="a35fa026" class="cell" data-execution_count="7">
+<div id="fd316727" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> make_model(<span class="st">"logistic"</span>, seed<span class="op">=</span>SEED)</span>
@@ -708,7 +708,7 @@ D=D_{\text{train}} z\cup D_{\text{validation}} \cup D_{\text{test}}
 </div>
 </div>
 <p>We then define the apparent error, true error, and optimism.</p>
-<div id="dfb8a959" class="cell" data-execution_count="8">
+<div id="8fa5b490" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> apparent_error(model, X, y):</span>
@@ -735,7 +735,7 @@ D=D_{\text{train}} z\cup D_{\text{validation}} \cup D_{\text{test}}
 \pi_i = \mathbb{P}(Y_i=1\mid X_i),
 \]</span></p>
 <p>We can calculate the exact expected error of the fitted classifier.</p>
-<div id="edb606d5" class="cell" data-execution_count="9">
+<div id="63f63de1" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> true_fixed_x_error(model, X, pi_true):</span>
@@ -759,7 +759,7 @@ D=D_{\text{train}} z\cup D_{\text{validation}} \cup D_{\text{test}}
 Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 \]</span></p>
 <p>For this particular sample, <span class="math inline">\(op=Err - \overline{err}\)</span></p>
-<div id="71c688d1" class="cell" data-execution_count="10">
+<div id="a9a93be5" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>actual_optimism <span class="op">=</span> err_true <span class="op">-</span> err_apparent</span>
@@ -774,7 +774,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 \omega = \mathbb{E}[\text{op}]
 \]</span></p>
 <p>For logistic regression and counting error, Efron proposes <a href="#eq-logistic-optimism" class="quarto-xref">Equation&nbsp;<span>1.1</span></a>.</p>
-<div id="68a1576b" class="cell" data-execution_count="11">
+<div id="cd6ac334" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> efron_optimism(model, X, cutoff<span class="op">=</span><span class="fl">0.5</span>):</span>
@@ -815,7 +815,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 <span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> omega_hat</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="90d6dce1" class="cell" data-execution_count="12">
+<div id="c852861e" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>omega_efron <span class="op">=</span> efron_optimism(model, X)</span>
@@ -829,7 +829,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 <p><span class="math display">\[
 \widehat{\text{Err}} = \overline{\text{err}} + \widehat{\omega}
 \]</span></p>
-<div id="05e89045" class="cell" data-execution_count="13">
+<div id="e0c92028" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>err_efron <span class="op">=</span> err_apparent <span class="op">+</span> omega_efron</span>
@@ -840,7 +840,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 </div>
 </div>
 <p>For one dataset, it may not equal the true error. That is why we need Monte Carlo simulation rather than single run.</p>
-<div id="51b9dd4a" class="cell" data-execution_count="14">
+<div id="c958ae4f" class="cell" data-execution_count="14">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> loo_cv_error(model, X, y):</span>
@@ -862,7 +862,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 <p><span class="math display">\[
 \widehat{Err}_{\text{LOO}} = \frac{1}{n}\sum_{i=1}^n \mathbf{1}\{Y_i \neq \hat{f}^{(-i)}(X_i)\}
 \]</span></p>
-<div id="ba62e3d8" class="cell" data-execution_count="15">
+<div id="df2a41a5" class="cell" data-execution_count="15">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> one_efron_replication(n, rng):</span>
@@ -906,7 +906,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 </details>
 </div>
 <p>First we reproduce the paper using <span class="math inline">\(n=20\)</span>.</p>
-<div id="f46ee823" class="cell" data-execution_count="16">
+<div id="51622b69" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_efron_simulation(R<span class="op">=</span><span class="dv">1000</span>, n<span class="op">=</span><span class="dv">20</span>, seed<span class="op">=</span><span class="dv">0</span>):</span>
@@ -923,7 +923,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 <span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(rows)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="4093d5e2" class="cell" data-execution_count="17">
+<div id="3b01fe34" class="cell" data-execution_count="17">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>efron_replication <span class="op">=</span> run_efron_simulation(R<span class="op">=</span><span class="dv">1000</span>, n<span class="op">=</span><span class="dv">20</span>, seed<span class="op">=</span>SEED)</span>
@@ -1003,7 +1003,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 </div>
 </div>
 </div>
-<div id="f66b639e" class="cell" data-execution_count="18">
+<div id="26cb9b56" class="cell" data-execution_count="18">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>replication_summary <span class="op">=</span> (</span>
@@ -1072,7 +1072,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 </div>
 </div>
 </div>
-<div id="6278f7bf" class="cell" data-execution_count="19">
+<div id="bb5dc6a0" class="cell" data-execution_count="19">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>true_mean <span class="op">=</span> (efron_replication[<span class="st">"true_error"</span>].mean())</span>
@@ -1127,7 +1127,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 </div>
 </div>
 <p>We now reproduce the figure 1 from the paper. we can make a cleaner version.</p>
-<div id="b88173dd" class="cell" data-execution_count="20">
+<div id="17d40bde" class="cell" data-execution_count="20">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
@@ -1164,14 +1164,14 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 </div>
 </div>
 <p>Now that the replication works, we will change the number of observations. Use <span class="math inline">\(N\in \{20, 30, 50, 75, 100, 150, 200\}\)</span> to see how the bias changes with sample size.</p>
-<div id="f1d3bd25" class="cell" data-execution_count="21">
+<div id="f9f76249" class="cell" data-execution_count="21">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>SAMPLE_SIZES <span class="op">=</span> [<span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">50</span>, <span class="dv">75</span>, <span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">200</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>The hypothesis is that as <span class="math inline">\(N\)</span> grows, each observation has less influence on the fitted model.</p>
-<div id="ffa3d213" class="cell" data-execution_count="22">
+<div id="851b3a04" class="cell" data-execution_count="22">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_sample_size_study(sample_sizes, R<span class="op">=</span><span class="dv">500</span>, seed<span class="op">=</span><span class="dv">0</span>):</span>
@@ -1186,14 +1186,14 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 <span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.concat(rows, ignore_index<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="dd26fd19" class="cell" data-execution_count="23">
+<div id="3f09721d" class="cell" data-execution_count="23">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>sample_size_results <span class="op">=</span> run_sample_size_study(SAMPLE_SIZES, R<span class="op">=</span><span class="dv">500</span>, seed<span class="op">=</span>SEED)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>For every <span class="math inline">\(N\)</span>, we generate 500 independent training datasets.</p>
-<div id="6a25cdd3" class="cell" data-execution_count="24">
+<div id="8b7d180f" class="cell" data-execution_count="24">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>optimism_by_n <span class="op">=</span> (</span>
@@ -1288,7 +1288,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 </div>
 </div>
 </div>
-<div id="cccca668" class="cell" data-execution_count="25">
+<div id="065acaa7" class="cell" data-execution_count="25">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
@@ -1324,7 +1324,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 </div>
 </div>
 </div>
-<div id="0fbc86b9" class="cell" data-execution_count="26">
+<div id="a6e4e741" class="cell" data-execution_count="26">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_bias_by_n(df):</span>
@@ -1348,7 +1348,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 <span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(rows)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="dac761e4" class="cell" data-execution_count="27">
+<div id="afc2a6cf" class="cell" data-execution_count="27">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>bias_by_n <span class="op">=</span> summarize_bias_by_n(sample_size_results)</span>
@@ -1416,7 +1416,7 @@ Err = \frac{1}{n}\sum_{i}\left[\hat{Y}_i (1-\pi_i)+(1-\hat Y_i)\pi_i\right]
 </div>
 </div>
 </div>
-<div id="fcc51846" class="cell" data-execution_count="28">
+<div id="018bde37" class="cell" data-execution_count="28">
 <details class="code-fold">
 <summary>Show code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>

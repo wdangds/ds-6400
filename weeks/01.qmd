@@ -8,7 +8,7 @@ tags:
   - Predictive Models
 ---
 
-Bradley Efron's 1986 paper "How Biased is the Apparent Error Rate of a Prediction Rule?" studies a problem that now sounds somehow obvious in modern day: 
+Bradley Efron's 1986 paper "How Biased is the Apparent Error Rate of a Prediction Rule?" (@efronHowBiasedApparent1986) studies a problem that now sounds somehow obvious in modern day: 
 
 > If a model is fitted and evaluted on the same observations, its observed error will usually be too optimistic i.e., it will underestimate the true error of the model.
 
@@ -241,7 +241,7 @@ In modern supervisde learning, we commonly assume that the data is generated fro
 
 :::{.callout-note title="Definition: Generalization Error"}
 
-The __generalization error__ of a prediction rule $\hat{f}$ is defined as the expected loss on new observations drawn from the underlying distribution:
+The __generalization error__ (@perlazaGeneralizationErrorMachine2024) of a prediction rule $\hat{f}$ is defined as the expected loss on new observations drawn from the underlying distribution:
 $$
 \text{Generalization Error} = \mathbb{E}_{(X, Y) \sim P}[Q(Y, \hat{f}(X))].
 $$
@@ -249,10 +249,10 @@ $$
 
 If $f$ was selected using the same data that is used to evaluate it, then the evaluation will be biased downward. This is the same principle that Efron studied in his paper. 
 
-Modern mL usually does not attempt to correct that bias; instead, we change the evaluation design. Dividing the available observations into independent subsets
+Modern ML usually does not attempt to correct that bias; instead, we change the evaluation design. Dividing the available observations into independent subsets
 
 $$
-D=D_{\text{train}} z\cup D_{\text{validation}} \cup D_{\text{test}}
+D=D_{\text{train}} \cup D_{\text{validation}} \cup D_{\text{test}}
 $$
 
 We use only $D_{\text{train}}$ to construct the model $D_\text{train}\to \hat{f}$, and then we use $D_{\text{validation}}$ to evaluate it. If we need to tune hyperparameters, we can use $D_{\text{validation}}$ for that purpose. Finally, we can use $D_{\text{test}}$ to obtain an unbiased estimate of the generalization error. Because the test observation did not determine $\hat{f}$, they do not have the self infludence that Efron studied, and the evaluation is unbiased. Instead of correcting the dependence, we try to _avoid it_.
@@ -791,3 +791,90 @@ plt.legend()
 
 plt.show()
 ```
+
+### Different data generating process
+
+Now we want to generate the predictors from a different distribution. Instead of the original Efron DGP, we will generate $X_1, X_2\sim \mathcal N(0, 1)$ and define 
+
+$$
+\mathrm{logit}(\pi_i)=-0.2 + X_{i1} - 0.7X_{i2}
+$$
+
+```{python}
+def generate_logistic_dgp(n, rng):
+    """
+    Generate a logistic regression data generating process.
+    """
+
+    x1 = rng.normal(size = n)
+    x2 = rng.normal(size = n)
+
+    eta = (-0.2 + x1 - 0.7 * x2)
+
+    pi_true = expit(eta)
+    
+    y = rng.binomial(1, pi_true)
+    X = np.column_stack([x1, x2])
+
+    return X, y, pi_true
+```
+
+Now we generate data from a nonlinear relationship.
+
+
+$$
+\mathrm{logit}(\pi_i) = -0.2 + X_{i1} - 0.7X_{i2} + 1.1
+$$
+
+```{python}
+def generate_nonlinear_dgp(n, rng):
+    """
+    Generate a nonlinear logistic regression data generating process.
+    """
+
+    x1 = rng.normal(size = n)
+    x2 = rng.normal(size = n)
+
+    eta = (-0.2 + x1 - 0.7*x2 +1.1*(x1**2 -1))
+
+    pi_true = expit(eta)
+    
+    y = rng.binomial(1, pi_true)
+    X = np.column_stack([x1, x2])
+
+    return X, y, pi_true
+
+def generate_data(n, dgp, rng):
+    """
+    Generate data from a specified data generating process.
+    """
+
+    if dgp == "efron":
+        return generate_efron_dgp(n, rng)
+    elif dgp == "logistic":
+        return generate_logistic_dgp(n, rng)
+    elif dgp == "nonlinear":
+        return generate_nonlinear_dgp(n, rng)
+    else:
+        raise ValueError(f"Unknown DGP: {dgp}")
+```
+
+LOO is computationally expensive and less common (I believe) in modern ML workflows. We will use 5(or 10)-K fold cross-validation instead.
+
+```{python}
+def kfold_cv_error(model, X, y, k=10, seed=0):
+    """
+    K-fold cross-validation error
+    """
+    class_counts = np.bincount(y)
+    if len(class_counts) < 2 or class_counts.min() < k:
+        return np.nan
+    
+    cv = StratifiedKFold(n_splits=k, shuffle=True, random_state=seed)
+    scores = cross_val_score(clone(model), X, y, cv=cv, scoring='accuracy')
+    return 1 - scores.mean()
+```
+
+For models other than logistic regression, Efron's @eq-logistic-optimism is not applicable. We will use a bootstrap optimism correction (@efronLeisurelyLookBootstrap1983). 
+
+For each bootstrap sample $D^{*b}$, 
