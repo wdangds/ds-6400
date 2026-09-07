@@ -1,0 +1,12 @@
+name: ds-6400
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - ipykernel
+  - jupyter
+  - numpy
+  - pandas
+  - matplotlib
+  - scipy
+  - scikit-learn

@@ -3,6 +3,10 @@ project:
 
 jupyter: ds-6400
 
+execute:
+  freeze: auto
+  warning: false
+
 book:
   title: "DS 6400 Weekly Writing"
   author: "Wan Dang"

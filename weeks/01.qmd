@@ -276,6 +276,9 @@ This study has two layers. First, we reproduce the main sampling experiment in E
 import numpy as np                  # RNG and numerical calculations
 import pandas as pd                 # store MC results
 import matplotlib.pyplot as plt     # plotting
+import warnings
+from pathlib import Path
+from time import perf_counter
 
 from scipy.special import expit     # for the logistic funciton 
 from scipy.stats import norm        # for Efron's analytic optimism formula
@@ -290,6 +293,18 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import LeaveOneOut, cross_val_score, StratifiedKFold
 
 from sklearn.metrics import zero_one_loss
+from sklearn.exceptions import ConvergenceWarning, DataConversionWarning, FitFailedWarning, UndefinedMetricWarning
+
+for warning_category in [
+    ConvergenceWarning,
+    DataConversionWarning,
+    FitFailedWarning,
+    UndefinedMetricWarning,
+]:
+    warnings.filterwarnings("ignore", category=warning_category)
+
+warnings.filterwarnings("ignore", category=UserWarning, module=r"sklearn\..*")
+warnings.filterwarnings("ignore", category=FutureWarning, module=r"sklearn\..*")
 ```
 
 ### Reproduce Efron's experiment
@@ -297,6 +312,62 @@ from sklearn.metrics import zero_one_loss
 ```{python}
 SEED = 6400 
 rng = np.random.default_rng(SEED)
+
+# Keep this True for the full simulation. Switch to False when you only
+# want a quick draft render.
+RUN_FULL_SIMULATION = True
+
+if RUN_FULL_SIMULATION:
+    EFRON_REPLICATIONS = 200
+    SAMPLE_SIZE_REPLICATIONS = 100
+    GENERAL_REPLICATIONS = 100
+    GENERAL_BOOTSTRAP_B = 50
+    GENERAL_TEST_N = 5000
+    COMPUTE_LOO_EXTENDED = True
+    RF_N_ESTIMATORS = 100
+    TRAIN_TEST_REPLICATIONS = 200
+else:
+    EFRON_REPLICATIONS = 50
+    SAMPLE_SIZE_REPLICATIONS = 20
+    GENERAL_REPLICATIONS = 5
+    GENERAL_BOOTSTRAP_B = 5
+    GENERAL_TEST_N = 1000
+    COMPUTE_LOO_EXTENDED = False
+    RF_N_ESTIMATORS = 20
+    TRAIN_TEST_REPLICATIONS = 50
+
+DGP_SEED_OFFSET = {
+    "efron": 101,
+    "logistic": 211,
+    "nonlinear": 307,
+}
+
+MODEL_SEED_OFFSET = {
+    "logistic": 11,
+    "lda": 23,
+    "1nn": 37,
+    "rf": 41,
+}
+
+PROJECT_ROOT = Path.cwd().parent if Path.cwd().name == "weeks" else Path.cwd()
+PROGRESS_LOG = PROJECT_ROOT / "simulation-progress.log"
+LOG_START = perf_counter()
+
+def reset_progress_log():
+    PROGRESS_LOG.write_text("", encoding="utf-8")
+
+def log_progress(message):
+    elapsed = perf_counter() - LOG_START
+    line = f"[{elapsed:8.1f}s] {message}"
+    with PROGRESS_LOG.open("a", encoding="utf-8") as f:
+        print(line, file=f, flush=True)
+    print(line, flush=True)
+
+reset_progress_log()
+log_progress(
+    "Simulation mode: "
+    + ("full" if RUN_FULL_SIMULATION else "fast render")
+)
 ```
 
 ```{python}
@@ -380,7 +451,7 @@ def make_model(model_name, seed=None):
         return KNeighborsClassifier(n_neighbors=1)
     elif model_name == "rf":
         return RandomForestClassifier(
-            n_estimators=300,
+            n_estimators=RF_N_ESTIMATORS,
             max_depth=None,
             random_state=seed
         )
@@ -585,7 +656,7 @@ def one_efron_replication(n, rng):
 First we reproduce the paper using $n=20$.
 
 ```{python}
-def run_efron_simulation(R=1000, n=20, seed=0):
+def run_efron_simulation(R=1000, n=20, seed=0, progress_every=None):
     """
     Run Efron's simulation experiment.
     """
@@ -596,11 +667,18 @@ def run_efron_simulation(R=1000, n=20, seed=0):
         result = one_efron_replication(n, rng)
         if result is not None:
             rows.append(result)
+            if progress_every and len(rows) % progress_every == 0:
+                log_progress(f"Efron replication n={n}: {len(rows)}/{R}")
     return pd.DataFrame(rows)
 ```
 
 ```{python}
-efron_replication = run_efron_simulation(R=1000, n=20, seed=SEED)
+efron_replication = run_efron_simulation(
+    R=EFRON_REPLICATIONS,
+    n=20,
+    seed=SEED,
+    progress_every=max(1, EFRON_REPLICATIONS // 20),
+)
 efron_replication.head()
 ```
 
@@ -683,16 +761,24 @@ def run_sample_size_study(sample_sizes, R=500, seed=0):
 
     rows = []
     for n in sample_sizes:
-        df_n = run_efron_simulation(R=R, n=n, seed=seed+n)
+        log_progress(f"Starting sample-size study n={n}: R={R}")
+        start = perf_counter()
+        df_n = run_efron_simulation(
+            R=R,
+            n=n,
+            seed=seed+n,
+            progress_every=max(1, R // 10),
+        )
         rows.append(df_n)
+        log_progress(f"Finished sample-size study n={n}: {len(df_n)} rows in {perf_counter() - start:.1f}s")
     return pd.concat(rows, ignore_index=True)
 ```
 
 ```{python}
-sample_size_results = run_sample_size_study(SAMPLE_SIZES, R=500, seed=SEED)
+sample_size_results = run_sample_size_study(SAMPLE_SIZES, R=SAMPLE_SIZE_REPLICATIONS, seed=SEED)
 ```
 
-For every $N$, we generate 500 independent training datasets. 
+For every $N$, we generate independent training datasets. 
 
 ```{python}
 optimism_by_n = (
@@ -877,4 +963,403 @@ def kfold_cv_error(model, X, y, k=10, seed=0):
 
 For models other than logistic regression, Efron's @eq-logistic-optimism is not applicable. We will use a bootstrap optimism correction (@efronLeisurelyLookBootstrap1983). 
 
-For each bootstrap sample $D^{*b}$, 
+For each bootstrap sample $D^{*b}$, we fit a model. That model performs better on the bootstrap sample that created it than on the original observations. So we estimate 
+
+$$
+op^{*b} = err_{\text{original}} - err_{\text{bootstrap}}. 
+$$
+
+Average this over bootstrap samples 
+
+$$
+\hat{\omega}_{\text{boot}} = \frac{1}{B}\sum_{b}op^{*b}
+$$
+
+Then $\hat{Err}_\text{boot} = \overline{err} + \hat{\omega}_{\text{boot}}$ is the bootstrap optimism-corrected error estimate. Note that this implementation is a generic nonparametric bootstrap extension rather than the specific parametric Bernoulli bootstrap that Efron used for logistic regression.
+
+```{python}
+def bootstrap_corrected_error(model, X, y, B=200, seed=0):
+    """
+    Generic nonparametric bootstrap optimism correction.
+    corrected error = apparent error + average bootstrap optimism
+    """
+    rng = np.random.default_rng(seed)
+    n = len(y)
+
+    original_model = clone(model)
+    original_model.fit(X, y)
+
+    apparent = apparent_error(original_model, X, y)
+
+    optimism_values = []
+
+    for b in range(B):
+
+        idx = rng.integers(0, n, size=n)
+
+        X_boot = X[idx]
+        y_boot = y[idx]
+
+        if len(np.unique(y_boot)) < 2:
+            continue
+        
+        boot_model = clone(model)
+        try:
+            boot_model.fit(X_boot, y_boot)
+        except Exception:
+            continue
+
+        # performance on bootstrap sample
+        err_boot = np.mean(boot_model.predict(X_boot) != y_boot)
+
+        # same boostrap model evaluated on original observations
+        err_orignial = np.mean(boot_model.predict(X) != y)
+
+        optimism_values.append(err_orignial - err_boot)
+
+    if len(optimism_values) == 0:
+        return np.nan
+    
+    mean_optimism = np.mean(optimism_values)
+    return apparent + mean_optimism
+```
+
+Now we want to generate completely new pairs $(X^{\text{new}}, Y^{\text{new}})$ instead of estimating $Err$= new $Y$ at existing $X$. This is more consistent with the modern ML definition of generalization error.
+
+```{python}
+def independent_test_error(model, dgp, rng, n_test=5000):
+    """
+    Evaluate fitted model on entirely new (X, Y) pairs from the population.
+    """
+    X_test, y_test, _ = generate_data(n_test, dgp, rng)
+    y_hat = model.predict(X_test)
+    return np.mean(y_hat != y_test)
+```
+
+Now we can evaluate arbitrary DGP/model combinations.
+
+```{python}
+def one_general_replication(n, dgp, model_name, rng, bootstrap_B=100, compute_loo=True, test_n=5000):
+    """
+    One replication for the extended simulation study.
+    """
+
+    # generate training data
+    X, y, pi_true = generate_data(n, dgp, rng)
+
+    if len(np.unique(y)) < 2:
+        return None
+
+    # fit model
+    rep_seed = int(rng.integers(0, 2**32 - 1))
+    model = make_model(model_name, seed=rep_seed)
+
+    try:
+        model.fit(X, y)
+    except Exception:
+        return None
+
+    # apparent error
+    apparent = apparent_error(model, X, y)
+
+    # exact fixed-X truth
+    true_fixed = true_fixed_x_error(model, X, pi_true)
+
+    # actual optimism
+    actual_op = true_fixed - apparent
+
+    # 10-fold CV
+    try: 
+        cv10 = kfold_cv_error(model, X, y, k=10, seed=rep_seed)
+    except Exception:
+        cv10 = np.nan
+    
+    # LOO CV
+    if compute_loo:
+        try: 
+            loo = loo_cv_error(model, X, y)
+        except Exception:
+            loo = np.nan
+    else:
+        loo = np.nan
+    
+    # bootstrap optimism correction
+    try:
+        boot = bootstrap_corrected_error(model, X, y, B=bootstrap_B, seed=rep_seed)
+    except Exception:
+        boot = np.nan
+    
+    # independent test error
+    try:
+        test = independent_test_error(model, dgp, rng, n_test=test_n)
+    except Exception:
+        test = np.nan
+    
+    # efron analytic correction (only for logistic regression)
+    if model_name == "logistic":
+        try:
+            efron_op = efron_optimism(model, X)
+            efron_err = apparent + efron_op
+        except Exception:
+            efron_op = np.nan
+            efron_err = np.nan
+    else:
+        efron_op = np.nan
+        efron_err = np.nan
+    
+    return {
+        "n": n,
+        "dgp": dgp,
+        "model": model_name,
+        "true_fixed_x": true_fixed,
+        "apparent_error": apparent,
+        "actual_optimism": actual_op,
+        "efron_optimism": efron_op,
+        "efron_error": efron_err,
+        "cv10_error": cv10,
+        "loo_error": loo,
+        "bootstrap_error": boot,
+        "test_error": test
+    }
+```
+
+We now have a single experimental unit that accepts $(N, \text{DGP}, \text{model})$ and returns the various error estimates. We can now run a Monte Carlo simulation to explore how the bias behaves under different conditions.
+
+```{python}
+def run_general_setting(
+    n,
+    dgp,
+    model_name,
+    R=200,
+    bootstrap_B=100,
+    compute_loo=True,
+    test_n=5000,
+    seed=0,
+    progress_every=None,
+):
+    """
+    Run Monte Carlo simulation for a specific (n, dgp, model) combination.
+    """
+
+    rng = np.random.default_rng(seed)
+    rows = []
+    while len(rows) < R:
+        result = one_general_replication(
+            n,
+            dgp,
+            model_name,
+            rng,
+            bootstrap_B=bootstrap_B,
+            compute_loo=compute_loo,
+            test_n=test_n,
+        )
+        if result is not None:
+            result["replication"] = len(rows) 
+            rows.append(result)
+            if progress_every and len(rows) % progress_every == 0:
+                log_progress(f"{dgp}/{model_name}/n={n}: {len(rows)}/{R} replications")
+    return pd.DataFrame(rows)
+```
+
+```{python}
+test_setting = run_general_setting(
+    n=50,
+    dgp="logistic",
+    model_name="logistic",
+    R=min(50, GENERAL_REPLICATIONS),
+    bootstrap_B=GENERAL_BOOTSTRAP_B,
+    compute_loo=COMPUTE_LOO_EXTENDED,
+    test_n=GENERAL_TEST_N,
+    seed=SEED,
+)
+test_setting.head()
+```
+
+For a broader study, we use:
+
+```{python}
+SAMPLE_SIZES = [20, 30, 50, 100, 200] #how does data quantity affect optimism?
+
+DGPS = ["efron", "logistic", "nonlinear"] # how dependent are the conclusions on the population mechanism?
+
+MODELS = ["logistic", "lda", "1nn", "rf"] # how does model complexity affect optimism?
+```
+
+
+Now we can run a full factorial experiment with all combinations of $(N, \text{DGP}, \text{model})$.
+
+```{python}
+#| label: run-extended-simulation
+all_model_results = []
+total_settings = len(SAMPLE_SIZES) * len(DGPS) * len(MODELS)
+setting_number = 0
+
+log_progress(
+    f"Starting extended simulation: {total_settings} settings, "
+    f"R={GENERAL_REPLICATIONS}, bootstrap_B={GENERAL_BOOTSTRAP_B}, "
+    f"LOO={COMPUTE_LOO_EXTENDED}, test_n={GENERAL_TEST_N}, "
+    f"rf_trees={RF_N_ESTIMATORS}"
+)
+
+for n in SAMPLE_SIZES:
+    for dgp in DGPS:
+        for model_name in MODELS:
+            setting_number += 1
+            start = perf_counter()
+            log_progress(f"Setting {setting_number}/{total_settings}: n={n}, dgp={dgp}, model={model_name}")
+            df = run_general_setting(
+                n,
+                dgp,
+                model_name,
+                R=GENERAL_REPLICATIONS,
+                bootstrap_B=GENERAL_BOOTSTRAP_B,
+                compute_loo=COMPUTE_LOO_EXTENDED,
+                test_n=GENERAL_TEST_N,
+                seed=SEED + n + DGP_SEED_OFFSET[dgp] + MODEL_SEED_OFFSET[model_name],
+                progress_every=max(1, GENERAL_REPLICATIONS // 20),
+            )
+            all_model_results.append(df)
+            log_progress(
+                f"Finished n={n}, dgp={dgp}, model={model_name}: "
+                f"{len(df)} rows in {perf_counter() - start:.1f}s"
+            )
+
+model_results = pd.concat(all_model_results, ignore_index=True)
+log_progress(f"Extended simulation complete: {len(model_results)} rows")
+```
+
+```{python}
+model_optimism = (
+    model_results
+    .groupby(["n", "dgp", "model"])
+    .agg(
+        actual_optimism=("actual_optimism", "mean"),
+        efron_optimism=("efron_optimism", "mean"),
+        cv10_error=("cv10_error", "mean"),
+        loo_error=("loo_error", "mean"),
+        bootstrap_error=("bootstrap_error", "mean"),
+        test_error=("test_error", "mean")
+    )
+    .reset_index()
+)
+```
+
+Now we give some plots to visualize the results.
+
+```{python}
+for dgp in DGPS:
+    subset = model_optimism[model_optimism["dgp"] == dgp]
+    plt.figure(figsize=(10, 6))
+    for model_name, g in subset.groupby("model"):
+        plt.plot(
+            g["n"],
+            g["actual_optimism"],
+            marker="o",
+            label=f"{model_name} (actual)"
+        )
+    plt.axhline(0, linestyle="--", alpha=0.5)
+    plt.xlabel("Training sample size N")
+    plt.ylabel("Actual optimism")
+    plt.title(f"Actual optimism vs sample size for DGP: {dgp}")
+    plt.legend()
+    plt.show()
+```
+
+The original Efron experiment changes sample size but keeps the DGP and model fixed. This extension changes the flexibility of the model and the underlying population mechanism, so we can investigate both dimensions of optimism.
+
+```{python}
+evaluation_long = (
+    model_results
+    .melt(
+        id_vars=["n", "dgp", "model", "replication", "true_fixed_x"],
+        value_vars=["apparent_error", "efron_error", "cv10_error", "loo_error", "bootstrap_error", "test_error"],
+        var_name="estimator",
+        value_name="estimated_error"
+    )
+)
+```
+
+```{python}
+evaluation_long["error"]= evaluation_long["estimated_error"] - evaluation_long["true_fixed_x"]
+
+evaluation_summary = (evaluation_long.dropna().groupby(["n", "dgp", "model", "estimator"])
+    .agg(
+        mean_estimate=("estimated_error", "mean"),
+        bias=("error", "mean"),
+        mse=("error", lambda x: np.mean(x**2)),
+    )
+    .reset_index()
+)
+
+evaluation_summary.head()
+```
+
+```{python}
+logistic_comparison = (evaluation_summary[evaluation_summary["model"]=="logistic"])
+
+for dgp in DGPS:
+    subset = logistic_comparison[logistic_comparison["dgp"]==dgp]
+    plt.figure(figsize=(10, 6))
+    for estimator, g in subset.groupby("estimator"):
+        plt.plot(
+            g["n"],
+            g["bias"],
+            marker="o",
+            label=estimator
+        )
+    plt.axhline(0, linestyle="--", alpha=0.5)
+    plt.xlabel("Training sample size N")
+    plt.ylabel("Monte Carlo bias")
+    plt.title(f"Bias of prediction-error estimators for logistic model, DGP: {dgp}")
+    plt.legend()
+    plt.show()
+```
+
+We can also isolate the problem of train/test splitting in one simple experiment.
+
+```{python}
+def train_vs_test_study(n, dgp, model_name, R=500, n_test=20000, seed=0):
+    """
+    Compare training error vs test error for a specific (n, dgp, model) combination.
+    """
+
+    rng = np.random.default_rng(seed)
+    rows = []
+    for r in range(R):
+        X_train, y_train, _ = (generate_data(n, dgp, rng))
+        if len(np.unique(y_train)) < 2:
+            continue
+        model = make_model(model_name)
+        model.fit(X_train, y_train)
+        train_error = np.mean(model.predict(X_train) != y_train)
+
+        X_test, y_test, _ = generate_data(n_test, dgp, rng)
+        test_error = np.mean(model.predict(X_test) != y_test)
+
+        rows.append({
+            "replication": r,
+            "train_error": train_error,
+            "test_error": test_error,
+            "generalization_gap": test_error - train_error
+        })
+    return pd.DataFrame(rows)
+```
+
+```{python}
+train_test_results = train_vs_test_study(
+    n=50,
+    dgp="logistic",
+    model_name="logistic",
+    R=TRAIN_TEST_REPLICATIONS,
+    n_test=GENERAL_TEST_N,
+)
+
+train_test_results[["train_error", "test_error", "generalization_gap"]].agg(["mean", "std"])
+
+plt.figure(figsize=(10, 6))
+plt.hist(train_test_results["generalization_gap"], bins=30, alpha=0.7)
+plt.xlabel("Test error - Training error")
+plt.ylabel("Frequency")
+plt.title("Distribution of Generalization Gaps")
+plt.show()
+```
