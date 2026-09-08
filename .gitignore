@@ -1,12 +1,7 @@
 .quarto/
 **/*.quarto_ipynb
 **/*.quarto_ipynb_*
-**/*_files/
-_book/
 _freeze/
-_site/
-/index.html
-weeks/*.html
 scratch/*.html
 /site_libs/
 simulation-progress.log
