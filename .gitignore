@@ -8,6 +8,7 @@ _site/
 /index.html
 /site_libs/
 simulation-progress.log
+simulation-cache/
 
 # Quarto/R/Python local state
 .Rproj.user/

@@ -277,6 +277,9 @@ import numpy as np                  # RNG and numerical calculations
 import pandas as pd                 # store MC results
 import matplotlib.pyplot as plt     # plotting
 import warnings
+import gc
+import subprocess
+import sys
 from pathlib import Path
 from time import perf_counter
 
@@ -313,8 +316,6 @@ warnings.filterwarnings("ignore", category=FutureWarning, module=r"sklearn\..*")
 SEED = 6400 
 rng = np.random.default_rng(SEED)
 
-# Keep this True for the full simulation. Switch to False when you only
-# want a quick draft render.
 RUN_FULL_SIMULATION = True
 
 if RUN_FULL_SIMULATION:
@@ -324,6 +325,7 @@ if RUN_FULL_SIMULATION:
     GENERAL_BOOTSTRAP_B = 50
     GENERAL_TEST_N = 5000
     COMPUTE_LOO_EXTENDED = True
+    COMPUTE_LOO_FOR_RANDOM_FOREST = True
     RF_N_ESTIMATORS = 100
     TRAIN_TEST_REPLICATIONS = 200
 else:
@@ -333,6 +335,7 @@ else:
     GENERAL_BOOTSTRAP_B = 5
     GENERAL_TEST_N = 1000
     COMPUTE_LOO_EXTENDED = False
+    COMPUTE_LOO_FOR_RANDOM_FOREST = False
     RF_N_ESTIMATORS = 20
     TRAIN_TEST_REPLICATIONS = 50
 
@@ -351,19 +354,34 @@ MODEL_SEED_OFFSET = {
 
 PROJECT_ROOT = Path.cwd().parent if Path.cwd().name == "weeks" else Path.cwd()
 PROGRESS_LOG = PROJECT_ROOT / "simulation-progress.log"
+SIMULATION_CACHE_DIR = PROJECT_ROOT / "simulation-cache"
+EXTENDED_SIMULATION_RUNNER = PROJECT_ROOT / "scripts" / "run_week01_extended_simulation.py"
 LOG_START = perf_counter()
 
 def reset_progress_log():
     PROGRESS_LOG.write_text("", encoding="utf-8")
+
+def prepare_simulation_cache():
+    SIMULATION_CACHE_DIR.mkdir(exist_ok=True)
 
 def log_progress(message):
     elapsed = perf_counter() - LOG_START
     line = f"[{elapsed:8.1f}s] {message}"
     with PROGRESS_LOG.open("a", encoding="utf-8") as f:
         print(line, file=f, flush=True)
-    print(line, flush=True)
+
+def extended_results_path():
+    loo_rf_flag = "loo-rf" if COMPUTE_LOO_FOR_RANDOM_FOREST else "no-loo-rf"
+    return (
+        SIMULATION_CACHE_DIR
+        / (
+            f"extended_results_R-{GENERAL_REPLICATIONS}_B-{GENERAL_BOOTSTRAP_B}"
+            f"_test-{GENERAL_TEST_N}_rf-{RF_N_ESTIMATORS}_{loo_rf_flag}.csv"
+        )
+    )
 
 reset_progress_log()
+prepare_simulation_cache()
 log_progress(
     "Simulation mode: "
     + ("full" if RUN_FULL_SIMULATION else "fast render")
@@ -947,6 +965,8 @@ def generate_data(n, dgp, rng):
 
 LOO is computationally expensive and less common (I believe) in modern ML workflows. We will use 5(or 10)-K fold cross-validation instead.
 
+In the extended simulation, LOO is omitted for random forest because leave-one-out would require refitting a full forest once per observation inside every Monte Carlo replication. The random forest comparison still uses apparent error, 10-fold CV, bootstrap correction, and independent test error.
+
 ```{python}
 def kfold_cv_error(model, X, y, k=10, seed=0):
     """
@@ -1158,7 +1178,52 @@ def run_general_setting(
             rows.append(result)
             if progress_every and len(rows) % progress_every == 0:
                 log_progress(f"{dgp}/{model_name}/n={n}: {len(rows)}/{R} replications")
+            gc.collect()
     return pd.DataFrame(rows)
+
+def should_compute_loo(model_name):
+    if not COMPUTE_LOO_EXTENDED:
+        return False
+    if model_name == "rf" and not COMPUTE_LOO_FOR_RANDOM_FOREST:
+        return False
+    return True
+
+def setting_cache_path(n, dgp, model_name, compute_loo):
+    loo_flag = "loo" if compute_loo else "no-loo"
+    return (
+        SIMULATION_CACHE_DIR
+        / (
+            f"extended_n-{n}_dgp-{dgp}_model-{model_name}"
+            f"_R-{GENERAL_REPLICATIONS}_B-{GENERAL_BOOTSTRAP_B}"
+            f"_{loo_flag}_test-{GENERAL_TEST_N}_rf-{RF_N_ESTIMATORS}.csv"
+        )
+    )
+
+def load_or_run_general_setting(n, dgp, model_name, seed):
+    compute_loo = should_compute_loo(model_name)
+    cache_path = setting_cache_path(n, dgp, model_name, compute_loo)
+
+    if cache_path.exists():
+        cached = pd.read_csv(cache_path)
+        if len(cached) >= GENERAL_REPLICATIONS:
+            log_progress(f"Using cached setting: n={n}, dgp={dgp}, model={model_name}")
+            return cached
+        log_progress(f"Ignoring incomplete cache for n={n}, dgp={dgp}, model={model_name}: {len(cached)} rows")
+
+    df = run_general_setting(
+        n,
+        dgp,
+        model_name,
+        R=GENERAL_REPLICATIONS,
+        bootstrap_B=GENERAL_BOOTSTRAP_B,
+        compute_loo=compute_loo,
+        test_n=GENERAL_TEST_N,
+        seed=seed,
+        progress_every=max(1, GENERAL_REPLICATIONS // 20),
+    )
+    df.to_csv(cache_path, index=False)
+    gc.collect()
+    return df
 ```
 
 ```{python}
@@ -1190,42 +1255,33 @@ Now we can run a full factorial experiment with all combinations of $(N, \text{D
 
 ```{python}
 #| label: run-extended-simulation
-all_model_results = []
-total_settings = len(SAMPLE_SIZES) * len(DGPS) * len(MODELS)
-setting_number = 0
+extended_results_file = extended_results_path()
 
-log_progress(
-    f"Starting extended simulation: {total_settings} settings, "
-    f"R={GENERAL_REPLICATIONS}, bootstrap_B={GENERAL_BOOTSTRAP_B}, "
-    f"LOO={COMPUTE_LOO_EXTENDED}, test_n={GENERAL_TEST_N}, "
-    f"rf_trees={RF_N_ESTIMATORS}"
-)
+if not extended_results_file.exists():
+    command = [
+        sys.executable,
+        str(EXTENDED_SIMULATION_RUNNER),
+        "--replications",
+        str(GENERAL_REPLICATIONS),
+        "--bootstrap-b",
+        str(GENERAL_BOOTSTRAP_B),
+        "--test-n",
+        str(GENERAL_TEST_N),
+        "--rf-trees",
+        str(RF_N_ESTIMATORS),
+        "--seed",
+        str(SEED),
+    ]
+    if COMPUTE_LOO_EXTENDED:
+        command.append("--compute-loo")
+    if COMPUTE_LOO_FOR_RANDOM_FOREST:
+        command.append("--compute-loo-rf")
 
-for n in SAMPLE_SIZES:
-    for dgp in DGPS:
-        for model_name in MODELS:
-            setting_number += 1
-            start = perf_counter()
-            log_progress(f"Setting {setting_number}/{total_settings}: n={n}, dgp={dgp}, model={model_name}")
-            df = run_general_setting(
-                n,
-                dgp,
-                model_name,
-                R=GENERAL_REPLICATIONS,
-                bootstrap_B=GENERAL_BOOTSTRAP_B,
-                compute_loo=COMPUTE_LOO_EXTENDED,
-                test_n=GENERAL_TEST_N,
-                seed=SEED + n + DGP_SEED_OFFSET[dgp] + MODEL_SEED_OFFSET[model_name],
-                progress_every=max(1, GENERAL_REPLICATIONS // 20),
-            )
-            all_model_results.append(df)
-            log_progress(
-                f"Finished n={n}, dgp={dgp}, model={model_name}: "
-                f"{len(df)} rows in {perf_counter() - start:.1f}s"
-            )
+    log_progress("Launching external extended simulation runner")
+    subprocess.run(command, check=True)
 
-model_results = pd.concat(all_model_results, ignore_index=True)
-log_progress(f"Extended simulation complete: {len(model_results)} rows")
+model_results = pd.read_csv(extended_results_file)
+log_progress(f"Loaded extended simulation results: {len(model_results)} rows")
 ```
 
 ```{python}
