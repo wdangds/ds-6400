@@ -273,47 +273,20 @@ flowchart LR
 This study has two layers. First, we reproduce the main sampling experiment in Efron's paper. Then we extend the experiment by changing sample size, data generating process, and model complexity. This let us move beyond the specific example in the paper and explore how optimism behaves in a more general setting.
 
 ```{python}
-import numpy as np                  # RNG and numerical calculations
-import pandas as pd                 # store MC results
-import matplotlib.pyplot as plt     # plotting
-import warnings
-import gc
 import subprocess
 import sys
 from pathlib import Path
 from time import perf_counter
 
-from scipy.special import expit     # for the logistic funciton 
-from scipy.stats import norm        # for Efron's analytic optimism formula
-
-# prediction models and CV
-from sklearn.base import clone 
-from sklearn.linear_model import LogisticRegression
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.ensemble import RandomForestClassifier
-
-from sklearn.model_selection import LeaveOneOut, cross_val_score, StratifiedKFold
-
-from sklearn.metrics import zero_one_loss
-from sklearn.exceptions import ConvergenceWarning, DataConversionWarning, FitFailedWarning, UndefinedMetricWarning
-
-for warning_category in [
-    ConvergenceWarning,
-    DataConversionWarning,
-    FitFailedWarning,
-    UndefinedMetricWarning,
-]:
-    warnings.filterwarnings("ignore", category=warning_category)
-
-warnings.filterwarnings("ignore", category=UserWarning, module=r"sklearn\..*")
-warnings.filterwarnings("ignore", category=FutureWarning, module=r"sklearn\..*")
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 ```
 
 ### Reproduce Efron's experiment
 
 ```{python}
-SEED = 6400 
+SEED = 6400
 rng = np.random.default_rng(SEED)
 
 RUN_FULL_SIMULATION = True
@@ -353,63 +326,46 @@ MODEL_SEED_OFFSET = {
 }
 
 PROJECT_ROOT = Path.cwd().parent if Path.cwd().name == "weeks" else Path.cwd()
+SRC_DIR = PROJECT_ROOT / "src"
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+from ds6400.cache import extended_results_path
+from ds6400.data_generation import generate_efron_dgp
+from ds6400.evaluation import (
+    apparent_error,
+    efron_optimism,
+    loo_cv_error,
+    true_fixed_x_error,
+)
+from ds6400.models import make_model
+from ds6400.progress import (
+    prepare_simulation_cache,
+    reset_progress_log,
+    suppress_sklearn_warnings,
+    write_progress,
+)
+from ds6400.simulation import (
+    run_efron_simulation,
+    run_general_setting,
+    run_sample_size_study,
+    summarize_bias_by_n,
+    train_vs_test_study,
+)
+
 PROGRESS_LOG = PROJECT_ROOT / "simulation-progress.log"
 SIMULATION_CACHE_DIR = PROJECT_ROOT / "simulation-cache"
 EXTENDED_SIMULATION_RUNNER = PROJECT_ROOT / "scripts" / "run_week01_extended_simulation.py"
 LOG_START = perf_counter()
+log_progress = lambda message: write_progress(message, PROGRESS_LOG, LOG_START)
 
-def reset_progress_log():
-    PROGRESS_LOG.write_text("", encoding="utf-8")
-
-def prepare_simulation_cache():
-    SIMULATION_CACHE_DIR.mkdir(exist_ok=True)
-
-def log_progress(message):
-    elapsed = perf_counter() - LOG_START
-    line = f"[{elapsed:8.1f}s] {message}"
-    with PROGRESS_LOG.open("a", encoding="utf-8") as f:
-        print(line, file=f, flush=True)
-
-def extended_results_path():
-    loo_rf_flag = "loo-rf" if COMPUTE_LOO_FOR_RANDOM_FOREST else "no-loo-rf"
-    return (
-        SIMULATION_CACHE_DIR
-        / (
-            f"extended_results_R-{GENERAL_REPLICATIONS}_B-{GENERAL_BOOTSTRAP_B}"
-            f"_test-{GENERAL_TEST_N}_rf-{RF_N_ESTIMATORS}_{loo_rf_flag}.csv"
-        )
-    )
-
-reset_progress_log()
-prepare_simulation_cache()
+suppress_sklearn_warnings()
+reset_progress_log(PROGRESS_LOG)
+prepare_simulation_cache(SIMULATION_CACHE_DIR)
 log_progress(
     "Simulation mode: "
     + ("full" if RUN_FULL_SIMULATION else "fast render")
 )
-```
-
-```{python}
-def generate_efron_dgp(n, rng):
-    """ 
-    Generate Efron's sampling experiment data
-
-    Returns:
-        X: ndarray (n, 2) two predictors
-        y: ndarray (n,) binary response
-        pi_true : ndarray (n,) true probabilities
-    """
-
-    # generate class labels
-    y = rng.binomial(n=1, p=0.5, size=n)
-    # predictor depends on the class
-    x1 = rng.normal(loc=y-0.5, scale=1, size=n)
-    x2 = rng.normal(loc=0, scale=1, size=n)
-    X = np.column_stack((x1, x2))
-
-    # true probability logit P(Y=1|X) = x1
-    pi_true = expit(x1) 
-
-    return X, y, pi_true
 ```
 
 ```{python}
@@ -451,32 +407,6 @@ plt.show()
 
 For the orginal replication, we need only logistic regression. Later we will add LDA, 1-NN, and random forest.
 
-```{python}
-def make_model(model_name, seed=None):
-    """
-    Construct a prediction model.
-    """
-
-    if model_name == "logistic":
-        return LogisticRegression(
-            penalty=None,
-            solver="lbfgs",
-            random_state=seed
-        )
-    elif model_name == "lda":
-        return LinearDiscriminantAnalysis()
-    elif model_name == "1nn":
-        return KNeighborsClassifier(n_neighbors=1)
-    elif model_name == "rf":
-        return RandomForestClassifier(
-            n_estimators=RF_N_ESTIMATORS,
-            max_depth=None,
-            random_state=seed
-        )
-    else:
-        raise ValueError(f"Unknown model name: {model_name}")
-```
-
 We then fit the model on Efron dataset. The fitted logistic model is 
 
 $$
@@ -493,13 +423,6 @@ model.intercept_, model.coef_
 We then define the apparent error, true error, and optimism. 
 
 ```{python}
-def apparent_error(model, X, y):
-    """
-    Compute the apparent error of a fitted model on the training data.
-    """
-    y_pred = model.predict(X)
-    return np.mean(y_pred != y)
-
 err_apparent = apparent_error(model, X, y)
 err_apparent
 ```
@@ -521,15 +444,6 @@ $$
 We can calculate the exact expected error of the fitted classifier.
 
 ```{python}
-def true_fixed_x_error(model, X, pi_true):
-    """
-    Compute the true error of a fitted model on the training data.
-    """
-    y_hat = model.predict(X)
-
-    error_probability = np.where(y_hat == 1, 1-pi_true, pi_true)
-    return np.mean(error_probability)
-
 err_true = true_fixed_x_error(model, X, pi_true)
 err_true
 ```
@@ -555,45 +469,6 @@ $$
 For logistic regression and counting error, Efron proposes @eq-logistic-optimism. 
 
 ```{python}
-def efron_optimism(model, X, cutoff=0.5):
-    """
-    Compute Efron's analytic optimism estimate for logistic regression.
-    """
-
-    n = len(X)
-
-    # t_i = (1, x_i1, x_i2)
-    T = np.column_stack((np.ones(n), X))
-
-    # beta_hat = (intercept, coef)
-    beta_hat = np.concatenate([model.intercept_, model.coef_.ravel()])
-
-    # fitted probabilities
-    pi_hat = model.predict_proba(X)[:, 1]
-
-    # Bernoulli variance 
-    w = pi_hat * (1 - pi_hat)
-
-    # fisher information matrix 
-    Xi_hat = (T.T @ (w[:, None] * T))
-
-    Xi_inv = np.linalg.inv(Xi_hat)
-
-    # d_i = t_i' Xi^{-1} t_i
-    d_hat = np.einsum('ij,jk,ik->i', T, Xi_inv, T)
-    d_hat = np.maximum(d_hat, 1e-10)  # avoid numerical issues
-
-    # c_i = logit(C0) - t_i' beta_hat
-    logit_cutoff = np.log(cutoff / (1 - cutoff))
-    c_hat = logit_cutoff - T @ beta_hat
-
-    # equation (2.4) in paper
-    omega_hat = (2/n) * np.sum(w * norm.pdf(c_hat / np.sqrt(d_hat)) * np.sqrt(d_hat))
-
-    return omega_hat
-```
-
-```{python}
 omega_efron = efron_optimism(model, X)
 omega_efron
 ```
@@ -612,14 +487,6 @@ err_efron
 For one dataset, it may not equal the true error. That is why we need Monte Carlo simulation rather than single run.
 
 ```{python}
-def loo_cv_error(model, X, y):
-    """
-    LOO cross-validation error
-    """
-    loo = LeaveOneOut()
-    scores = cross_val_score(model, X, y, cv=loo, scoring='accuracy')
-    return 1 - scores.mean()
-
 err_loo = loo_cv_error(model, X, y)
 err_loo
 ```
@@ -630,65 +497,7 @@ $$
 \widehat{Err}_{\text{LOO}} = \frac{1}{n}\sum_{i=1}^n \mathbf{1}\{Y_i \neq \hat{f}^{(-i)}(X_i)\}
 $$
 
-```{python}
-def one_efron_replication(n, rng):
-    """
-    One MC replication of the Efron experiment.
-    """
-
-    # generate data
-    X, y, pi_true = generate_efron_dgp(n, rng)
-    if len(np.unique(y)) < 2:
-        # skip if only one class is present
-        return None
-    model = make_model("logistic", seed=SEED)
-    try:
-        model.fit(X, y)
-    except Exception:
-        return None
-    
-    # apparent error
-    apparent = apparent_error(model, X, y)
-    # true fitted error
-    true_error = true_fixed_x_error(model, X, pi_true)
-    # actual optimism 
-    actual_op = true_error - apparent
-    # Efron's analytic optimism
-    efron_op = efron_optimism(model, X)
-    # Efron's corrected error
-    efron_err = apparent + efron_op
-    # LOO CV error
-    loo_err = loo_cv_error(model, X, y)
-
-    return {
-        "n": n,
-        "true_error": true_error,
-        "apparent_error": apparent,
-        "actual_optimism": actual_op,
-        "efron_optimism": efron_op,
-        "efron_error": efron_err,
-        "loo_error": loo_err
-    }
-```
-
 First we reproduce the paper using $n=20$.
-
-```{python}
-def run_efron_simulation(R=1000, n=20, seed=0, progress_every=None):
-    """
-    Run Efron's simulation experiment.
-    """
-
-    rng = np.random.default_rng(seed)
-    rows = []
-    while len(rows) < R:
-        result = one_efron_replication(n, rng)
-        if result is not None:
-            rows.append(result)
-            if progress_every and len(rows) % progress_every == 0:
-                log_progress(f"Efron replication n={n}: {len(rows)}/{R}")
-    return pd.DataFrame(rows)
-```
 
 ```{python}
 efron_replication = run_efron_simulation(
@@ -696,6 +505,8 @@ efron_replication = run_efron_simulation(
     n=20,
     seed=SEED,
     progress_every=max(1, EFRON_REPLICATIONS // 20),
+    progress_callback=log_progress,
+    rf_n_estimators=RF_N_ESTIMATORS,
 )
 efron_replication.head()
 ```
@@ -772,28 +583,13 @@ SAMPLE_SIZES = [20, 30, 50, 75, 100, 150, 200]
 The hypothesis is that as $N$ grows, each observation has less influence on the fitted model.
 
 ```{python}
-def run_sample_size_study(sample_sizes, R=500, seed=0):
-    """
-    Run the simulation study for different sample sizes.
-    """
-
-    rows = []
-    for n in sample_sizes:
-        log_progress(f"Starting sample-size study n={n}: R={R}")
-        start = perf_counter()
-        df_n = run_efron_simulation(
-            R=R,
-            n=n,
-            seed=seed+n,
-            progress_every=max(1, R // 10),
-        )
-        rows.append(df_n)
-        log_progress(f"Finished sample-size study n={n}: {len(df_n)} rows in {perf_counter() - start:.1f}s")
-    return pd.concat(rows, ignore_index=True)
-```
-
-```{python}
-sample_size_results = run_sample_size_study(SAMPLE_SIZES, R=SAMPLE_SIZE_REPLICATIONS, seed=SEED)
+sample_size_results = run_sample_size_study(
+    SAMPLE_SIZES,
+    R=SAMPLE_SIZE_REPLICATIONS,
+    seed=SEED,
+    progress_callback=log_progress,
+    rf_n_estimators=RF_N_ESTIMATORS,
+)
 ```
 
 For every $N$, we generate independent training datasets. 
@@ -842,28 +638,6 @@ plt.show()
 ```
 
 ```{python}
-def summarize_bias_by_n(df):
-    rows = []
-    for n, g in df.groupby("n"):
-
-        truth = g["true_error"]
-
-        for estimator in ["apparent_error", "efron_error", "loo_error"]:
-            estimate = g[estimator]
-            valid = (estimate.notna() & truth.notna())
-            error = (estimate[valid] - truth[valid])
-
-            rows.append({
-                "n": n,
-                "estimator": estimator,
-                "bias": error.mean(),
-                "mse": np.mean(error**2),
-                "variance": estimate[valid].var()
-            })
-    return pd.DataFrame(rows)
-```
-
-```{python}
 bias_by_n = summarize_bias_by_n(sample_size_results)
 bias_by_n.head()
 ```
@@ -904,25 +678,6 @@ $$
 \mathrm{logit}(\pi_i)=-0.2 + X_{i1} - 0.7X_{i2}
 $$
 
-```{python}
-def generate_logistic_dgp(n, rng):
-    """
-    Generate a logistic regression data generating process.
-    """
-
-    x1 = rng.normal(size = n)
-    x2 = rng.normal(size = n)
-
-    eta = (-0.2 + x1 - 0.7 * x2)
-
-    pi_true = expit(eta)
-    
-    y = rng.binomial(1, pi_true)
-    X = np.column_stack([x1, x2])
-
-    return X, y, pi_true
-```
-
 Now we generate data from a nonlinear relationship.
 
 
@@ -930,56 +685,9 @@ $$
 \mathrm{logit}(\pi_i) = -0.2 + X_{i1} - 0.7X_{i2} + 1.1(X_{i1}^2 - 1)
 $$
 
-```{python}
-def generate_nonlinear_dgp(n, rng):
-    """
-    Generate a nonlinear logistic regression data generating process.
-    """
-
-    x1 = rng.normal(size = n)
-    x2 = rng.normal(size = n)
-
-    eta = (-0.2 + x1 - 0.7*x2 +1.1*(x1**2 -1))
-
-    pi_true = expit(eta)
-    
-    y = rng.binomial(1, pi_true)
-    X = np.column_stack([x1, x2])
-
-    return X, y, pi_true
-
-def generate_data(n, dgp, rng):
-    """
-    Generate data from a specified data generating process.
-    """
-
-    if dgp == "efron":
-        return generate_efron_dgp(n, rng)
-    elif dgp == "logistic":
-        return generate_logistic_dgp(n, rng)
-    elif dgp == "nonlinear":
-        return generate_nonlinear_dgp(n, rng)
-    else:
-        raise ValueError(f"Unknown DGP: {dgp}")
-```
-
 LOO is computationally expensive and less common (I believe) in modern ML workflows. We will use 5(or 10)-K fold cross-validation instead.
 
 In the extended simulation, LOO is omitted for random forest because leave-one-out would require refitting a full forest once per observation inside every Monte Carlo replication. The random forest comparison still uses apparent error, 10-fold CV, bootstrap correction, and independent test error.
-
-```{python}
-def kfold_cv_error(model, X, y, k=10, seed=0):
-    """
-    K-fold cross-validation error
-    """
-    class_counts = np.bincount(y)
-    if len(class_counts) < 2 or class_counts.min() < k:
-        return np.nan
-    
-    cv = StratifiedKFold(n_splits=k, shuffle=True, random_state=seed)
-    scores = cross_val_score(clone(model), X, y, cv=cv, scoring='accuracy')
-    return 1 - scores.mean()
-```
 
 For models other than logistic regression, Efron's @eq-logistic-optimism is not applicable. We will use a bootstrap optimism correction (@efronLeisurelyLookBootstrap1983). 
 
@@ -997,234 +705,11 @@ $$
 
 Then $\hat{Err}_\text{boot} = \overline{err} + \hat{\omega}_{\text{boot}}$ is the bootstrap optimism-corrected error estimate. Note that this implementation is a generic nonparametric bootstrap extension rather than the specific parametric Bernoulli bootstrap that Efron used for logistic regression.
 
-```{python}
-def bootstrap_corrected_error(model, X, y, B=200, seed=0):
-    """
-    Generic nonparametric bootstrap optimism correction.
-    corrected error = apparent error + average bootstrap optimism
-    """
-    rng = np.random.default_rng(seed)
-    n = len(y)
-
-    original_model = clone(model)
-    original_model.fit(X, y)
-
-    apparent = apparent_error(original_model, X, y)
-
-    optimism_values = []
-
-    for b in range(B):
-
-        idx = rng.integers(0, n, size=n)
-
-        X_boot = X[idx]
-        y_boot = y[idx]
-
-        if len(np.unique(y_boot)) < 2:
-            continue
-        
-        boot_model = clone(model)
-        try:
-            boot_model.fit(X_boot, y_boot)
-        except Exception:
-            continue
-
-        # performance on bootstrap sample
-        err_boot = np.mean(boot_model.predict(X_boot) != y_boot)
-
-        # same boostrap model evaluated on original observations
-        err_orignial = np.mean(boot_model.predict(X) != y)
-
-        optimism_values.append(err_orignial - err_boot)
-
-    if len(optimism_values) == 0:
-        return np.nan
-    
-    mean_optimism = np.mean(optimism_values)
-    return apparent + mean_optimism
-```
-
 Now we want to generate completely new pairs $(X^{\text{new}}, Y^{\text{new}})$ instead of estimating $Err$= new $Y$ at existing $X$. This is more consistent with the modern ML definition of generalization error.
-
-```{python}
-def independent_test_error(model, dgp, rng, n_test=5000):
-    """
-    Evaluate fitted model on entirely new (X, Y) pairs from the population.
-    """
-    X_test, y_test, _ = generate_data(n_test, dgp, rng)
-    y_hat = model.predict(X_test)
-    return np.mean(y_hat != y_test)
-```
 
 Now we can evaluate arbitrary DGP/model combinations.
 
-```{python}
-def one_general_replication(n, dgp, model_name, rng, bootstrap_B=100, compute_loo=True, test_n=5000):
-    """
-    One replication for the extended simulation study.
-    """
-
-    # generate training data
-    X, y, pi_true = generate_data(n, dgp, rng)
-
-    if len(np.unique(y)) < 2:
-        return None
-
-    # fit model
-    rep_seed = int(rng.integers(0, 2**32 - 1))
-    model = make_model(model_name, seed=rep_seed)
-
-    try:
-        model.fit(X, y)
-    except Exception:
-        return None
-
-    # apparent error
-    apparent = apparent_error(model, X, y)
-
-    # exact fixed-X truth
-    true_fixed = true_fixed_x_error(model, X, pi_true)
-
-    # actual optimism
-    actual_op = true_fixed - apparent
-
-    # 10-fold CV
-    try: 
-        cv10 = kfold_cv_error(model, X, y, k=10, seed=rep_seed)
-    except Exception:
-        cv10 = np.nan
-    
-    # LOO CV
-    if compute_loo:
-        try: 
-            loo = loo_cv_error(model, X, y)
-        except Exception:
-            loo = np.nan
-    else:
-        loo = np.nan
-    
-    # bootstrap optimism correction
-    try:
-        boot = bootstrap_corrected_error(model, X, y, B=bootstrap_B, seed=rep_seed)
-    except Exception:
-        boot = np.nan
-    
-    # independent test error
-    try:
-        test = independent_test_error(model, dgp, rng, n_test=test_n)
-    except Exception:
-        test = np.nan
-    
-    # efron analytic correction (only for logistic regression)
-    if model_name == "logistic":
-        try:
-            efron_op = efron_optimism(model, X)
-            efron_err = apparent + efron_op
-        except Exception:
-            efron_op = np.nan
-            efron_err = np.nan
-    else:
-        efron_op = np.nan
-        efron_err = np.nan
-    
-    return {
-        "n": n,
-        "dgp": dgp,
-        "model": model_name,
-        "true_fixed_x": true_fixed,
-        "apparent_error": apparent,
-        "actual_optimism": actual_op,
-        "efron_optimism": efron_op,
-        "efron_error": efron_err,
-        "cv10_error": cv10,
-        "loo_error": loo,
-        "bootstrap_error": boot,
-        "test_error": test
-    }
-```
-
 We now have a single experimental unit that accepts $(N, \text{DGP}, \text{model})$ and returns the various error estimates. We can now run a Monte Carlo simulation to explore how the bias behaves under different conditions.
-
-```{python}
-def run_general_setting(
-    n,
-    dgp,
-    model_name,
-    R=200,
-    bootstrap_B=100,
-    compute_loo=True,
-    test_n=5000,
-    seed=0,
-    progress_every=None,
-):
-    """
-    Run Monte Carlo simulation for a specific (n, dgp, model) combination.
-    """
-
-    rng = np.random.default_rng(seed)
-    rows = []
-    while len(rows) < R:
-        result = one_general_replication(
-            n,
-            dgp,
-            model_name,
-            rng,
-            bootstrap_B=bootstrap_B,
-            compute_loo=compute_loo,
-            test_n=test_n,
-        )
-        if result is not None:
-            result["replication"] = len(rows) 
-            rows.append(result)
-            if progress_every and len(rows) % progress_every == 0:
-                log_progress(f"{dgp}/{model_name}/n={n}: {len(rows)}/{R} replications")
-            gc.collect()
-    return pd.DataFrame(rows)
-
-def should_compute_loo(model_name):
-    if not COMPUTE_LOO_EXTENDED:
-        return False
-    if model_name == "rf" and not COMPUTE_LOO_FOR_RANDOM_FOREST:
-        return False
-    return True
-
-def setting_cache_path(n, dgp, model_name, compute_loo):
-    loo_flag = "loo" if compute_loo else "no-loo"
-    return (
-        SIMULATION_CACHE_DIR
-        / (
-            f"extended_n-{n}_dgp-{dgp}_model-{model_name}"
-            f"_R-{GENERAL_REPLICATIONS}_B-{GENERAL_BOOTSTRAP_B}"
-            f"_{loo_flag}_test-{GENERAL_TEST_N}_rf-{RF_N_ESTIMATORS}.csv"
-        )
-    )
-
-def load_or_run_general_setting(n, dgp, model_name, seed):
-    compute_loo = should_compute_loo(model_name)
-    cache_path = setting_cache_path(n, dgp, model_name, compute_loo)
-
-    if cache_path.exists():
-        cached = pd.read_csv(cache_path)
-        if len(cached) >= GENERAL_REPLICATIONS:
-            log_progress(f"Using cached setting: n={n}, dgp={dgp}, model={model_name}")
-            return cached
-        log_progress(f"Ignoring incomplete cache for n={n}, dgp={dgp}, model={model_name}: {len(cached)} rows")
-
-    df = run_general_setting(
-        n,
-        dgp,
-        model_name,
-        R=GENERAL_REPLICATIONS,
-        bootstrap_B=GENERAL_BOOTSTRAP_B,
-        compute_loo=compute_loo,
-        test_n=GENERAL_TEST_N,
-        seed=seed,
-        progress_every=max(1, GENERAL_REPLICATIONS // 20),
-    )
-    df.to_csv(cache_path, index=False)
-    gc.collect()
-    return df
-```
 
 ```{python}
 test_setting = run_general_setting(
@@ -1236,6 +721,8 @@ test_setting = run_general_setting(
     compute_loo=COMPUTE_LOO_EXTENDED,
     test_n=GENERAL_TEST_N,
     seed=SEED,
+    progress_callback=log_progress,
+    rf_n_estimators=RF_N_ESTIMATORS,
 )
 test_setting.head()
 ```
@@ -1243,7 +730,7 @@ test_setting.head()
 For a broader study, we use:
 
 ```{python}
-SAMPLE_SIZES = [20, 30, 50, 100, 200] #how does data quantity affect optimism?
+SAMPLE_SIZES = [20, 30, 50, 75, 100, 150, 200] #how does data quantity affect optimism?
 
 DGPS = ["efron", "logistic", "nonlinear"] # how dependent are the conclusions on the population mechanism?
 
@@ -1255,7 +742,14 @@ Now we can run a full factorial experiment with all combinations of $(N, \text{D
 
 ```{python}
 #| label: run-extended-simulation
-extended_results_file = extended_results_path()
+extended_results_file = extended_results_path(
+    cache_dir=SIMULATION_CACHE_DIR,
+    replications=GENERAL_REPLICATIONS,
+    bootstrap_b=GENERAL_BOOTSTRAP_B,
+    test_n=GENERAL_TEST_N,
+    rf_n_estimators=RF_N_ESTIMATORS,
+    compute_loo_for_random_forest=COMPUTE_LOO_FOR_RANDOM_FOREST,
+)
 
 if not extended_results_file.exists():
     command = [
@@ -1374,40 +868,13 @@ for dgp in DGPS:
 We can also isolate the problem of train/test splitting in one simple experiment.
 
 ```{python}
-def train_vs_test_study(n, dgp, model_name, R=500, n_test=20000, seed=0):
-    """
-    Compare training error vs test error for a specific (n, dgp, model) combination.
-    """
-
-    rng = np.random.default_rng(seed)
-    rows = []
-    for r in range(R):
-        X_train, y_train, _ = (generate_data(n, dgp, rng))
-        if len(np.unique(y_train)) < 2:
-            continue
-        model = make_model(model_name)
-        model.fit(X_train, y_train)
-        train_error = np.mean(model.predict(X_train) != y_train)
-
-        X_test, y_test, _ = generate_data(n_test, dgp, rng)
-        test_error = np.mean(model.predict(X_test) != y_test)
-
-        rows.append({
-            "replication": r,
-            "train_error": train_error,
-            "test_error": test_error,
-            "generalization_gap": test_error - train_error
-        })
-    return pd.DataFrame(rows)
-```
-
-```{python}
 train_test_results = train_vs_test_study(
     n=50,
     dgp="logistic",
     model_name="logistic",
     R=TRAIN_TEST_REPLICATIONS,
     n_test=GENERAL_TEST_N,
+    rf_n_estimators=RF_N_ESTIMATORS,
 )
 
 train_test_results[["train_error", "test_error", "generalization_gap"]].agg(["mean", "std"])

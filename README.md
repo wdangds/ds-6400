@@ -30,6 +30,24 @@ Register or refresh the matching Jupyter kernel:
 python -m ipykernel install --user --name ds-6400 --display-name "Python (ds-6400)"
 ```
 
+Optionally install the local `src/ds6400` package in editable mode:
+
+```bash
+python -m pip install -e .
+```
+
+The shared code is organized by purpose:
+
+```text
+src/ds6400/
+  data_generation.py  # data-generating processes
+  models.py           # model factory
+  evaluation.py       # error estimators and CV helpers
+  simulation.py       # Monte Carlo loops
+  cache.py            # result cache paths
+  progress.py         # logs and warning filters
+```
+
 Test the setup:
 
 ```bash
