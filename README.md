@@ -49,3 +49,15 @@ Render the book:
 ```bash
 quarto render
 ```
+
+This renders HTML by default. To build the PDF version separately:
+
+```bash
+quarto render --profile pdf --to pdf
+```
+
+For the week 1 simulation, progress is written to `simulation-progress.log` instead of the rendered page. You can watch it in another terminal with:
+
+```bash
+tail -f simulation-progress.log
+```

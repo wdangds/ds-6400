@@ -927,7 +927,7 @@ Now we generate data from a nonlinear relationship.
 
 
 $$
-\mathrm{logit}(\pi_i) = -0.2 + X_{i1} - 0.7X_{i2} + 1.1
+\mathrm{logit}(\pi_i) = -0.2 + X_{i1} - 0.7X_{i2} + 1.1(X_{i1}^2 - 1)
 $$
 
 ```{python}

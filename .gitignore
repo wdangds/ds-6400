@@ -6,6 +6,8 @@ _book/
 _freeze/
 _site/
 /index.html
+weeks/*.html
+scratch/*.html
 /site_libs/
 simulation-progress.log
 simulation-cache/
@@ -25,8 +27,8 @@ venv/
 Thumbs.db
 *.swp
 
-/.quarto/
-
 strategy.qmd
 
 notebooks/
+
+/.quarto/
