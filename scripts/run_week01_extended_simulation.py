@@ -16,7 +16,7 @@ from time import perf_counter
 import pandas as pd
 
 
-SAMPLE_SIZES = [20, 30, 50, 100, 200]
+DEFAULT_SAMPLE_SIZES = [20, 30, 50, 100, 200]
 DGPS = ["efron", "logistic", "nonlinear"]
 MODELS = ["logistic", "lda", "1nn", "rf"]
 
@@ -100,10 +100,23 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--bootstrap-b", type=int, required=True)
     parser.add_argument("--test-n", type=int, required=True)
     parser.add_argument("--rf-trees", type=int, required=True)
+    parser.add_argument(
+        "--sample-sizes",
+        type=parse_sample_sizes,
+        default=DEFAULT_SAMPLE_SIZES,
+        help="Comma-separated sample sizes, for example: 20,30,50,100,200",
+    )
     parser.add_argument("--seed", type=int, default=6400)
     parser.add_argument("--compute-loo", action="store_true")
     parser.add_argument("--compute-loo-rf", action="store_true")
     return parser.parse_args()
+
+
+def parse_sample_sizes(value: str) -> list[int]:
+    sample_sizes = [int(item.strip()) for item in value.split(",") if item.strip()]
+    if not sample_sizes:
+        raise argparse.ArgumentTypeError("sample sizes cannot be empty")
+    return sample_sizes
 
 
 def main() -> None:
@@ -114,6 +127,7 @@ def main() -> None:
 
     output_path = extended_results_path(
         cache_dir=SIMULATION_CACHE_DIR,
+        sample_sizes=args.sample_sizes,
         replications=args.replications,
         bootstrap_b=args.bootstrap_b,
         test_n=args.test_n,
@@ -122,23 +136,24 @@ def main() -> None:
     )
     if output_path.exists():
         cached = pd.read_csv(output_path)
-        expected_rows = len(SAMPLE_SIZES) * len(DGPS) * len(MODELS) * args.replications
+        expected_rows = len(args.sample_sizes) * len(DGPS) * len(MODELS) * args.replications
         if len(cached) >= expected_rows:
             log_progress(f"Using cached extended simulation results: {output_path.name}")
             return
 
-    total_settings = len(SAMPLE_SIZES) * len(DGPS) * len(MODELS)
+    total_settings = len(args.sample_sizes) * len(DGPS) * len(MODELS)
     all_model_results = []
 
     log_progress(
         f"Starting extended simulation: {total_settings} settings, "
+        f"sample_sizes={args.sample_sizes}, "
         f"R={args.replications}, bootstrap_B={args.bootstrap_b}, "
         f"LOO={args.compute_loo}, LOO_RF={args.compute_loo_rf}, "
         f"test_n={args.test_n}, rf_trees={args.rf_trees}"
     )
 
     setting_number = 0
-    for n in SAMPLE_SIZES:
+    for n in args.sample_sizes:
         for dgp in DGPS:
             for model_name in MODELS:
                 setting_number += 1

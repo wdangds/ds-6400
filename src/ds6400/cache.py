@@ -3,10 +3,17 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Sequence
+
+
+def sample_sizes_slug(sample_sizes: Sequence[int]) -> str:
+    """Build a stable filename fragment for a sequence of sample sizes."""
+    return "n-" + "-".join(str(n) for n in sample_sizes)
 
 
 def extended_results_path(
     cache_dir: Path,
+    sample_sizes: Sequence[int],
     replications: int,
     bootstrap_b: int,
     test_n: int,
@@ -18,7 +25,8 @@ def extended_results_path(
     return (
         cache_dir
         / (
-            f"extended_results_R-{replications}_B-{bootstrap_b}"
+            f"extended_results_{sample_sizes_slug(sample_sizes)}"
+            f"_R-{replications}_B-{bootstrap_b}"
             f"_test-{test_n}_rf-{rf_n_estimators}_{loo_rf_flag}.csv"
         )
     )

@@ -270,7 +270,7 @@ flowchart LR
 
 ## Simulation Study
 
-This study has two layers. First, we reproduce the main sampling experiment in Efron's paper. Then we extend the experiment by changing sample size, data generating process, and model complexity. This let us move beyond the specific example in the paper and explore how optimism behaves in a more general setting.
+This study has two layers. First, we reproduce the main sampling experiment in Efron's paper. Then we extend the experiment by changing sample size, data generating process, and model complexity. This let us move beyond the specific example in the paper and explore how optimism behaves in a more general setting. For source code, see the [GitHub repository](https://github.com/wdangds/ds-6400/tree/main/src/ds6400).
 
 ```{python}
 import subprocess
@@ -386,18 +386,9 @@ plt.figure(figsize=(7,5))
 
 for label in [0, 1]:
     mask = y == label
-    plt.scatter(
-        X[mask, 0],
-        X[mask, 1],
-        label=f"Y={label}",
-        alpha=0.5
-    )
+    plt.scatter(X[mask, 0],X[mask, 1],label=f"Y={label}",alpha=0.5)
 
-plt.axvline(
-    0,
-    linestyle="--",
-    alpha=0.6
-)
+plt.axvline(0, linestyle="--",alpha=0.6)
 
 plt.xlabel("x1")
 plt.ylabel("x2")
@@ -548,21 +539,11 @@ bias_summary
 We now reproduce the figure 1 from the paper. we can make a cleaner version.
 
 ```{python} 
-plt.figure(figsize=(8, 5))
+plt.figure(figsize=(7, 5))
 
-plt.hist(
-    efron_replication["true_error"] - efron_replication["apparent_error"],
-    bins=30,
-    alpha=0.5,
-    label="True error - apparent error"
-)
+plt.hist(efron_replication["true_error"] - efron_replication["apparent_error"], bins=30, alpha=0.5, label="True error - apparent error")
 
-plt.hist(
-    efron_replication["true_error"] - efron_replication["efron_error"],
-    bins=30,
-    alpha=0.5,
-    label="True error - corrected error"
-)
+plt.hist(efron_replication["true_error"] - efron_replication["efron_error"], bins=30, alpha=0.5, label="True error - corrected error")
 
 plt.axvline(0,linestyle="--")
 
@@ -611,21 +592,11 @@ optimism_by_n
 ```
 
 ```{python}
-plt.figure(figsize=(8, 5))
+plt.figure(figsize=(7, 5))
 
-plt.plot(
-    optimism_by_n["n"],
-    optimism_by_n["actual_optimism"],
-    marker="o",
-    label="Actual optimism"
-)
+plt.plot(optimism_by_n["n"], optimism_by_n["actual_optimism"], marker="o", label="Actual optimism")
 
-plt.plot(
-    optimism_by_n["n"],
-    optimism_by_n["estimated_optimism"],
-    marker="o",
-    label="Efron estimate"
-)
+plt.plot(optimism_by_n["n"],optimism_by_n["estimated_optimism"],marker="o",label="Efron estimate")
 
 plt.axhline(0, linestyle="--", alpha=0.5)
 
@@ -643,24 +614,12 @@ bias_by_n.head()
 ```
 
 ```{python}
-plt.figure(figsize=(8, 5))
+plt.figure(figsize=(7, 5))
 
-for estimator, g in (
-    bias_by_n
-    .groupby("estimator")
-):
+for estimator, g in (bias_by_n.groupby("estimator")):
+    plt.plot(g["n"], g["bias"], marker="o", label=estimator)
 
-    plt.plot(
-        g["n"],
-        g["bias"],
-        marker="o",
-        label=estimator
-    )
-
-plt.axhline(
-    0,
-    linestyle="--"
-)
+plt.axhline(0,linestyle="--")
 
 plt.xlabel("Training sample size N")
 plt.ylabel("Monte Carlo bias")
@@ -744,6 +703,7 @@ Now we can run a full factorial experiment with all combinations of $(N, \text{D
 #| label: run-extended-simulation
 extended_results_file = extended_results_path(
     cache_dir=SIMULATION_CACHE_DIR,
+    sample_sizes=SAMPLE_SIZES,
     replications=GENERAL_REPLICATIONS,
     bootstrap_b=GENERAL_BOOTSTRAP_B,
     test_n=GENERAL_TEST_N,
@@ -763,6 +723,8 @@ if not extended_results_file.exists():
         str(GENERAL_TEST_N),
         "--rf-trees",
         str(RF_N_ESTIMATORS),
+        "--sample-sizes",
+        ",".join(str(n) for n in SAMPLE_SIZES),
         "--seed",
         str(SEED),
     ]
@@ -799,14 +761,9 @@ Now we give some plots to visualize the results.
 ```{python}
 for dgp in DGPS:
     subset = model_optimism[model_optimism["dgp"] == dgp]
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(7, 5))
     for model_name, g in subset.groupby("model"):
-        plt.plot(
-            g["n"],
-            g["actual_optimism"],
-            marker="o",
-            label=f"{model_name} (actual)"
-        )
+        plt.plot(g["n"],g["actual_optimism"],marker="o",label=f"{model_name} (actual)")
     plt.axhline(0, linestyle="--", alpha=0.5)
     plt.xlabel("Training sample size N")
     plt.ylabel("Actual optimism")
@@ -849,14 +806,9 @@ logistic_comparison = (evaluation_summary[evaluation_summary["model"]=="logistic
 
 for dgp in DGPS:
     subset = logistic_comparison[logistic_comparison["dgp"]==dgp]
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(7, 5))
     for estimator, g in subset.groupby("estimator"):
-        plt.plot(
-            g["n"],
-            g["bias"],
-            marker="o",
-            label=estimator
-        )
+        plt.plot(g["n"],g["bias"],marker="o",label=estimator)
     plt.axhline(0, linestyle="--", alpha=0.5)
     plt.xlabel("Training sample size N")
     plt.ylabel("Monte Carlo bias")
@@ -879,7 +831,7 @@ train_test_results = train_vs_test_study(
 
 train_test_results[["train_error", "test_error", "generalization_gap"]].agg(["mean", "std"])
 
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(7, 5))
 plt.hist(train_test_results["generalization_gap"], bins=30, alpha=0.7)
 plt.xlabel("Test error - Training error")
 plt.ylabel("Frequency")
