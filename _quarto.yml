@@ -1,5 +1,7 @@
 project:
   type: book
+  resources:
+    - .nojekyll
 
 jupyter: ds-6400
 
@@ -17,13 +19,18 @@ book:
     - part: "Weekly Writing"
       chapters:
         - weeks/01.qmd
+        - weeks/02.qmd
     - references.qmd
 
 bibliography: references.bib
+
+filters:
+  - filters/draft.lua
 
 format:
   html:
     theme:
       - cosmo
       - brand
+    css: styles.css
     toc: true

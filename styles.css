@@ -1,0 +1,22 @@
+.draft-placeholder {
+  border-left: 4px solid #737373;
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: #f7f7f5;
+}
+
+.draft-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.draft-tag {
+  border: 1px solid #b7b7ad;
+  border-radius: 999px;
+  color: #3f3f3a;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0.35rem 0.55rem;
+}

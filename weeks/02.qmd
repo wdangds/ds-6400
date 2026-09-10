@@ -1,0 +1,21 @@
+---
+title: "40 years of Predictive Performance Estimation"
+jupyter: ds-6400
+draft: true
+tags: 
+  - Efron
+  - Optimism
+  - Bootstrap
+  - Predictive Performance
+  - Estimation
+---
+
+Nearly 40 years ago, the central question was if a model is fitted and evaluated on the same observations, how much does the apparent error underestimate its future prediction error? The [previous discussion](01.qmd) focused on this problem through the idea of __optimism__. The data are used twice ($D\to \hat f$ then $D\to \text{err}(\hat f)$), so the resulting appearent error tends to be too favorable. Efron (@efronHowBiasedApparent1986) expressed this different as 
+
+$$
+\text{op} = \text{Err} - \text{err},
+$$
+
+and studied ways to estimate and correct it. This also led to connections among bootstrap correction, cross-validation, and what we now call *generalization error*.
+
+
