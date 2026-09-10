@@ -1,6 +1,20 @@
 # DS 6400
 
+Published book: <https://wdangds.github.io/ds-6400/>
+
 This is a Quarto book repository for weekly class writing.
+
+## Repository Layout
+
+```text
+.
+  _book/       # rendered website served by GitHub Pages
+  checks/      # small environment/render checks
+  filters/     # Quarto Lua filters
+  scripts/     # command-line scripts for long-running work
+  src/ds6400/  # reusable Python helpers
+  weeks/       # weekly Quarto chapters
+```
 
 ## Environment
 
@@ -51,7 +65,7 @@ src/ds6400/
 Test the setup:
 
 ```bash
-quarto render scratch/env-check.qmd
+quarto render checks/env-check.qmd
 ```
 
 ## Quarto
@@ -89,7 +103,7 @@ The extended simulation cache filename includes the sample-size grid. If you cha
 Add this to a chapter's YAML front matter to publish it as a placeholder:
 
 ```yaml
-draft: true
+draft: "true"
 ```
 
 The rendered page will keep the title and tags, then show `(on progress)`. The source content stays in the `.qmd` file. To preview the full draft locally, run:

@@ -2,6 +2,7 @@
 **/*.quarto_ipynb
 **/*.quarto_ipynb_*
 _freeze/
+checks/*.html
 scratch/*.html
 /site_libs/
 simulation-progress.log
@@ -25,5 +26,3 @@ Thumbs.db
 strategy.qmd
 
 notebooks/
-
-/.quarto/
