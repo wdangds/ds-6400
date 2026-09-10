@@ -34,3 +34,5 @@ format:
       - brand
     css: styles.css
     toc: true
+    include-in-header:
+      - tex/mathjax.html

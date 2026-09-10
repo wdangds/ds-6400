@@ -26,3 +26,5 @@ Thumbs.db
 strategy.qmd
 
 notebooks/
+
+/.quarto/

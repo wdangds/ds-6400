@@ -13,6 +13,7 @@ This is a Quarto book repository for weekly class writing.
   filters/     # Quarto Lua filters
   scripts/     # command-line scripts for long-running work
   src/ds6400/  # reusable Python helpers
+  tex/          # shared math notation for HTML and PDF
   weeks/       # weekly Quarto chapters
 ```
 
@@ -89,6 +90,11 @@ This renders HTML by default. To build the PDF version separately:
 ```bash
 quarto render --profile pdf --to pdf
 ```
+
+Shared math notation is configured in `tex/mathjax.html` for HTML and
+`tex/preamble.tex` for PDF. The book supports `\coloneqq` plus shortcuts such
+as `\R`, `\N`, `\Z`, `\Q`, `\C`, `\E`, `\Var`, `\Cov`, `\Corr`, `\argmin`,
+`\argmax`, and `\ind`.
 
 For the week 1 simulation, progress is written to `simulation-progress.log` instead of the rendered page. You can watch it in another terminal with:
 

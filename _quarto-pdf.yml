@@ -1,3 +1,5 @@
 format:
   pdf:
     documentclass: scrreprt
+    include-in-header:
+      - tex/preamble.tex

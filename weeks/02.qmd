@@ -16,5 +16,45 @@ $$
 \text{op} = \text{Err} - \text{err},
 $$
 
-and studied ways to estimate and correct it. This also led to connections among bootstrap correction, cross-validation, and what we now call *generalization error*.
+and studied ways to estimate and correct it. This also led to connections among bootstrap correction, cross-validation (CV), and what we now call *generalization error*.
+
+Over the following four decades, the question became more precise:
+
+```{mermaid}
+flowchart TD
+    A[How optimisitic is training error?]
+    B[How should we estimate prediction error?]
+    C[How uncertain is that estimate?]
+    D[What prediction error are we estimating?]
+
+    A --> B
+    B --> C
+    C --> D
+```
+
+@batesCrossvalidationWhatDoes2024 address the last two questions. Their paper provides an endpoint to this development. We now can't just say that the cross validation error estimates the generalization error, only after we specify what exactly *generalization error* means.
+
+# From optimism to cross-validation
+
+Efron's earlier work treated prediction-error estimation as a resampling problem. @efronLeisurelyLookBootstrap1983 studied CV and boostrap estimators for the error rate of a prediction rule, particularly in small sample. @efronHowBiasedApparent1986 then approached the same problem through apparent-error optimism, connecting prediction error estimation to CV, bootstrap, $C_p$, and AIC. Thus the theme was established in mid-1980s was the performance on the observed sample was different from the performance on future observations. As CV became standard in statistical learning, attention moved from correcting apparent error to understanding the statistical behavior of CV itself.
+
+A major complication is uncertainty. @bengioNoUnbiasedEstimator2004 showed that there is no universally unbiased estimator of the variance of $K$-fold CV from a single CV run. The main reason is that CV errors are dependent because training sets overlap. More recent work developed asymptotic theories under assumptions related to the stability of the learning algorithm. @austernAsymptoticsCrossvalidation2020 studied asymptotic normality of cross-validated risk, while @bayleCrossvalidationConfidenceIntervals2020 developed asymptotically valid confidence intervals for CV test error under stability conditions. And, finally, @batesCrossvalidationWhatDoes2024 sit at end of this progression and ask a question that is prior to all of them:
+
+> *What exactly is the target of cross-validation?*
+
+# Prediction error as a random quantity
+
+Let $\mathbf X=(X_1, \dots, X_n)$, $\mathbf Y=(Y_1, \dots, Y_n)$, where $(X_i, Y_i) \sim P$ are i.i.d. random variables. Let $\mathcal A$ denote a model-fitting algorithm. Given the observed data, $\hat \theta = \mathcal A(\mathbf X, \mathbf Y)$. For a parameter value $\theta$, let $\hat f(x, \theta)$ denote the corresponding prediction at feature value $x$, and let $\ell (\hat y, y)$ be a nonnegative loss function, i.e. a [metric](https://en.wikipedia.org/wiki/Metric_space) on the prediction space $\mathcal Y$.  
+
+:::{.callout-note title="Definition: Out-of-sample prediction error"}
+
+The **out-of-sample prediction error**, denoted $\text{Err}_{XY}$, is the error of the model fitted to the **observed training sample** $(X_{n+1}, Y_{n+1})\sim P$:
+
+$$
+\text{Err}_{XY} \coloneqq \E\left[\ell (\hat f(X_{n+1}, \hat \theta), Y_{n+1})\mid (\mathbf X, \mathbf Y)\right].
+$$
+
+:::
+
+
 
