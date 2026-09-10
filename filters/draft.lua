@@ -32,12 +32,15 @@ end
 
 function Pandoc(doc)
   if os.getenv("SHOW_DRAFT_CONTENT") == "true" then
+    doc.meta.draft = nil
     return doc
   end
 
   if not is_true(doc.meta.draft) then
     return doc
   end
+
+  doc.meta.draft = nil
 
   local blocks = {}
   local tags = collect_tags(doc.meta.tags)

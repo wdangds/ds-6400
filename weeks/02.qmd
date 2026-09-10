@@ -1,7 +1,7 @@
 ---
 title: "40 years of Predictive Performance Estimation"
 jupyter: ds-6400
-draft: true
+draft: "true"
 tags: 
   - Efron
   - Optimism
@@ -17,5 +17,4 @@ $$
 $$
 
 and studied ways to estimate and correct it. This also led to connections among bootstrap correction, cross-validation, and what we now call *generalization error*.
-
 
