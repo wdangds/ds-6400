@@ -68,6 +68,8 @@ Render the book:
 quarto render
 ```
 
+The GitHub Pages workflow publishes the rendered `_book` directory. After changing content, render locally, commit the source files and `_book`, then push to `main`.
+
 This renders HTML by default. To build the PDF version separately:
 
 ```bash
@@ -81,3 +83,17 @@ tail -f simulation-progress.log
 ```
 
 The extended simulation cache filename includes the sample-size grid. If you change the second `SAMPLE_SIZES` list in `weeks/01.qmd`, Quarto will request a new combined CSV instead of silently reusing the old one. Existing per-setting cache files may still be reused for sample sizes already computed.
+
+## Draft Pages
+
+Add this to a chapter's YAML front matter to publish it as a placeholder:
+
+```yaml
+draft: true
+```
+
+The rendered page will keep the title and tags, then show `(on progress)`. The source content stays in the `.qmd` file. To preview the full draft locally, run:
+
+```bash
+SHOW_DRAFT_CONTENT=true quarto preview
+```
