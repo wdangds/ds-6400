@@ -1,7 +1,6 @@
 ---
 title: "40 years of Predictive Performance Estimation"
 jupyter: ds-6400
-draft: "true"
 tags: 
   - Efron
   - Optimism
@@ -21,6 +20,7 @@ and studied ways to estimate and correct it. This also led to connections among 
 Over the following four decades, the question became more precise:
 
 ```{mermaid}
+%%| fig-align: center
 flowchart TD
     A[How optimisitic is training error?]
     B[How should we estimate prediction error?]
@@ -34,7 +34,7 @@ flowchart TD
 
 @batesCrossvalidationWhatDoes2024 address the last two questions. Their paper provides an endpoint to this development. We now can't just say that the cross validation error estimates the generalization error, only after we specify what exactly *generalization error* means.
 
-# From optimism to cross-validation
+## From optimism to cross-validation
 
 Efron's earlier work treated prediction-error estimation as a resampling problem. @efronLeisurelyLookBootstrap1983 studied CV and boostrap estimators for the error rate of a prediction rule, particularly in small sample. @efronHowBiasedApparent1986 then approached the same problem through apparent-error optimism, connecting prediction error estimation to CV, bootstrap, $C_p$, and AIC. Thus the theme was established in mid-1980s was the performance on the observed sample was different from the performance on future observations. As CV became standard in statistical learning, attention moved from correcting apparent error to understanding the statistical behavior of CV itself.
 
@@ -42,11 +42,13 @@ A major complication is uncertainty. @bengioNoUnbiasedEstimator2004 showed that 
 
 > *What exactly is the target of cross-validation?*
 
-# Prediction error as a random quantity
+## Prediction error as a random quantity
 
 Let $\mathbf X=(X_1, \dots, X_n)$, $\mathbf Y=(Y_1, \dots, Y_n)$, where $(X_i, Y_i) \sim P$ are i.i.d. random variables. Let $\mathcal A$ denote a model-fitting algorithm. Given the observed data, $\hat \theta = \mathcal A(\mathbf X, \mathbf Y)$. For a parameter value $\theta$, let $\hat f(x, \theta)$ denote the corresponding prediction at feature value $x$, and let $\ell (\hat y, y)$ be a nonnegative loss function, i.e. a [metric](https://en.wikipedia.org/wiki/Metric_space) on the prediction space $\mathcal Y$.  
 
-:::{.callout-note title="Definition: Out-of-sample prediction error"}
+::: {#def-out-of-sample-prediction-error}
+
+## Out-of-sample prediction error
 
 The **out-of-sample prediction error**, denoted $\text{Err}_{XY}$, is the error of the model fitted to the **observed training sample** $(X_{n+1}, Y_{n+1})\sim P$:
 
@@ -56,5 +58,371 @@ $$
 
 :::
 
+Before observing the training sample, $\text{Err}_{XY}$ is a random quantity. The expectation is taken over the distribution of $(X_{n+1}, Y_{n+1})$ conditional on the observed training sample. This is the quantity that Efron called $\text{Err}$ in his 1986 paper (@efronHowBiasedApparent1986).
+
+Instead of conditioning on the particular sample that happened to be observed, we also consider about the expectation of this quantity across possible training sets. 
+
+::: {#def-expected-prediction-error}
+
+## Expected prediction error
+
+The average out-of-sample error obtained by applying the fitting algorithm $\mathcal A$ to repeated datasets of size $n$ drawn from $P$ is called the **expected prediction error**:
+
+$$
+\text{Err} \coloneqq \E \left[\text{Err}_{XY}\right]
+$$
+
+:::
+
+To understand why these two targets behave differently, Bates et al. introduce 
+
+$$
+\text{Err}_{X} \coloneqq \E[\text{Err}_{XY}\mid \mathbf X]
+$$
+
+Here the observed features $\mathbf X$ are fixed, but the randomness in $\mathbf Y\mid \mathbf X$ is averaged out. We therefor now have three different targets of prediction error estimation: $\text{Err}_{XY}$, $\text{Err}$, and $\text{Err}_{X}$.
+
+![Err is a constant, $\Err_{X}$ is a function of $\mathbf X$, and $\Err_{XY}$ is a function of $(\mathbf X, \mathbf Y)$.](figs/err-errx-errxy.png)
+
+To make this relationship precise, we can write the decomposition of the variance of $\Err_{XY}$ as
+
+$$
+\Var(\Err_{XY}) = \underbrace{\E_{\mathbf X}[\Var(\Err_{XY}\mid \mathbf X)]}_{\text{var due to } \mathbf Y \mid \mathbf X} + \underbrace{\Var(\Err_X)}_{\text{var due to } \mathbf X}
+$$
+
+::: {.derivation-note}
+[How can we derive this equation?]{.derivation-note-trigger tabindex="0"}
+
+::: {.derivation-note-body}
+This is the law of total variance. Start by conditioning on the observed feature values $\mathbf X$:
+
+$$
+\Var(\Err_{XY})
+= \E_{\mathbf X}\left[
+    \E\left[
+      \left(\Err_{XY} - \E[\Err_{XY}]\right)^2
+      \mid \mathbf X
+    \right]
+  \right].
+$$
+
+Add and subtract $\Err_X = \E[\Err_{XY}\mid \mathbf X]$ inside the square:
+
+$$
+\Err_{XY} - \E[\Err_{XY}]
+=
+\left(\Err_{XY} - \Err_X\right)
++
+\left(\Err_X - \E[\Err_{XY}]\right).
+$$
+
+After expanding, the cross term has conditional mean zero because
+$\E[\Err_{XY} - \Err_X\mid \mathbf X]=0$. Therefore,
+
+$$
+\Var(\Err_{XY})
+=
+\E_{\mathbf X}[\Var(\Err_{XY}\mid \mathbf X)]
++
+\Var(\Err_X).
+$$
+:::
+:::
+
+The first term measures variation caused by the responses $\mathbf Y$ coniditional on the observed predictors. The second term measures variation caused by the feature sample $\mathbf X$.
+
+## Cross-validation as an estimator
+
+Let $\mathcal I=\{1, \dots, n\}$ be partitioned randomly into $K$ disjoint folds $\mathcal I_1, \dots, \mathcal I_K$, each of size $m=\frac{n}{K}$. For the first fold, we define $\hat \theta^{(-1)} = \mathcal A(X_j, Y_j)_{j\in \mathcal I \setminus \mathcal I_1}$ is the fitted parameters obtained without observations in $\mathcal I_1$. For $i\mathcal I_1$, the held-out loss is $e_i = \ell(\hat f(x_i, \hat \theta^{(-1)}), y_i)$. Losses for the remaining folds are defined similarly.
+
+::: {#def-kfold-cross-validation-error}
+
+## K-fold cross-validation error
+
+The **K-fold cross-validation error** is the average of the held-out losses across all folds:
+
+$$
+\widehat \Err^{(CV)} \coloneqq \overline e = \frac{1}{n}\sum_{i=1}^n e_i
+$$
+:::
+
+So now we can see the problem. We have one estimator $\widehat \Err^{(CV)}$ and three different targets $\Err_{XY}$, $\Err_X$, and $\Err$. The question is which target does cross-validation estimate?
+
+## A linear-model result
+
+To answer this question, Bates et al. consider a homoscedascity linear model with 
+
+$$
+y_i = x_i^\top \theta + \epsilon_i \quad \text{where} \quad \epsilon_i \overset{\text{i.i.d.}}{\sim} N(0, \sigma^2)
+$${#eq-linear-model}
+
+with $\epsilon=(\epsilon_1, \dots, \epsilon_n)$ independent of $\mathbf X$.
+
+Before reaching the main result, the define a class of prediction error estimators that satisfy a certain linearity condition.
+
+::: {#def-linearly-invariant-estimators}
+
+## Linearly invariant estimators
+
+A prediction-error estimator $\widehat \Err((X_i, Y_i),\dots, (X_n, Y_n), U)$ is **linearly invariant** if, for every $\kappa \in \mathbb R^p$ and $x_i, y_i, u$ we have
+
+$$
+\widehat \Err((x_1, y_1), \dots, (x_n, y_n), u) = \widehat \Err((x_1, y_1 + x_1^\top \kappa), \dots, (x_n, y_n + x_n^\top \kappa), u)
+$$
+
+The random variable $U$ allows the estimator itself to contain randomness, such as the random partitioning of the data into folds for cross-validation.
+:::
+
+With OLS fitting, $\widehat \Err^{(CV)}$ satisfies this property:
+
+::: {#lem-cv-linear-invariant}
+When using OLS as the fitting algorithm and squared-error loss, the cross-validation estimate of prediction error, $\hat \Err^{(CV)}$, is linearly invariant.
+:::
+
+As we may recognize, adding the same linear signal $x_i^\top \kappa$ to every response changes the fitted coefficients, but it does not change the residual structure on which this class of error estimators depends.
+
+::: {#thm-conditional-independence}
+
+## Conditional Independence
+
+Assume the homoscedastic Gaussian linear model (@eq-linear-model) holds and that we use squared-error loss. Let $\widehat \Err$ be a linearly invariant estimate of prediction error (such as $\widehat \Err^{(CV)}$ using OLS as the fitting algorithm). Then,
+
+$$
+\widehat \Err \indep \Err_{XY}\mid \mathbf X.
+$$
+
+:::
+
+CV uses the same observed sample from which the final OLS is fitted, yet conditional on $\mathbf X$, its estimate is independent of that model's actual prediction error. This is a surprising result.
+
+For a more detailed derivation of why this happens, see the appendix note on [OLS, linear invariance, and conditional independence](../appendices/ols-cv-independence.qmd).
 
 
+As a result, any linearly invariant estimator, such as CV, has lower MSE as an estimate of $\Err_X$ than as an estimate of $\Err_{XY}$.
+
+
+::: {#cor-cv-errx}
+
+Under the conditions of @thm-conditional-independence,
+
+$$
+\E \left[(\widehat \Err - \Err_{XY})^2 \right] = \E \left[(\widehat \Err - \Err_{X})^2\right] + \underbrace{\E[\Var(\Err_{XY}\mid Y)]}_{\geq 0}
+$$
+
+:::
+
+Since the last term is nonnegative, we have 
+
+$$
+\E[(\widehat \Err - \Err_{XY})^2]\geq \E\left[(\widehat \Err - \Err_{X})^2\right].
+$$
+
+Thus CV is closer to $\Err_{X}$ than to $\Err_{XY}$ <u>under this model</u>.
+
+The remaining question is how close $\Err_X$ is to $\Err$. To study this, Bates et al. considers the proportional asymptotic regime 
+
+$$
+n>p, \quad n, p \to \infty, \quad \frac{n}{p}\to \lambda > 1.
+$${#eq-proportional-asymptotics}
+
+This is different from classical asyptotics with fixed $p$. When $p$ remains fixed and $n\to \infty$, the three errors become so close that distinguishing them is less informative.
+
+::: {#thm-assymptotic-errx-err}
+
+Suppose the homoscedastic Gaussian linear model (@eq-linear-model) holds and that we use squared-error loss. In addition, assume that feature vectors $X_i\sim \mathcal N(0, \Sigma_p)$ for any full-rank $\Sigma_p$. Then, in the proportial asymptotic limit in (@eq-proportional-asymptotics), we have 
+
+$$
+\E_X[\Var(\Err_{XY}\mid \mathbf X)] =\Theta\left(\frac{1}{n}\right),
+$$
+
+and 
+
+$$
+\Var(\Err_X) = \E(\Err_X - \Err)^2 = \Theta\left(\frac{1}{n^2}\right),
+$$
+
+as $n, p \to \infty$.
+:::
+
+Therefore the fluctuations of $\Err_X - \Err$ are much smaller than the fluctuations of $\Err_{XY} - \Err_{X}$. 
+
+![The relationship among various notions of prediction error in the proportional asymptotic limit.](figs/relation-err-errx-errxy.png)
+
+::: {#cor-cv-err}
+
+In the setting of @thm-assymptotic-errx-err, $\Corr(\Err_{XY}, \Err_X)\to 0$ as $n, p \to \infty$. Moreover, for any linearly invariant estimator $\widehat \Err$ (such as $\widehat \Err^{(CV)}$ using OLS as the fitting algorithm), 
+
+$$
+\Corr(\Err_{XY}, \widehat \Err) \to 0, \quad \text{as } n, p \to \infty.
+$$
+:::
+
+Consequently, in the proportional asymptotic limit, $\widehat \Err^{(CV)}$ is a good estimator of $\Err_X$, but it is not a good estimator of $\Err_{XY}$.
+
+::: {#cor-cv-errx-err}
+
+In the setting of @thm-assymptotic-errx-err, let $\widehat \Err$ be any linearly invariant estimator (such as $\widehat \Err^{(CV)}$ using OLS as the fitting algorithm). Suppose in addition that $\Var(\widehat \Err) \to 0$ (an extremly weak condition satisfied by any reasonable estimator). Then,
+
+$$
+\begin{aligned}
+\E\left[(\widehat \Err - \Err_{XY})^2\right] - \E\left[(\widehat \Err - \Err_X)^2\right] &= \Omega\left(\frac{1}{n}\right), \\
+\E\left[(\widehat \Err - \Err_{XY})^2\right] - \E\left[(\widehat \Err - \Err)^2\right] &= \Omega\left(\frac{1}{n}\right)\\ 
+\E\left[(\widehat \Err - \Err)^2\right] - \E\left[(\widehat \Err - \Err_{X}))^2\right] &= O\left(\frac{1}{n}\right).
+\end{aligned}
+$$
+:::
+
+::: {.callout-caution title="Caution"}
+
+In $K$-fold CV, each fitted model uses $n\frac{K-1}{K}$ observations, while $\Err$ and $\Err_{XY}$ are defined using models fitted on $n$ observations. Hence $\E \left[\widehat Err^{(CV)}\right]$ need not equal $\Err$ or $\Err_{XY}$. In the classical parametric regime ($p$ fixed, $n\to \infty$), the bias is typically of order $O(\frac{1}{n})$, and is small relative to the sampling variance. In proportional high dimensional regimes, it can be larger. Increasing $K$ reduces the difference between the CV training size and $n$. 
+
+Since both $\widehat \Err^{(CV)}$ and $\Err_{XY}$ are random quantities, we cannot use the usual bias-variance decomposition. However, by @cor-cv-err, these two quantites are asymptotically uncorrelated, yielding the following:
+
+$$
+\E\left[(\widehat \Err - \Err_{XY})^2\right] \approx \underbrace{\left(\E\left[(\widehat \Err - \Err)^2\right]\right)}_{\text{bias}^2} + \underbrace{\E\left[(\widehat \Err-\E[\widehat \Err])^2\right]}_{\text{variance of } \widehat \Err} + \underbrace{\E\left[(\Err_{XY}- \Err)^2\right]}_{\text{variance of } \Err_{XY}}.
+$$
+
+:::
+
+## From Estimation to Inference
+
+Recall the $K$-fold CV estimate in @def-kfold-cross-validation-error. An estimate of its standard error is given by 
+
+$$
+\widehat{\text{SE}} \coloneqq \frac{1}{\sqrt{n}} \sqrt{\frac{1}{n-1}\sum_{i=1}^n(e_i -\overline e)^2}.
+$$
+
+The problem is that this formula behaves as if the $e_i$ were independent, but they are not. To see this more clearly, we write 
+
+$$
+\Var(\overline e) = \Var(\frac{1}{n}\sum_{i=1}^n e_i) = \frac{1}{n^2}\sum_{i=1}^n \Var(e_i) + \frac{2}{n^2}\sum_{i<j} \Cov(e_i, e_j).
+$$
+
+If the losses were independent, then $\Cov(e_i, e_j)$ would be zero, and the usual formula would be valid. But cross-validation does not have this structure. Two held-out predictions may be produced by models trained on overlapping datasets. Hence their errors can be correlated.
+
+![Covariance structure of the CV errors.](figs/cov-cv-error.png)
+
+### Confidence Intervals with Nested Cross-Validation
+
+::: {#def-cv-mse}
+
+For a sample of size $n$ split into $K$ folds, the **cross-validation MSE** is 
+
+$$
+\text{MSE}_{K, n} \coloneqq \E\left[(\widehat \Err^{(CV)} - \Err_{XY})^2\right].
+$$
+
+:::
+
+A small notice is that this MSE appear incosistent with previous section, where we claimed that $\widehat \Err^{(CV)}$ estimates $\Err$ more accurately than $\Err_{XY}$, yet the confidence interval is calibrated toward $\Err_{XY}$. 
+
+Ordinarily, a confidence interval (ci) is centered at an estimator and uses its sampling variance:
+
+$$
+\hat \theta \pm z_{1-\alpha/2}\sqrt{\Var(\hat \theta)}.
+$$
+
+The problem is $\widehat \Err^{(CV)}$ can be biased as discussed in the previous section. Therefore, 
+
+$$
+\text{MSE} = \Var + \text{Bias}^2
+$$
+
+is more relevant than variance alone.
+
+Their interval has the form 
+
+$$
+\widehat \Err^{(NCV)}-\widehat{\text{bias}} \pm z_{1-\alpha/2}\sqrt{\widehat{\text{MSE}}}.
+$$
+
+### The holdout MSE identity
+
+Suppose the full index set $\mathcal I=\{1,\dots, n\}$ is randomly partitioned to $\mathcal I_{\text{(train)}}$ and $\mathcal I_{\text{(out)}}$. let $(\tilde{\mathbf X}, \tilde{\mathbf Y})$ denote the observations in $\mathcal I_{\text{(train)}}$. Using only these observations, we fit $\hat \theta^{\text{(train)}}=\mathcal A(\tilde{\mathbf X}, \tilde{\mathbf Y})$. The true prediction error of this fitted model is denoted $\Err_{\tilde X \tilde Y}$. 
+
+Now suppose that, using only the training subset, we also construct some estimator $\widehat \Err_{\tilde X \tilde Y}$ such as CV. The untouched outer set gives an independent estimate of the fitted model's prediction error. For $i\in \mathcal I_{\text{(out)}}$, let 
+
+$$
+e_i^{(\text{out})} = \ell(\hat f(X_i, \hat \theta^{\text{(train)}}), Y_i)
+$$
+
+be the losses of the fitted model, and let
+
+$$
+\overline e^{\text{(out)}} = \frac{1}{|\mathcal I_{\text{(out)}}|}\sum_{i\in \mathcal I_{\text{(out)}}} e_i^{\text{(out)}}
+$$
+
+be the average of these losses. Then we have the following identity:
+
+::: {#lem-holdout-mse-identity}
+
+In the setting above 
+
+$$
+\underbrace{\E\left[(\widehat \Err_{\tilde X \tilde Y} -\Err_{\tilde X \tilde Y})^2\right]}_{\text{MSE}} = \underbrace{\E\left[(\widehat \Err_{\tilde X \tilde Y} - \overline e^{\text{(out)}})^2\right]}_{\text{(a)}} - \underbrace{\E\left[(\overline e^{\text{(out)}} - \Err_{\tilde X \tilde Y})^2\right]}_{\text{(b)}}
+$$
+
+:::
+
+The first term (a) measures the observed disagreement between the internal prediction error estimate and the outer holdout error. Notice that this agreement contains two type of noise: the error of the CV estimator + the sampling noise in the holdout set. The second term (b) measures the sampling noise in the holdout set. Therefore, subtracting (b) from (a) gives an unbiased estimate of the MSE of the internal prediction error estimator.
+
+> **How term (b) can be estimated?**
+
+Conditional on the training set, the outer observations are i.i.d. from $P$. Hence 
+
+$$
+\Var(\overline e^{\text{(out)}}\mid \tilde{\mathbf X}, \tilde{\mathbf Y}) = \frac{1}{|\mathcal I_{\text{(out)}}|}\Var(e_i^{\text{(out)}}\mid \tilde{\mathbf X}, \tilde{\mathbf Y})
+$$
+
+So term (b) can be estimated by $\frac{s^2_{\text{(out)}}}{|\mathcal I_{\text{(out)}}|}$, where $s^2_{\text{(out)}}$ is the sample variance of the outer losses $e_i^{\text{(out)}}$.
+
+### The nested CV MSE estimator
+
+For split $b$, obtain $\widehat{\Err}_{\tilde X \tilde Y}^{(b)}$ using the training set and $\overline e^{\text{(out)}, (b)}$ using the outer holdout set. Then we estimate 
+
+$$
+a_b = (\widehat \Err_{\tilde X \tilde Y}^{(b)} - \overline e^{\text{(out)}, (b)})^2,
+$$
+
+and 
+
+$$
+b_b = \frac{s^2_{\text{(out)}, (b)}}{|\mathcal I_{\text{(out)}}|}.
+$$
+
+We then average these over $B$ splits to obtain
+
+$$
+\widehat{\text{MSE}}^{(NCV)} = \frac{1}{B}\sum_{b=1}^B (a_b - b_b).
+$$
+
+::: {#thm-ncv-mse-estimator}
+
+For a nested CV with a sample of size $n$, $\E[\widehat{\text{MSE}}^{(NCV)}] = \text{MSE}_{K-1, n'}$, where $n' = n\frac{K-1}{K}$.
+
+:::
+
+The nested procedure does not directly provide an unbiased estimate of $\text{MSE}_{K, n}$ for $K$-fold CV on the full $n$-observation sample. Instead, its target is the MSE of $K-1$-fold CV on the sample of size $n' = n\frac{K-1}{K}$ used to fit the models in the inner loop.
+
+To translate the nested-CV MSE estimate back toward the desired full-sample scale, Bates et al/ recommend
+
+$$
+\widehat{\text{MSE}} = \frac{K-1}{K}\widehat{\text{MSE}}^{(NCV)}.
+$$
+
+This rescaled estimator is not guaranteed to be unbiased for $\text{MSE}_{K, n}$.
+
+## Simulation Studies
+
+This paper uses simulations for two distinct purposes. Some experiments test the estimand theory from @thm-conditional-independence; other test the confidence interval theory from @thm-ncv-mse-estimator.
+
+| Study | Model | Main quantities studied | Purpose | Main finding |
+|-------|-------|------------------------|---------|--------------|
+| Motivating sparse classification example, Fig. 1 | $n$=90, $p$=100; Gaussian $X$; 4 coefficients; $L_1$ penalized LR | $\widehat{\Err}^{\text{(CV)}}$, $\Err_{XY}$, naive 90% CV intervals | Show that ordinary CV confidence intervals can fail | Nominal 10% miscoverage becomes about 31%; intervals need to be roughly 1.6 times wider |
+| Linear model estimand exp, Fig. 3 | $n$=100, $p$= 20; Gaussian features; OLS | MSE relative to $\Err$, $\Err_{XY}$; CV vs $\Err_{XY}$ corr | Demonstrate Thm 1 / Cor 1 in finite samples | CV has more precise for $\Err$ and $\Err_{X}$ than for $\Err_{XY}$ |
+| | | | | |
+| | | | | |
+| | | | | |
+| | | | | |
+| | | | | |
+| | | | | |

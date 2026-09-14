@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -91,7 +110,11 @@ window.MathJax = {
       Corr: "\\operatorname{Corr}",
       argmin: "\\operatorname*{arg\\,min}",
       argmax: "\\operatorname*{arg\\,max}",
-      ind: "\\mathbb{1}"
+      ind: "\\mathbb{1}",
+      Err: "\\operatorname{Err}",
+      err: "\\operatorname{err}",
+      var: "\\operatorname{var}",
+      indep: "\\perp\\!\\!\\!\\perp"
     }
   }
 };
@@ -100,6 +123,35 @@ window.MathJax = {
 <script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
 <link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../styles.css">
 </head>
@@ -128,9 +180,7 @@ window.MathJax = {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="../">
-      DS 6400 Weekly Writing
-      </a> 
+      <a href="../">DS 6400 Weekly Writing</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -158,7 +208,7 @@ window.MathJax = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../weeks/01.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Apparent Error to Modern Error: Efron's Optimism and Evaluation of Predictive Models</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Apparent Error to Modern Error: Efron’s Optimism and Evaluation of Predictive Models</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -175,13 +225,46 @@ window.MathJax = {
  <span class="menu-text">References</span></a>
   </div>
 </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/ols-cv-independence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">OLS, Linear Invariance, and Conditional Independence</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
     </ul>
     </div>
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#from-optimism-to-cross-validation" id="toc-from-optimism-to-cross-validation" class="nav-link active" data-scroll-target="#from-optimism-to-cross-validation"><span class="header-section-number">1</span> From optimism to cross-validation</a></li>
+  <li><a href="#prediction-error-as-a-random-quantity" id="toc-prediction-error-as-a-random-quantity" class="nav-link" data-scroll-target="#prediction-error-as-a-random-quantity"><span class="header-section-number">2</span> Prediction error as a random quantity</a></li>
+  <li><a href="#cross-validation-as-an-estimator" id="toc-cross-validation-as-an-estimator" class="nav-link" data-scroll-target="#cross-validation-as-an-estimator"><span class="header-section-number">3</span> Cross-validation as an estimator</a></li>
+  <li><a href="#a-linear-model-result" id="toc-a-linear-model-result" class="nav-link" data-scroll-target="#a-linear-model-result"><span class="header-section-number">4</span> A linear-model result</a></li>
+  <li><a href="#from-estimation-to-inference" id="toc-from-estimation-to-inference" class="nav-link" data-scroll-target="#from-estimation-to-inference"><span class="header-section-number">5</span> From Estimation to Inference</a>
+  <ul class="collapse">
+  <li><a href="#confidence-intervals-with-nested-cross-validation" id="toc-confidence-intervals-with-nested-cross-validation" class="nav-link" data-scroll-target="#confidence-intervals-with-nested-cross-validation"><span class="header-section-number">5.1</span> Confidence Intervals with Nested Cross-Validation</a></li>
+  <li><a href="#the-holdout-mse-identity" id="toc-the-holdout-mse-identity" class="nav-link" data-scroll-target="#the-holdout-mse-identity"><span class="header-section-number">5.2</span> The holdout MSE identity</a></li>
+  <li><a href="#the-nested-cv-mse-estimator" id="toc-the-nested-cv-mse-estimator" class="nav-link" data-scroll-target="#the-nested-cv-mse-estimator"><span class="header-section-number">5.3</span> The nested CV MSE estimator</a></li>
+  </ul></li>
+  <li><a href="#simulation-studies" id="toc-simulation-studies" class="nav-link" data-scroll-target="#simulation-studies"><span class="header-section-number">6</span> Simulation Studies</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -205,16 +288,410 @@ window.MathJax = {
 </header>
 
 
-<div class="draft-placeholder">
-<div class="draft-tags">
-<span class="draft-tag">Efron</span>
-<span class="draft-tag">Optimism</span>
-<span class="draft-tag">Bootstrap</span>
-<span class="draft-tag">Predictive Performance</span>
-<span class="draft-tag">Estimation</span>
+<p>Nearly 40 years ago, the central question was if a model is fitted and evaluated on the same observations, how much does the apparent error underestimate its future prediction error? The <a href="../weeks/01.html">previous discussion</a> focused on this problem through the idea of <strong>optimism</strong>. The data are used twice (<span class="math inline">\(D\to \hat f\)</span> then <span class="math inline">\(D\to \text{err}(\hat f)\)</span>), so the resulting appearent error tends to be too favorable. Efron (<span class="citation" data-cites="efronHowBiasedApparent1986">Efron (<a href="../references.html#ref-efronHowBiasedApparent1986" role="doc-biblioref">1986</a>)</span>) expressed this different as</p>
+<p><span class="math display">\[
+\text{op} = \text{Err} - \text{err},
+\]</span></p>
+<p>and studied ways to estimate and correct it. This also led to connections among bootstrap correction, cross-validation (CV), and what we now call <em>generalization error</em>.</p>
+<p>Over the following four decades, the question became more precise:</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    A[How optimisitic is training error?]
+    B[How should we estimate prediction error?]
+    C[How uncertain is that estimate?]
+    D[What prediction error are we estimating?]
+
+    A --&gt; B
+    B --&gt; C
+    C --&gt; D
+</pre>
 </div>
-<p>(on progress)</p>
+<p></p></figure><p></p>
 </div>
+</div>
+</div>
+<p><span class="citation" data-cites="batesCrossvalidationWhatDoes2024">Bates et al. (<a href="../references.html#ref-batesCrossvalidationWhatDoes2024" role="doc-biblioref">2024</a>)</span> address the last two questions. Their paper provides an endpoint to this development. We now can’t just say that the cross validation error estimates the generalization error, only after we specify what exactly <em>generalization error</em> means.</p>
+<section id="from-optimism-to-cross-validation" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="from-optimism-to-cross-validation"><span class="header-section-number">1</span> From optimism to cross-validation</h2>
+<p>Efron’s earlier work treated prediction-error estimation as a resampling problem. <span class="citation" data-cites="efronLeisurelyLookBootstrap1983">Efron and Gong (<a href="../references.html#ref-efronLeisurelyLookBootstrap1983" role="doc-biblioref">1983</a>)</span> studied CV and boostrap estimators for the error rate of a prediction rule, particularly in small sample. <span class="citation" data-cites="efronHowBiasedApparent1986">Efron (<a href="../references.html#ref-efronHowBiasedApparent1986" role="doc-biblioref">1986</a>)</span> then approached the same problem through apparent-error optimism, connecting prediction error estimation to CV, bootstrap, <span class="math inline">\(C_p\)</span>, and AIC. Thus the theme was established in mid-1980s was the performance on the observed sample was different from the performance on future observations. As CV became standard in statistical learning, attention moved from correcting apparent error to understanding the statistical behavior of CV itself.</p>
+<p>A major complication is uncertainty. <span class="citation" data-cites="bengioNoUnbiasedEstimator2004">Bengio and Grandvalet (<a href="../references.html#ref-bengioNoUnbiasedEstimator2004" role="doc-biblioref">2004</a>)</span> showed that there is no universally unbiased estimator of the variance of <span class="math inline">\(K\)</span>-fold CV from a single CV run. The main reason is that CV errors are dependent because training sets overlap. More recent work developed asymptotic theories under assumptions related to the stability of the learning algorithm. <span class="citation" data-cites="austernAsymptoticsCrossvalidation2020">Austern and Zhou (<a href="../references.html#ref-austernAsymptoticsCrossvalidation2020" role="doc-biblioref">2020</a>)</span> studied asymptotic normality of cross-validated risk, while <span class="citation" data-cites="bayleCrossvalidationConfidenceIntervals2020">Bayle et al. (<a href="../references.html#ref-bayleCrossvalidationConfidenceIntervals2020" role="doc-biblioref">2020</a>)</span> developed asymptotically valid confidence intervals for CV test error under stability conditions. And, finally, <span class="citation" data-cites="batesCrossvalidationWhatDoes2024">Bates et al. (<a href="../references.html#ref-batesCrossvalidationWhatDoes2024" role="doc-biblioref">2024</a>)</span> sit at end of this progression and ask a question that is prior to all of them:</p>
+<blockquote class="blockquote">
+<p><em>What exactly is the target of cross-validation?</em></p>
+</blockquote>
+</section>
+<section id="prediction-error-as-a-random-quantity" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="prediction-error-as-a-random-quantity"><span class="header-section-number">2</span> Prediction error as a random quantity</h2>
+<p>Let <span class="math inline">\(\mathbf X=(X_1, \dots, X_n)\)</span>, <span class="math inline">\(\mathbf Y=(Y_1, \dots, Y_n)\)</span>, where <span class="math inline">\((X_i, Y_i) \sim P\)</span> are i.i.d. random variables. Let <span class="math inline">\(\mathcal A\)</span> denote a model-fitting algorithm. Given the observed data, <span class="math inline">\(\hat \theta = \mathcal A(\mathbf X, \mathbf Y)\)</span>. For a parameter value <span class="math inline">\(\theta\)</span>, let <span class="math inline">\(\hat f(x, \theta)\)</span> denote the corresponding prediction at feature value <span class="math inline">\(x\)</span>, and let <span class="math inline">\(\ell (\hat y, y)\)</span> be a nonnegative loss function, i.e.&nbsp;a <a href="https://en.wikipedia.org/wiki/Metric_space">metric</a> on the prediction space <span class="math inline">\(\mathcal Y\)</span>.</p>
+<div id="def-out-of-sample-prediction-error" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Out-of-sample prediction error)</strong></span> The <strong>out-of-sample prediction error</strong>, denoted <span class="math inline">\(\text{Err}_{XY}\)</span>, is the error of the model fitted to the <strong>observed training sample</strong> <span class="math inline">\((X_{n+1}, Y_{n+1})\sim P\)</span>:</p>
+<p><span class="math display">\[
+\text{Err}_{XY} \coloneqq \E\left[\ell (\hat f(X_{n+1}, \hat \theta), Y_{n+1})\mid (\mathbf X, \mathbf Y)\right].
+\]</span></p>
+</div>
+<p>Before observing the training sample, <span class="math inline">\(\text{Err}_{XY}\)</span> is a random quantity. The expectation is taken over the distribution of <span class="math inline">\((X_{n+1}, Y_{n+1})\)</span> conditional on the observed training sample. This is the quantity that Efron called <span class="math inline">\(\text{Err}\)</span> in his 1986 paper (<span class="citation" data-cites="efronHowBiasedApparent1986">Efron (<a href="../references.html#ref-efronHowBiasedApparent1986" role="doc-biblioref">1986</a>)</span>).</p>
+<p>Instead of conditioning on the particular sample that happened to be observed, we also consider about the expectation of this quantity across possible training sets.</p>
+<div id="def-expected-prediction-error" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Expected prediction error)</strong></span> The average out-of-sample error obtained by applying the fitting algorithm <span class="math inline">\(\mathcal A\)</span> to repeated datasets of size <span class="math inline">\(n\)</span> drawn from <span class="math inline">\(P\)</span> is called the <strong>expected prediction error</strong>:</p>
+<p><span class="math display">\[
+\text{Err} \coloneqq \E \left[\text{Err}_{XY}\right]
+\]</span></p>
+</div>
+<p>To understand why these two targets behave differently, Bates et al.&nbsp;introduce</p>
+<p><span class="math display">\[
+\text{Err}_{X} \coloneqq \E[\text{Err}_{XY}\mid \mathbf X]
+\]</span></p>
+<p>Here the observed features <span class="math inline">\(\mathbf X\)</span> are fixed, but the randomness in <span class="math inline">\(\mathbf Y\mid \mathbf X\)</span> is averaged out. We therefor now have three different targets of prediction error estimation: <span class="math inline">\(\text{Err}_{XY}\)</span>, <span class="math inline">\(\text{Err}\)</span>, and <span class="math inline">\(\text{Err}_{X}\)</span>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/err-errx-errxy.png" class="img-fluid figure-img"></p>
+<figcaption>Err is a constant, <span class="math inline">\(\Err_{X}\)</span> is a function of <span class="math inline">\(\mathbf X\)</span>, and <span class="math inline">\(\Err_{XY}\)</span> is a function of <span class="math inline">\((\mathbf X, \mathbf Y)\)</span>.</figcaption>
+</figure>
+</div>
+<p>To make this relationship precise, we can write the decomposition of the variance of <span class="math inline">\(\Err_{XY}\)</span> as</p>
+<p><span class="math display">\[
+\Var(\Err_{XY}) = \underbrace{\E_{\mathbf X}[\Var(\Err_{XY}\mid \mathbf X)]}_{\text{var due to } \mathbf Y \mid \mathbf X} + \underbrace{\Var(\Err_X)}_{\text{var due to } \mathbf X}
+\]</span></p>
+<div class="derivation-note">
+<p><span class="derivation-note-trigger" tabindex="0">How can we derive this equation?</span></p>
+<div class="derivation-note-body">
+<p>This is the law of total variance. Start by conditioning on the observed feature values <span class="math inline">\(\mathbf X\)</span>:</p>
+<p><span class="math display">\[
+\Var(\Err_{XY})
+= \E_{\mathbf X}\left[
+    \E\left[
+      \left(\Err_{XY} - \E[\Err_{XY}]\right)^2
+      \mid \mathbf X
+    \right]
+  \right].
+\]</span></p>
+<p>Add and subtract <span class="math inline">\(\Err_X = \E[\Err_{XY}\mid \mathbf X]\)</span> inside the square:</p>
+<p><span class="math display">\[
+\Err_{XY} - \E[\Err_{XY}]
+=
+\left(\Err_{XY} - \Err_X\right)
++
+\left(\Err_X - \E[\Err_{XY}]\right).
+\]</span></p>
+<p>After expanding, the cross term has conditional mean zero because <span class="math inline">\(\E[\Err_{XY} - \Err_X\mid \mathbf X]=0\)</span>. Therefore,</p>
+<p><span class="math display">\[
+\Var(\Err_{XY})
+=
+\E_{\mathbf X}[\Var(\Err_{XY}\mid \mathbf X)]
++
+\Var(\Err_X).
+\]</span></p>
+</div>
+</div>
+<p>The first term measures variation caused by the responses <span class="math inline">\(\mathbf Y\)</span> coniditional on the observed predictors. The second term measures variation caused by the feature sample <span class="math inline">\(\mathbf X\)</span>.</p>
+</section>
+<section id="cross-validation-as-an-estimator" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="cross-validation-as-an-estimator"><span class="header-section-number">3</span> Cross-validation as an estimator</h2>
+<p>Let <span class="math inline">\(\mathcal I=\{1, \dots, n\}\)</span> be partitioned randomly into <span class="math inline">\(K\)</span> disjoint folds <span class="math inline">\(\mathcal I_1, \dots, \mathcal I_K\)</span>, each of size <span class="math inline">\(m=\frac{n}{K}\)</span>. For the first fold, we define <span class="math inline">\(\hat \theta^{(-1)} = \mathcal A(X_j, Y_j)_{j\in \mathcal I \setminus \mathcal I_1}\)</span> is the fitted parameters obtained without observations in <span class="math inline">\(\mathcal I_1\)</span>. For <span class="math inline">\(i\mathcal I_1\)</span>, the held-out loss is <span class="math inline">\(e_i = \ell(\hat f(x_i, \hat \theta^{(-1)}), y_i)\)</span>. Losses for the remaining folds are defined similarly.</p>
+<div id="def-kfold-cross-validation-error" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3 (K-fold cross-validation error)</strong></span> The <strong>K-fold cross-validation error</strong> is the average of the held-out losses across all folds:</p>
+<p><span class="math display">\[
+\widehat \Err^{(CV)} \coloneqq \overline e = \frac{1}{n}\sum_{i=1}^n e_i
+\]</span></p>
+</div>
+<p>So now we can see the problem. We have one estimator <span class="math inline">\(\widehat \Err^{(CV)}\)</span> and three different targets <span class="math inline">\(\Err_{XY}\)</span>, <span class="math inline">\(\Err_X\)</span>, and <span class="math inline">\(\Err\)</span>. The question is which target does cross-validation estimate?</p>
+</section>
+<section id="a-linear-model-result" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="a-linear-model-result"><span class="header-section-number">4</span> A linear-model result</h2>
+<p>To answer this question, Bates et al.&nbsp;consider a homoscedascity linear model with</p>
+<p><span id="eq-linear-model"><span class="math display">\[
+y_i = x_i^\top \theta + \epsilon_i \quad \text{where} \quad \epsilon_i \overset{\text{i.i.d.}}{\sim} N(0, \sigma^2)
+\tag{1}\]</span></span></p>
+<p>with <span class="math inline">\(\epsilon=(\epsilon_1, \dots, \epsilon_n)\)</span> independent of <span class="math inline">\(\mathbf X\)</span>.</p>
+<p>Before reaching the main result, the define a class of prediction error estimators that satisfy a certain linearity condition.</p>
+<div id="def-linearly-invariant-estimators" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 4 (Linearly invariant estimators)</strong></span> A prediction-error estimator <span class="math inline">\(\widehat \Err((X_i, Y_i),\dots, (X_n, Y_n), U)\)</span> is <strong>linearly invariant</strong> if, for every <span class="math inline">\(\kappa \in \mathbb R^p\)</span> and <span class="math inline">\(x_i, y_i, u\)</span> we have</p>
+<p><span class="math display">\[
+\widehat \Err((x_1, y_1), \dots, (x_n, y_n), u) = \widehat \Err((x_1, y_1 + x_1^\top \kappa), \dots, (x_n, y_n + x_n^\top \kappa), u)
+\]</span></p>
+<p>The random variable <span class="math inline">\(U\)</span> allows the estimator itself to contain randomness, such as the random partitioning of the data into folds for cross-validation.</p>
+</div>
+<p>With OLS fitting, <span class="math inline">\(\widehat \Err^{(CV)}\)</span> satisfies this property:</p>
+<div id="lem-cv-linear-invariant" class="theorem lemma">
+<p><span class="theorem-title"><strong>Lemma 1</strong></span> When using OLS as the fitting algorithm and squared-error loss, the cross-validation estimate of prediction error, <span class="math inline">\(\hat \Err^{(CV)}\)</span>, is linearly invariant.</p>
+</div>
+<p>As we may recognize, adding the same linear signal <span class="math inline">\(x_i^\top \kappa\)</span> to every response changes the fitted coefficients, but it does not change the residual structure on which this class of error estimators depends.</p>
+<div id="thm-conditional-independence" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1 (Conditional Independence)</strong></span> Assume the homoscedastic Gaussian linear model (<a href="#eq-linear-model" class="quarto-xref">Equation&nbsp;<span>1</span></a>) holds and that we use squared-error loss. Let <span class="math inline">\(\widehat \Err\)</span> be a linearly invariant estimate of prediction error (such as <span class="math inline">\(\widehat \Err^{(CV)}\)</span> using OLS as the fitting algorithm). Then,</p>
+<p><span class="math display">\[
+\widehat \Err \indep \Err_{XY}\mid \mathbf X.
+\]</span></p>
+</div>
+<p>CV uses the same observed sample from which the final OLS is fitted, yet conditional on <span class="math inline">\(\mathbf X\)</span>, its estimate is independent of that model’s actual prediction error. This is a surprising result.</p>
+<p>For a more detailed derivation of why this happens, see the appendix note on <a href="../appendices/ols-cv-independence.html">OLS, linear invariance, and conditional independence</a>.</p>
+<p>As a result, any linearly invariant estimator, such as CV, has lower MSE as an estimate of <span class="math inline">\(\Err_X\)</span> than as an estimate of <span class="math inline">\(\Err_{XY}\)</span>.</p>
+<div id="cor-cv-errx" class="theorem corollary">
+<p><span class="theorem-title"><strong>Corollary 1</strong></span> Under the conditions of <a href="#thm-conditional-independence" class="quarto-xref">Theorem&nbsp;<span>1</span></a>,</p>
+<p><span class="math display">\[
+\E \left[(\widehat \Err - \Err_{XY})^2 \right] = \E \left[(\widehat \Err - \Err_{X})^2\right] + \underbrace{\E[\Var(\Err_{XY}\mid Y)]}_{\geq 0}
+\]</span></p>
+</div>
+<p>Since the last term is nonnegative, we have</p>
+<p><span class="math display">\[
+\E[(\widehat \Err - \Err_{XY})^2]\geq \E\left[(\widehat \Err - \Err_{X})^2\right].
+\]</span></p>
+<p>Thus CV is closer to <span class="math inline">\(\Err_{X}\)</span> than to <span class="math inline">\(\Err_{XY}\)</span> <u>under this model</u>.</p>
+<p>The remaining question is how close <span class="math inline">\(\Err_X\)</span> is to <span class="math inline">\(\Err\)</span>. To study this, Bates et al.&nbsp;considers the proportional asymptotic regime</p>
+<p><span id="eq-proportional-asymptotics"><span class="math display">\[
+n&gt;p, \quad n, p \to \infty, \quad \frac{n}{p}\to \lambda &gt; 1.
+\tag{2}\]</span></span></p>
+<p>This is different from classical asyptotics with fixed <span class="math inline">\(p\)</span>. When <span class="math inline">\(p\)</span> remains fixed and <span class="math inline">\(n\to \infty\)</span>, the three errors become so close that distinguishing them is less informative.</p>
+<div id="thm-assymptotic-errx-err" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 2</strong></span> Suppose the homoscedastic Gaussian linear model (<a href="#eq-linear-model" class="quarto-xref">Equation&nbsp;<span>1</span></a>) holds and that we use squared-error loss. In addition, assume that feature vectors <span class="math inline">\(X_i\sim \mathcal N(0, \Sigma_p)\)</span> for any full-rank <span class="math inline">\(\Sigma_p\)</span>. Then, in the proportial asymptotic limit in (<a href="#eq-proportional-asymptotics" class="quarto-xref">Equation&nbsp;<span>2</span></a>), we have</p>
+<p><span class="math display">\[
+\E_X[\Var(\Err_{XY}\mid \mathbf X)] =\Theta\left(\frac{1}{n}\right),
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\Var(\Err_X) = \E(\Err_X - \Err)^2 = \Theta\left(\frac{1}{n^2}\right),
+\]</span></p>
+<p>as <span class="math inline">\(n, p \to \infty\)</span>.</p>
+</div>
+<p>Therefore the fluctuations of <span class="math inline">\(\Err_X - \Err\)</span> are much smaller than the fluctuations of <span class="math inline">\(\Err_{XY} - \Err_{X}\)</span>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/relation-err-errx-errxy.png" class="img-fluid figure-img"></p>
+<figcaption>The relationship among various notions of prediction error in the proportional asymptotic limit.</figcaption>
+</figure>
+</div>
+<div id="cor-cv-err" class="theorem corollary">
+<p><span class="theorem-title"><strong>Corollary 2</strong></span> In the setting of <a href="#thm-assymptotic-errx-err" class="quarto-xref">Theorem&nbsp;<span>2</span></a>, <span class="math inline">\(\Corr(\Err_{XY}, \Err_X)\to 0\)</span> as <span class="math inline">\(n, p \to \infty\)</span>. Moreover, for any linearly invariant estimator <span class="math inline">\(\widehat \Err\)</span> (such as <span class="math inline">\(\widehat \Err^{(CV)}\)</span> using OLS as the fitting algorithm),</p>
+<p><span class="math display">\[
+\Corr(\Err_{XY}, \widehat \Err) \to 0, \quad \text{as } n, p \to \infty.
+\]</span></p>
+</div>
+<p>Consequently, in the proportional asymptotic limit, <span class="math inline">\(\widehat \Err^{(CV)}\)</span> is a good estimator of <span class="math inline">\(\Err_X\)</span>, but it is not a good estimator of <span class="math inline">\(\Err_{XY}\)</span>.</p>
+<div id="cor-cv-errx-err" class="theorem corollary">
+<p><span class="theorem-title"><strong>Corollary 3</strong></span> In the setting of <a href="#thm-assymptotic-errx-err" class="quarto-xref">Theorem&nbsp;<span>2</span></a>, let <span class="math inline">\(\widehat \Err\)</span> be any linearly invariant estimator (such as <span class="math inline">\(\widehat \Err^{(CV)}\)</span> using OLS as the fitting algorithm). Suppose in addition that <span class="math inline">\(\Var(\widehat \Err) \to 0\)</span> (an extremly weak condition satisfied by any reasonable estimator). Then,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\E\left[(\widehat \Err - \Err_{XY})^2\right] - \E\left[(\widehat \Err - \Err_X)^2\right] &amp;= \Omega\left(\frac{1}{n}\right), \\
+\E\left[(\widehat \Err - \Err_{XY})^2\right] - \E\left[(\widehat \Err - \Err)^2\right] &amp;= \Omega\left(\frac{1}{n}\right)\\
+\E\left[(\widehat \Err - \Err)^2\right] - \E\left[(\widehat \Err - \Err_{X}))^2\right] &amp;= O\left(\frac{1}{n}\right).
+\end{aligned}
+\]</span></p>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled" title="Caution">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Caution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In <span class="math inline">\(K\)</span>-fold CV, each fitted model uses <span class="math inline">\(n\frac{K-1}{K}\)</span> observations, while <span class="math inline">\(\Err\)</span> and <span class="math inline">\(\Err_{XY}\)</span> are defined using models fitted on <span class="math inline">\(n\)</span> observations. Hence <span class="math inline">\(\E \left[\widehat Err^{(CV)}\right]\)</span> need not equal <span class="math inline">\(\Err\)</span> or <span class="math inline">\(\Err_{XY}\)</span>. In the classical parametric regime (<span class="math inline">\(p\)</span> fixed, <span class="math inline">\(n\to \infty\)</span>), the bias is typically of order <span class="math inline">\(O(\frac{1}{n})\)</span>, and is small relative to the sampling variance. In proportional high dimensional regimes, it can be larger. Increasing <span class="math inline">\(K\)</span> reduces the difference between the CV training size and <span class="math inline">\(n\)</span>.</p>
+<p>Since both <span class="math inline">\(\widehat \Err^{(CV)}\)</span> and <span class="math inline">\(\Err_{XY}\)</span> are random quantities, we cannot use the usual bias-variance decomposition. However, by <a href="#cor-cv-err" class="quarto-xref">Corollary&nbsp;<span>2</span></a>, these two quantites are asymptotically uncorrelated, yielding the following:</p>
+<p><span class="math display">\[
+\E\left[(\widehat \Err - \Err_{XY})^2\right] \approx \underbrace{\left(\E\left[(\widehat \Err - \Err)^2\right]\right)}_{\text{bias}^2} + \underbrace{\E\left[(\widehat \Err-\E[\widehat \Err])^2\right]}_{\text{variance of } \widehat \Err} + \underbrace{\E\left[(\Err_{XY}- \Err)^2\right]}_{\text{variance of } \Err_{XY}}.
+\]</span></p>
+</div>
+</div>
+</section>
+<section id="from-estimation-to-inference" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="from-estimation-to-inference"><span class="header-section-number">5</span> From Estimation to Inference</h2>
+<p>Recall the <span class="math inline">\(K\)</span>-fold CV estimate in <a href="#def-kfold-cross-validation-error" class="quarto-xref">Definition&nbsp;<span>3</span></a>. An estimate of its standard error is given by</p>
+<p><span class="math display">\[
+\widehat{\text{SE}} \coloneqq \frac{1}{\sqrt{n}} \sqrt{\frac{1}{n-1}\sum_{i=1}^n(e_i -\overline e)^2}.
+\]</span></p>
+<p>The problem is that this formula behaves as if the <span class="math inline">\(e_i\)</span> were independent, but they are not. To see this more clearly, we write</p>
+<p><span class="math display">\[
+\Var(\overline e) = \Var(\frac{1}{n}\sum_{i=1}^n e_i) = \frac{1}{n^2}\sum_{i=1}^n \Var(e_i) + \frac{2}{n^2}\sum_{i&lt;j} \Cov(e_i, e_j).
+\]</span></p>
+<p>If the losses were independent, then <span class="math inline">\(\Cov(e_i, e_j)\)</span> would be zero, and the usual formula would be valid. But cross-validation does not have this structure. Two held-out predictions may be produced by models trained on overlapping datasets. Hence their errors can be correlated.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/cov-cv-error.png" class="img-fluid figure-img"></p>
+<figcaption>Covariance structure of the CV errors.</figcaption>
+</figure>
+</div>
+<section id="confidence-intervals-with-nested-cross-validation" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="confidence-intervals-with-nested-cross-validation"><span class="header-section-number">5.1</span> Confidence Intervals with Nested Cross-Validation</h3>
+<div id="def-cv-mse" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 5</strong></span> For a sample of size <span class="math inline">\(n\)</span> split into <span class="math inline">\(K\)</span> folds, the <strong>cross-validation MSE</strong> is</p>
+<p><span class="math display">\[
+\text{MSE}_{K, n} \coloneqq \E\left[(\widehat \Err^{(CV)} - \Err_{XY})^2\right].
+\]</span></p>
+</div>
+<p>A small notice is that this MSE appear incosistent with previous section, where we claimed that <span class="math inline">\(\widehat \Err^{(CV)}\)</span> estimates <span class="math inline">\(\Err\)</span> more accurately than <span class="math inline">\(\Err_{XY}\)</span>, yet the confidence interval is calibrated toward <span class="math inline">\(\Err_{XY}\)</span>.</p>
+<p>Ordinarily, a confidence interval (ci) is centered at an estimator and uses its sampling variance:</p>
+<p><span class="math display">\[
+\hat \theta \pm z_{1-\alpha/2}\sqrt{\Var(\hat \theta)}.
+\]</span></p>
+<p>The problem is <span class="math inline">\(\widehat \Err^{(CV)}\)</span> can be biased as discussed in the previous section. Therefore,</p>
+<p><span class="math display">\[
+\text{MSE} = \Var + \text{Bias}^2
+\]</span></p>
+<p>is more relevant than variance alone.</p>
+<p>Their interval has the form</p>
+<p><span class="math display">\[
+\widehat \Err^{(NCV)}-\widehat{\text{bias}} \pm z_{1-\alpha/2}\sqrt{\widehat{\text{MSE}}}.
+\]</span></p>
+</section>
+<section id="the-holdout-mse-identity" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="the-holdout-mse-identity"><span class="header-section-number">5.2</span> The holdout MSE identity</h3>
+<p>Suppose the full index set <span class="math inline">\(\mathcal I=\{1,\dots, n\}\)</span> is randomly partitioned to <span class="math inline">\(\mathcal I_{\text{(train)}}\)</span> and <span class="math inline">\(\mathcal I_{\text{(out)}}\)</span>. let <span class="math inline">\((\tilde{\mathbf X}, \tilde{\mathbf Y})\)</span> denote the observations in <span class="math inline">\(\mathcal I_{\text{(train)}}\)</span>. Using only these observations, we fit <span class="math inline">\(\hat \theta^{\text{(train)}}=\mathcal A(\tilde{\mathbf X}, \tilde{\mathbf Y})\)</span>. The true prediction error of this fitted model is denoted <span class="math inline">\(\Err_{\tilde X \tilde Y}\)</span>.</p>
+<p>Now suppose that, using only the training subset, we also construct some estimator <span class="math inline">\(\widehat \Err_{\tilde X \tilde Y}\)</span> such as CV. The untouched outer set gives an independent estimate of the fitted model’s prediction error. For <span class="math inline">\(i\in \mathcal I_{\text{(out)}}\)</span>, let</p>
+<p><span class="math display">\[
+e_i^{(\text{out})} = \ell(\hat f(X_i, \hat \theta^{\text{(train)}}), Y_i)
+\]</span></p>
+<p>be the losses of the fitted model, and let</p>
+<p><span class="math display">\[
+\overline e^{\text{(out)}} = \frac{1}{|\mathcal I_{\text{(out)}}|}\sum_{i\in \mathcal I_{\text{(out)}}} e_i^{\text{(out)}}
+\]</span></p>
+<p>be the average of these losses. Then we have the following identity:</p>
+<div id="lem-holdout-mse-identity" class="theorem lemma">
+<p><span class="theorem-title"><strong>Lemma 2</strong></span> In the setting above</p>
+<p><span class="math display">\[
+\underbrace{\E\left[(\widehat \Err_{\tilde X \tilde Y} -\Err_{\tilde X \tilde Y})^2\right]}_{\text{MSE}} = \underbrace{\E\left[(\widehat \Err_{\tilde X \tilde Y} - \overline e^{\text{(out)}})^2\right]}_{\text{(a)}} - \underbrace{\E\left[(\overline e^{\text{(out)}} - \Err_{\tilde X \tilde Y})^2\right]}_{\text{(b)}}
+\]</span></p>
+</div>
+<p>The first term (a) measures the observed disagreement between the internal prediction error estimate and the outer holdout error. Notice that this agreement contains two type of noise: the error of the CV estimator + the sampling noise in the holdout set. The second term (b) measures the sampling noise in the holdout set. Therefore, subtracting (b) from (a) gives an unbiased estimate of the MSE of the internal prediction error estimator.</p>
+<blockquote class="blockquote">
+<p><strong>How term (b) can be estimated?</strong></p>
+</blockquote>
+<p>Conditional on the training set, the outer observations are i.i.d. from <span class="math inline">\(P\)</span>. Hence</p>
+<p><span class="math display">\[
+\Var(\overline e^{\text{(out)}}\mid \tilde{\mathbf X}, \tilde{\mathbf Y}) = \frac{1}{|\mathcal I_{\text{(out)}}|}\Var(e_i^{\text{(out)}}\mid \tilde{\mathbf X}, \tilde{\mathbf Y})
+\]</span></p>
+<p>So term (b) can be estimated by <span class="math inline">\(\frac{s^2_{\text{(out)}}}{|\mathcal I_{\text{(out)}}|}\)</span>, where <span class="math inline">\(s^2_{\text{(out)}}\)</span> is the sample variance of the outer losses <span class="math inline">\(e_i^{\text{(out)}}\)</span>.</p>
+</section>
+<section id="the-nested-cv-mse-estimator" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="the-nested-cv-mse-estimator"><span class="header-section-number">5.3</span> The nested CV MSE estimator</h3>
+<p>For split <span class="math inline">\(b\)</span>, obtain <span class="math inline">\(\widehat{\Err}_{\tilde X \tilde Y}^{(b)}\)</span> using the training set and <span class="math inline">\(\overline e^{\text{(out)}, (b)}\)</span> using the outer holdout set. Then we estimate</p>
+<p><span class="math display">\[
+a_b = (\widehat \Err_{\tilde X \tilde Y}^{(b)} - \overline e^{\text{(out)}, (b)})^2,
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+b_b = \frac{s^2_{\text{(out)}, (b)}}{|\mathcal I_{\text{(out)}}|}.
+\]</span></p>
+<p>We then average these over <span class="math inline">\(B\)</span> splits to obtain</p>
+<p><span class="math display">\[
+\widehat{\text{MSE}}^{(NCV)} = \frac{1}{B}\sum_{b=1}^B (a_b - b_b).
+\]</span></p>
+<div id="thm-ncv-mse-estimator" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 3</strong></span> For a nested CV with a sample of size <span class="math inline">\(n\)</span>, <span class="math inline">\(\E[\widehat{\text{MSE}}^{(NCV)}] = \text{MSE}_{K-1, n'}\)</span>, where <span class="math inline">\(n' = n\frac{K-1}{K}\)</span>.</p>
+</div>
+<p>The nested procedure does not directly provide an unbiased estimate of <span class="math inline">\(\text{MSE}_{K, n}\)</span> for <span class="math inline">\(K\)</span>-fold CV on the full <span class="math inline">\(n\)</span>-observation sample. Instead, its target is the MSE of <span class="math inline">\(K-1\)</span>-fold CV on the sample of size <span class="math inline">\(n' = n\frac{K-1}{K}\)</span> used to fit the models in the inner loop.</p>
+<p>To translate the nested-CV MSE estimate back toward the desired full-sample scale, Bates et al/ recommend</p>
+<p><span class="math display">\[
+\widehat{\text{MSE}} = \frac{K-1}{K}\widehat{\text{MSE}}^{(NCV)}.
+\]</span></p>
+<p>This rescaled estimator is not guaranteed to be unbiased for <span class="math inline">\(\text{MSE}_{K, n}\)</span>.</p>
+</section>
+</section>
+<section id="simulation-studies" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="simulation-studies"><span class="header-section-number">6</span> Simulation Studies</h2>
+<p>This paper uses simulations for two distinct purposes. Some experiments test the estimand theory from <a href="#thm-conditional-independence" class="quarto-xref">Theorem&nbsp;<span>1</span></a>; other test the confidence interval theory from <a href="#thm-ncv-mse-estimator" class="quarto-xref">Theorem&nbsp;<span>3</span></a>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 39%">
+<col style="width: 14%">
+<col style="width: 22%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Study</th>
+<th>Model</th>
+<th>Main quantities studied</th>
+<th>Purpose</th>
+<th>Main finding</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Motivating sparse classification example, Fig. 1</td>
+<td><span class="math inline">\(n\)</span>=90, <span class="math inline">\(p\)</span>=100; Gaussian <span class="math inline">\(X\)</span>; 4 coefficients; <span class="math inline">\(L_1\)</span> penalized LR</td>
+<td><span class="math inline">\(\widehat{\Err}^{\text{(CV)}}\)</span>, <span class="math inline">\(\Err_{XY}\)</span>, naive 90% CV intervals</td>
+<td>Show that ordinary CV confidence intervals can fail</td>
+<td>Nominal 10% miscoverage becomes about 31%; intervals need to be roughly 1.6 times wider</td>
+</tr>
+<tr class="even">
+<td>Linear model estimand exp, Fig. 3</td>
+<td><span class="math inline">\(n\)</span>=100, <span class="math inline">\(p\)</span>= 20; Gaussian features; OLS</td>
+<td>MSE relative to <span class="math inline">\(\Err\)</span>, <span class="math inline">\(\Err_{XY}\)</span>; CV vs <span class="math inline">\(\Err_{XY}\)</span> corr</td>
+<td>Demonstrate Thm 1 / Cor 1 in finite samples</td>
+<td>CV has more precise for <span class="math inline">\(\Err\)</span> and <span class="math inline">\(\Err_{X}\)</span> than for <span class="math inline">\(\Err_{XY}\)</span></td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-austernAsymptoticsCrossvalidation2020" class="csl-entry" role="listitem">
+Austern, Morgane, and Wenda Zhou. 2020. <em>Asymptotics of Cross-Validation</em>. arXiv:2001.11111. arXiv. <a href="https://doi.org/10.48550/arXiv.2001.11111">https://doi.org/10.48550/arXiv.2001.11111</a>.
+</div>
+<div id="ref-batesCrossvalidationWhatDoes2024" class="csl-entry" role="listitem">
+Bates, Stephen, Trevor Hastie, and Robert Tibshirani. 2024. <span>“Cross-Validation: What Does It Estimate and How Well Does It Do It?”</span> <em>Journal of the American Statistical Association</em> 119 (546): 1434–45. <a href="https://doi.org/10.1080/01621459.2023.2197686">https://doi.org/10.1080/01621459.2023.2197686</a>.
+</div>
+<div id="ref-bayleCrossvalidationConfidenceIntervals2020" class="csl-entry" role="listitem">
+Bayle, Pierre, Alexandre Bayle, Lucas Janson, and Lester Mackey. 2020. <em>Cross-Validation Confidence Intervals for Test Error</em>. arXiv:2007.12671. arXiv. <a href="https://doi.org/10.48550/arXiv.2007.12671">https://doi.org/10.48550/arXiv.2007.12671</a>.
+</div>
+<div id="ref-bengioNoUnbiasedEstimator2004" class="csl-entry" role="listitem">
+Bengio, Yoshua, and Yves Grandvalet. 2004. <span>“No Unbiased Estimator of the Variance of <span class="nocase">K-fold</span> Cross-Validation.”</span> <em>Journal of Machine Learning Research</em> 5 (Sep): 1089–105.
+</div>
+<div id="ref-efronHowBiasedApparent1986" class="csl-entry" role="listitem">
+Efron, Bradley. 1986. <span>“How Biased Is the Apparent Error Rate of a Prediction Rule?”</span> <em>Journal of the American Statistical Association</em> 81 (394): 461–70. <a href="https://doi.org/10.2307/2289236">https://doi.org/10.2307/2289236</a>.
+</div>
+<div id="ref-efronLeisurelyLookBootstrap1983" class="csl-entry" role="listitem">
+Efron, Bradley, and Gail Gong. 1983. <span>“A Leisurely Look at the Bootstrap, the Jackknife, and Cross-Validation.”</span> <em>American Statistician</em> 37 (1): 36–48. <a href="https://doi.org/10.1080/00031305.1983.10483087">https://doi.org/10.1080/00031305.1983.10483087</a>.
+</div>
+</div>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -620,7 +1097,7 @@ window.MathJax = {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="../weeks/01.html" class="pagination-link" aria-label="From Apparent Error to Modern Error: Efron's Optimism and Evaluation of Predictive Models">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Apparent Error to Modern Error: Efron's Optimism and Evaluation of Predictive Models</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Apparent Error to Modern Error: Efron’s Optimism and Evaluation of Predictive Models</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

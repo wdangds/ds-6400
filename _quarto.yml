@@ -9,6 +9,9 @@ execute:
   freeze: auto
   warning: false
 
+crossref:
+  chapters: false
+
 book:
   title: "DS 6400 Weekly Writing"
   author: "Wan Dang"
@@ -21,6 +24,8 @@ book:
         - weeks/01.qmd
         - weeks/02.qmd
     - references.qmd
+  appendices:
+    - appendices/ols-cv-independence.qmd
 
 bibliography: references.bib
 

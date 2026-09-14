@@ -1,0 +1,119 @@
+---
+title: "OLS, Linear Invariance, and Conditional Independence"
+jupyter: ds-6400
+tags:
+  - OLS
+  - Cross-validation
+  - Linear Models
+  - Conditional Independence
+---
+
+This appendix expands the linear-model argument behind the conditional-independence result in Week 2. The goal is to separate the algebra from the main narrative, where the main point is conceptual: cross-validation can be a reasonable estimator of average prediction error while still being independent of the particular fitted model's conditional prediction error.
+
+## Setup
+
+Assume the homoscedastic Gaussian linear model
+
+$$
+\mathbf Y = \mathbf X\theta + \epsilon,
+\qquad
+\epsilon \mid \mathbf X \sim N(0, \sigma^2 I_n).
+$${#eq-app-linear-model}
+
+Let $\mathcal A$ be ordinary least squares. Conditional on $\mathbf X$, the fitted parameter is
+
+$$
+\hat \theta
+=
+(\mathbf X^\top \mathbf X)^{-1}\mathbf X^\top \mathbf Y
+=
+\theta + (\mathbf X^\top \mathbf X)^{-1}\mathbf X^\top \epsilon.
+$$
+
+Thus, after conditioning on $\mathbf X$, every source of randomness comes from the noise vector $\epsilon$.
+
+## Geometry
+
+OLS decomposes the response into a fitted component and a residual component:
+
+$$
+\mathbf Y
+=
+\underbrace{H\mathbf Y}_{\text{projection onto column space of } \mathbf X}
++
+\underbrace{(I-H)\mathbf Y}_{\text{residual}},
+\qquad
+H = \mathbf X(\mathbf X^\top \mathbf X)^{-1}\mathbf X^\top.
+$$
+
+Because $(I-H)\mathbf X\theta = 0$, the residual vector depends only on the noise:
+
+$$
+(I-H)\mathbf Y = (I-H)\epsilon.
+$$
+
+The fitted-model error, however, depends on the coefficient error
+
+$$
+\hat \theta - \theta
+=
+(\mathbf X^\top \mathbf X)^{-1}\mathbf X^\top \epsilon.
+$$
+
+So the two quantities are driven by two different projections of the same Gaussian noise vector.
+
+```{mermaid}
+%%| fig-align: center
+flowchart LR
+    A["Gaussian noise epsilon"]
+    B["Fitted-direction component X^T epsilon"]
+    C["Residual component (I-H) epsilon"]
+    D["Conditional prediction error Err_XY"]
+    E["Linearly invariant estimator such as CV"]
+
+    A --> B --> D
+    A --> C --> E
+```
+
+## Why linear invariance matters
+
+A prediction-error estimator $\widehat \Err$ is linearly invariant if adding any linear signal $x_i^\top \kappa$ to every response does not change the estimator. In symbols,
+
+$$
+\widehat \Err((x_i,y_i)_{i=1}^n, U)
+=
+\widehat \Err((x_i,y_i+x_i^\top\kappa)_{i=1}^n, U).
+$$
+
+For OLS with squared-error loss, cross-validation has this property. Adding $x_i^\top\kappa$ shifts the fitted values in each training fold by the same linear signal. The held-out residuals are unchanged, so the squared held-out errors are unchanged.
+
+Therefore, conditional on $\mathbf X$, a linearly invariant estimator can depend on $\mathbf Y$ only through residual information orthogonal to the column space of $\mathbf X$:
+
+$$
+\widehat \Err = g((I-H)\epsilon, U)
+$$
+
+for some function $g$.
+
+## Why the theorem follows
+
+The conditional prediction error of the final OLS model depends on the fitted coefficient error, which is determined by $\mathbf X^\top \epsilon$. A linearly invariant estimator such as OLS cross-validation depends on the residual component $(I-H)\epsilon$.
+
+Under the Gaussian linear model, orthogonal projections of a Gaussian vector are independent. Since
+
+$$
+H\epsilon \perp\!\!\!\perp (I-H)\epsilon \mid \mathbf X,
+$$
+
+we get the key separation:
+
+$$
+\widehat \Err
+\indep
+\Err_{XY}
+\mid
+\mathbf X.
+$$
+
+This does not mean cross-validation is useless. It means that, in this setting, cross-validation is estimating a population-level or repeated-sample target more naturally than it is estimating the realized conditional error of the exact fitted model in hand.
+

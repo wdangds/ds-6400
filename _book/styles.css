@@ -20,3 +20,114 @@
   line-height: 1;
   padding: 0.35rem 0.55rem;
 }
+
+.derivation-note {
+  display: inline-block;
+  margin: 0.35rem 0 1rem;
+  position: relative;
+}
+
+.derivation-note-trigger {
+  border-bottom: 1px dotted #6f6f66;
+  color: #3f5f7f;
+  cursor: help;
+  font-size: 0.95rem;
+}
+
+.derivation-note-trigger:focus {
+  border-radius: 4px;
+  outline: 2px solid #7ba7c7;
+  outline-offset: 3px;
+}
+
+.derivation-note-body {
+  background: #fff8c9;
+  border: 1px solid #dccd7a;
+  box-shadow: 0 12px 28px rgba(35, 35, 28, 0.18);
+  color: #24241f;
+  font-size: 0.9rem;
+  left: 0;
+  line-height: 1.42;
+  max-width: min(38rem, calc(100vw - 3rem));
+  opacity: 0;
+  padding: 0.8rem 0.95rem;
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  transform: translateY(-0.25rem);
+  transition: opacity 120ms ease, transform 120ms ease, visibility 120ms ease;
+  visibility: hidden;
+  width: max-content;
+  z-index: 20;
+}
+
+.derivation-note:hover .derivation-note-body,
+.derivation-note:focus-within .derivation-note-body {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.derivation-note-body p {
+  margin-bottom: 0.6rem;
+}
+
+.derivation-note-body p:last-child {
+  margin-bottom: 0;
+}
+
+.derivation-note-body .math.display {
+  display: block;
+  margin: 0.55rem 0;
+  overflow-x: auto;
+}
+
+.theorem {
+  background: #fffaf0;
+  border: 1px solid #e3d4a6;
+  border-left: 4px solid #a66f00;
+  border-radius: 6px;
+  margin: 1.25rem 0;
+  padding: 0.9rem 1rem;
+}
+
+.theorem.definition {
+  background: #f3f8fb;
+  border-color: #bdd4e4;
+  border-left-color: #4e7896;
+}
+
+.theorem.lemma,
+.theorem.proposition,
+.theorem.corollary {
+  background: #f5f8f2;
+  border-color: #c9d9bd;
+  border-left-color: #63845a;
+}
+
+.theorem > p:first-child {
+  margin-top: 0;
+}
+
+.theorem > p:last-child {
+  margin-bottom: 0;
+}
+
+.theorem .theorem-title {
+  color: #2f3b45;
+  display: block;
+  margin-bottom: 0.45rem;
+}
+
+.theorem .theorem-title::after {
+  content: ".";
+}
+
+@media (max-width: 700px) {
+  .derivation-note {
+    display: block;
+  }
+
+  .derivation-note-body {
+    width: calc(100vw - 2rem);
+  }
+}
