@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -45,7 +80,7 @@ div.csl-indent {
 }</style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -122,6 +157,9 @@ window.MathJax = {
 <script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
 <script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
 <link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -262,7 +300,15 @@ window.Quarto = {
   <li><a href="#the-holdout-mse-identity" id="toc-the-holdout-mse-identity" class="nav-link" data-scroll-target="#the-holdout-mse-identity"><span class="header-section-number">5.2</span> The holdout MSE identity</a></li>
   <li><a href="#the-nested-cv-mse-estimator" id="toc-the-nested-cv-mse-estimator" class="nav-link" data-scroll-target="#the-nested-cv-mse-estimator"><span class="header-section-number">5.3</span> The nested CV MSE estimator</a></li>
   </ul></li>
-  <li><a href="#simulation-studies" id="toc-simulation-studies" class="nav-link" data-scroll-target="#simulation-studies"><span class="header-section-number">6</span> Simulation Studies</a></li>
+  <li><a href="#simulation-studies" id="toc-simulation-studies" class="nav-link" data-scroll-target="#simulation-studies"><span class="header-section-number">6</span> Simulation Studies</a>
+  <ul class="collapse">
+  <li><a href="#what-does-cv-estimate" id="toc-what-does-cv-estimate" class="nav-link" data-scroll-target="#what-does-cv-estimate"><span class="header-section-number">6.1</span> What does CV estimate?</a></li>
+  <li><a href="#reproducing-the-inference-problem" id="toc-reproducing-the-inference-problem" class="nav-link" data-scroll-target="#reproducing-the-inference-problem"><span class="header-section-number">6.2</span> Reproducing the inference problem</a></li>
+  <li><a href="#the-nested-cv-mse-idea" id="toc-the-nested-cv-mse-idea" class="nav-link" data-scroll-target="#the-nested-cv-mse-idea"><span class="header-section-number">6.3</span> The nested CV MSE idea</a></li>
+  <li><a href="#what-happens-under-regularization" id="toc-what-happens-under-regularization" class="nav-link" data-scroll-target="#what-happens-under-regularization"><span class="header-section-number">6.4</span> What happens under regularization?</a></li>
+  <li><a href="#np-scaling" id="toc-np-scaling" class="nav-link" data-scroll-target="#np-scaling"><span class="header-section-number">6.5</span> <span class="math inline">\(n/p\)</span> scaling</a></li>
+  <li><a href="#nonlinear-dgp" id="toc-nonlinear-dgp" class="nav-link" data-scroll-target="#nonlinear-dgp"><span class="header-section-number">6.6</span> Nonlinear DGP</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -288,7 +334,7 @@ window.Quarto = {
 </header>
 
 
-<p>Nearly 40 years ago, the central question was if a model is fitted and evaluated on the same observations, how much does the apparent error underestimate its future prediction error? The <a href="../weeks/01.html">previous discussion</a> focused on this problem through the idea of <strong>optimism</strong>. The data are used twice (<span class="math inline">\(D\to \hat f\)</span> then <span class="math inline">\(D\to \text{err}(\hat f)\)</span>), so the resulting appearent error tends to be too favorable. Efron (<span class="citation" data-cites="efronHowBiasedApparent1986">Efron (<a href="../references.html#ref-efronHowBiasedApparent1986" role="doc-biblioref">1986</a>)</span>) expressed this different as</p>
+<p>Nearly 40 years ago, the central question was if a model is fitted and evaluated on the same observations, how much does the apparent error underestimate its future prediction error? The <a href="../weeks/01.html">previous discussion</a> focused on this problem through the idea of <strong>optimism</strong>. The data are used twice (<span class="math inline">\(D\to \hat f\)</span> then <span class="math inline">\(D\to \text{err}(\hat f)\)</span>), so the resulting appearent error tends to be too favorable. <span class="citation" data-cites="efronHowBiasedApparent1986">Efron (<a href="../references.html#ref-efronHowBiasedApparent1986" role="doc-biblioref">1986</a>)</span> expressed this different as</p>
 <p><span class="math display">\[
 \text{op} = \text{Err} - \text{err},
 \]</span></p>
@@ -626,49 +672,969 @@ b_b = \frac{s^2_{\text{(out)}, (b)}}{|\mathcal I_{\text{(out)}}|}.
 <td>CV has more precise for <span class="math inline">\(\Err\)</span> and <span class="math inline">\(\Err_{X}\)</span> than for <span class="math inline">\(\Err_{XY}\)</span></td>
 </tr>
 <tr class="odd">
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
+<td>Proportional-asymptotic scaling, Fig. 5</td>
+<td>Gaussian linear regression with <span class="math inline">\(n, p \to \infty\)</span>, <span class="math inline">\(n/p\to \lambda &gt; 1\)</span></td>
+<td>Scaling of differences among <span class="math inline">\(\Err\)</span>, <span class="math inline">\(\Err_X\)</span>, <span class="math inline">\(\Err_{XY}\)</span></td>
+<td>Empirically verify Thm 2</td>
+<td>Simulation follows the predicted <span class="math inline">\(n\)</span>-scaling.</td>
 </tr>
 <tr class="even">
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
+<td>Low dimensional logistic coverage, Tab 1</td>
+<td><span class="math inline">\(n=100\)</span>, <span class="math inline">\(p=20\)</span>; Gaussian <span class="math inline">\(X\)</span>; unregularized logistic regression; two signal strengths</td>
+<td>CV, NCV, data-splitting coverage and interval widths</td>
+<td>Test Sec 4 beyond the exact OLS theory</td>
+<td>NCV coverage is closer to nominal coverage</td>
 </tr>
 <tr class="odd">
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
+<td>LR estimand study, Fig. 8</td>
+<td>LR; Bayes error 22.5%, varying <span class="math inline">\(n, p\)</span></td>
+<td><span class="math inline">\(\Corr(\widehat{\Err}^{(CV)})\)</span>; precision for <span class="math inline">\(\Err\)</span> vs.&nbsp;<span class="math inline">\(\Err_{XY}\)</span></td>
+<td>Check whether sec 3 persists outside OLS</td>
+<td>Correlation remains small; CV remains slightly more precise for <span class="math inline">\(\Err\)</span></td>
 </tr>
 <tr class="even">
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
+<td>High dimensional sparse lr, Tab 2 Fig. 9</td>
+<td><span class="math inline">\(p\)</span>=1000, <span class="math inline">\(n\in\{90,200\}\)</span>; sparse logistic; correlated or ind. predictors</td>
+<td>Coverage and width of CV, NCV, data splitting</td>
+<td>Stress-test NCV in a <span class="math inline">\(p\gg n\)</span> setting</td>
+<td>NCV gives much better coverage than naive CV</td>
 </tr>
 <tr class="odd">
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
+<td>OLS inference exp, Fig. 10</td>
+<td><span class="math inline">\(p\)</span>=20, <span class="math inline">\(X_{ij}\sim \mathcal N(0,1)\)</span>, <span class="math inline">\(Y=X\theta +\epsilon\)</span>, <span class="math inline">\(\epsilon\sim \mathcal N(0,1)\)</span>; varying <span class="math inline">\(n\)</span></td>
+<td>Miscoverage of CV, NCV, data splitting</td>
+<td>Evaluate Sec 4</td>
+<td>NCV has good coverage across <span class="math inline">\(n\)</span>, naive CV remains poor until the sample becomes large</td>
 </tr>
 <tr class="even">
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
+<td>Real-data subsampling</td>
+<td>Communities and crime and crop-mapping data</td>
+<td>CV/NCV/data-splitting coverage after repeated sampling</td>
+<td>Check whether simulation behavior appears in real datasets</td>
+<td>NCV is much closer to nominal coverage; data splitting performs poorly for small <span class="math inline">\(n\)</span></td>
 </tr>
 </tbody>
 </table>
+<section id="what-does-cv-estimate" class="level3" data-number="6.1">
+<h3 data-number="6.1" class="anchored" data-anchor-id="what-does-cv-estimate"><span class="header-section-number">6.1</span> What does CV estimate?</h3>
+<div id="fig-mse-miscoverage-cv" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mse-miscoverage-cv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/mse-miscoverage-cv.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mse-miscoverage-cv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: MSE, Miscoverage, and CV estimate of <span class="math inline">\(\Err\)</span>, <span class="math inline">\(\Err_X\)</span>, and <span class="math inline">\(\Err_{XY}\)</span> in a linear model with <span class="math inline">\(n=100\)</span>, <span class="math inline">\(p=20\)</span>.
+</figcaption>
+</figure>
+</div>
+<p>We first reproduce the idea behind <a href="#fig-mse-miscoverage-cv" class="quarto-xref">Figure&nbsp;<span>1</span></a>. Consider</p>
+<p><span class="math display">\[
+Y = X\theta + \epsilon, \quad \epsilon \sim \mathcal N(0, I_n), \quad X\overset{\text{i.i.d.}}{\sim} \mathcal N_p(0, I_p), \quad n=100, p=20.
+\]</span></p>
+<p>The specific value of <span class="math inline">\(\theta\)</span> is not important for the OLS invariance argument, so we can take <span class="math inline">\(\theta = 0\)</span>. For each generated training sample we compute three quantities: the ordinary 10-fold CV estimate <span class="math inline">\(\widehat{\Err}^{(CV)}\)</span>, the prediction error of the OLS model fitted to that training sample <span class="math inline">\(\Err_{XY}\)</span>, and the expected prediction error <span class="math inline">\(\Err\)</span>. Since we know the DGP, we can estimate <span class="math inline">\(\Err_{XY}\)</span> almost exactly using a very large independent test sample. We can also estimate <span class="math inline">\(\Err\)</span> by averaging <span class="math inline">\(\Err_{XY}\)</span> over many MC replications.</p>
+<p>Our main interest is whether <span class="math inline">\(\widehat{\Err}^{(CV)}\)</span> can track the fluctuations of <span class="math inline">\(\Err_{XY}\)</span>, or instead fluctuates around the common average.</p>
+<div id="4f268685" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression, Ridge</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score, KFold</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.base <span class="im">import</span> clone </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">6400</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We will use mean squared prediction error throughout.</p>
+<div id="5ccc0d47" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mse(y_true, y_pred):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.mean((y_true <span class="op">-</span> y_pred) <span class="op">**</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Data Generating Process (DGP)</strong></p>
+</blockquote>
+<div id="1d181427" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_linear_data(n, p, beta<span class="op">=</span><span class="va">None</span>, sigma<span class="op">=</span><span class="fl">1.0</span>, rng<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rng <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        rng <span class="op">=</span> np.random.default_rng()</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> beta <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        beta <span class="op">=</span> np.zeros(p)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> rng.normal(size<span class="op">=</span>(n, p))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    eps <span class="op">=</span> rng.normal(loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span>sigma, size<span class="op">=</span>n)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> X <span class="op">@</span> beta <span class="op">+</span> eps</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> X, y</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Computing <span class="math inline">\(\widehat{\Err}^{(CV)}\)</span></strong></p>
+</blockquote>
+<div id="a9aa8f11" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cv_error(model, X, y, K<span class="op">=</span><span class="dv">10</span>, seed<span class="op">=</span><span class="dv">6400</span>):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    cv <span class="op">=</span> KFold(n_splits<span class="op">=</span>K, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span>seed)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> cross_val_score(clone(model), X, y, cv<span class="op">=</span>cv, scoring<span class="op">=</span><span class="st">'neg_mean_squared_error'</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>np.mean(scores)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Approximating <span class="math inline">\(\Err_{XY}\)</span></strong></p>
+</blockquote>
+<p>Once the training sample has been observed, we fit OLS using all <span class="math inline">\(n\)</span> observations, then generate an enormous independent test set <span class="math inline">\((X_{\text{test}}, Y_{\text{test}}) \sim P\)</span>.</p>
+<div id="336bd477" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> instance_specific_error(model, X, y, beta, sigma<span class="op">=</span><span class="fl">1.0</span>, n_test<span class="op">=</span><span class="dv">50_000</span>, rng<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rng <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        rng <span class="op">=</span> np.random.default_rng()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    fitted <span class="op">=</span> clone(model)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    fitted.fit(X, y)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    X_test, y_test <span class="op">=</span> simulate_linear_data(n<span class="op">=</span>n_test, p<span class="op">=</span>X.shape[<span class="dv">1</span>], beta<span class="op">=</span>beta, sigma<span class="op">=</span>sigma, rng<span class="op">=</span>rng)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    y_pred <span class="op">=</span> fitted.predict(X_test)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> mse(y_test, y_pred)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>For a sufficiently large <span class="math inline">\(n_{\text{test}}\)</span>, this is approximately</p>
+<p><span class="math display">\[
+\Err_{XY} = \E[(\hat f(X_{n+1}) - Y_{n+1})^2\mid \mathbf X, \mathbf Y]
+\]</span></p>
+<blockquote class="blockquote">
+<p><strong>Monte Carlo experiment</strong></p>
+</blockquote>
+<div id="54317fb0" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_estimand_simulation(R<span class="op">=</span><span class="dv">1000</span>, n<span class="op">=</span><span class="dv">100</span>, p<span class="op">=</span><span class="dv">20</span>, K<span class="op">=</span><span class="dv">10</span>, sigma<span class="op">=</span><span class="fl">1.0</span>, n_test<span class="op">=</span><span class="dv">50_000</span>, seed<span class="op">=</span><span class="dv">6400</span>):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(seed)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> np.zeros(p)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> LinearRegression()</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> []</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(R):</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        X, y <span class="op">=</span> simulate_linear_data(n<span class="op">=</span>n, p<span class="op">=</span>p, beta<span class="op">=</span>beta, sigma<span class="op">=</span>sigma, rng<span class="op">=</span>rng)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        cv_err <span class="op">=</span> cv_error(model, X, y, K<span class="op">=</span>K, seed<span class="op">=</span>r)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        err_xy <span class="op">=</span> instance_specific_error(model, X, y, beta<span class="op">=</span>beta, sigma<span class="op">=</span>sigma, n_test<span class="op">=</span>n_test, rng<span class="op">=</span>rng)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        results.append({<span class="st">'replicate'</span>: r, <span class="st">'cv_error'</span>: cv_err, <span class="st">'err_xy'</span>: err_xy})</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(results)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="3963cfd2" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>results_ols <span class="op">=</span> run_estimand_simulation(R<span class="op">=</span><span class="dv">1000</span>, n<span class="op">=</span><span class="dv">100</span>, p<span class="op">=</span><span class="dv">20</span>, K<span class="op">=</span><span class="dv">10</span>, n_test<span class="op">=</span><span class="dv">50_000</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>results_ols.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">replicate</th>
+<th data-quarto-table-cell-role="th">cv_error</th>
+<th data-quarto-table-cell-role="th">err_xy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0</td>
+<td>0.872696</td>
+<td>1.187166</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>1</td>
+<td>1.399638</td>
+<td>1.238822</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>2</td>
+<td>0.898550</td>
+<td>1.154714</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>3</td>
+<td>1.603536</td>
+<td>1.127220</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>4</td>
+<td>0.990371</td>
+<td>1.409012</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Estimating <span class="math inline">\(\Err\)</span></strong></p>
+</blockquote>
+<p>Across the repeated training samples, <span class="math inline">\(\Err=\E[\Err_{XY}]\)</span> is estimated by <span class="math inline">\(\widehat{\Err} = \frac{1}{R}\sum_{r=1}^R \Err_{XY}^{(r)}\)</span>.</p>
+<div id="37a0a4da" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>err_average <span class="op">=</span> results_ols[<span class="st">'err_xy'</span>].mean()</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Estimated Err: </span><span class="sc">{</span>err_average<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Estimated Err: 1.2664</code></pre>
+</div>
+</div>
+<p>Now compare the MSE of CV relative to the two targets.</p>
+<div id="f257d2c4" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mse_to_err_xy <span class="op">=</span> np.mean((results_ols[<span class="st">'cv_error'</span>] <span class="op">-</span> results_ols[<span class="st">'err_xy'</span>]) <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>mse_to_err <span class="op">=</span> np.mean((results_ols[<span class="st">'cv_error'</span>] <span class="op">-</span> err_average)<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>summary_estimand <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Target'</span>: [<span class="st">'Err'</span>, <span class="st">'Err_XY'</span>],</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">'MSE of CV'</span>: [mse_to_err, mse_to_err_xy]</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>summary_estimand</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Target</th>
+<th data-quarto-table-cell-role="th">MSE of CV</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Err</td>
+<td>0.049666</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Err_XY</td>
+<td>0.058076</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>According to the paper, we expect</p>
+<p><span class="math display">\[
+\text{MSE}(\widehat{\Err}^{(CV)}, \Err) &lt; \text{MSE}(\widehat{\Err}^{(CV)}, \Err_{XY})
+\]</span></p>
+<blockquote class="blockquote">
+<p><strong>Weak correlation</strong></p>
+</blockquote>
+<p>Now we calculate <span class="math inline">\(\Corr(\widehat{\Err}^{(CV)}, \Err_{XY})\)</span>.</p>
+<div id="70b49b5b" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>correlation <span class="op">=</span> results_ols[[<span class="st">'cv_error'</span>, <span class="st">'err_xy'</span>]].corr().iloc[<span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Correlation between CV error and Err_</span><span class="ch">{{</span><span class="ss">XY</span><span class="ch">}}</span><span class="ss">: </span><span class="sc">{</span>correlation<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Correlation between CV error and Err_{XY}: 0.0081</code></pre>
+</div>
+</div>
+<p>And plot the relationship.</p>
+<div id="8ba957a7" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>ax.scatter(results_ols[<span class="st">'err_xy'</span>], results_ols[<span class="st">'cv_error'</span>], alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>ax.axhline(err_average, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="vs">r'</span><span class="dv">$\w</span><span class="vs">idehat{</span><span class="dv">\m</span><span class="vs">athrm{Err}}</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="vs">r'</span><span class="dv">$\m</span><span class="vs">athrm{Err}_{XY}</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="vs">r'</span><span class="dv">$\w</span><span class="vs">idehat{</span><span class="dv">\m</span><span class="vs">athrm{Err}}</span><span class="dv">^</span><span class="vs">{</span><span class="kw">(</span><span class="vs">CV</span><span class="kw">)</span><span class="vs">}</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'CV error vs. instance-specific prediction error'</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_files/figure-html/cell-12-output-1.png" width="597" height="450" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This provides a concrete interpretation of</p>
+<p><span class="math display">\[
+\widehat{\Err}^{(CV)} \indep \Err_{XY}\mid \mathbf X
+\]</span></p>
+</section>
+<section id="reproducing-the-inference-problem" class="level3" data-number="6.2">
+<h3 data-number="6.2" class="anchored" data-anchor-id="reproducing-the-inference-problem"><span class="header-section-number">6.2</span> Reproducing the inference problem</h3>
+<p>The naive CV interval treats <span class="math inline">\(e_1, \dots, e_n\)</span> as independent observations. For each observation, we therefore need its out-of-fold squared error.</p>
+<div id="7685482a" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cv_losses(model, X, y, K<span class="op">=</span><span class="dv">10</span>, seed<span class="op">=</span><span class="dv">6400</span>):</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="bu">len</span>(y)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    losses <span class="op">=</span> np.empty(n)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    cv <span class="op">=</span> KFold(n_splits<span class="op">=</span>K, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span>seed)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> train_idx, test_idx <span class="kw">in</span> cv.split(X):</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        fitted <span class="op">=</span> clone(model)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        fitted.fit(X[train_idx], y[train_idx])</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        pred <span class="op">=</span> fitted.predict(X[test_idx])</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        losses[test_idx] <span class="op">=</span> (pred <span class="op">-</span> y[test_idx]) <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> losses</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The naive standard error is then <span class="math inline">\(\widehat{\text{SE}}=\frac{s_e}{\sqrt{n}}\)</span>, where <span class="math inline">\(s_e\)</span> is the sample standard deviation of the <span class="math inline">\(e_i\)</span>.</p>
+<div id="b34811e0" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> naive_cv_interval(model, X, y, K<span class="op">=</span><span class="dv">10</span>, alpha<span class="op">=</span><span class="fl">0.10</span>, seed<span class="op">=</span><span class="dv">6400</span>):</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    losses <span class="op">=</span> cv_losses(model, X, y, K<span class="op">=</span>K, seed<span class="op">=</span>seed)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    err_hat <span class="op">=</span> np.mean(losses)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    se_hat <span class="op">=</span> np.std(losses, ddof<span class="op">=</span><span class="dv">1</span>) <span class="op">/</span> np.sqrt(<span class="bu">len</span>(losses))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> norm.ppf(<span class="dv">1</span> <span class="op">-</span> alpha <span class="op">/</span> <span class="dv">2</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    lower <span class="op">=</span> err_hat <span class="op">-</span> z <span class="op">*</span> se_hat</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    upper <span class="op">=</span> err_hat <span class="op">+</span> z <span class="op">*</span> se_hat</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">'estimate'</span>: err_hat,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">'se'</span>: se_hat,</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>      <span class="st">'lower'</span>: lower,</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>      <span class="st">'upper'</span>: upper</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Checking coverage</strong></p>
+</blockquote>
+<p>For each MC training sample we know approximately the true <span class="math inline">\(\Err_{XY}\)</span> from the large test population. Therefore we can ask whether the nominal 90% CV interval contains it.</p>
+<div id="f3ffa6bc" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_naive_coverage_simulation(R<span class="op">=</span><span class="dv">1000</span>, n<span class="op">=</span><span class="dv">100</span>, p<span class="op">=</span><span class="dv">20</span>, K<span class="op">=</span><span class="dv">10</span>, sigma<span class="op">=</span><span class="fl">1.0</span>, n_test<span class="op">=</span><span class="dv">50_000</span>, seed<span class="op">=</span><span class="dv">6400</span>):</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(seed)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> np.zeros(p)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> LinearRegression()</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> []</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(R):</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        X, y <span class="op">=</span> simulate_linear_data(n<span class="op">=</span>n, p<span class="op">=</span>p, beta<span class="op">=</span>beta, sigma<span class="op">=</span>sigma, rng<span class="op">=</span>rng)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        ci <span class="op">=</span> naive_cv_interval(model, X, y, K<span class="op">=</span>K, alpha<span class="op">=</span><span class="fl">0.10</span>, seed<span class="op">=</span>r)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>        err_xy <span class="op">=</span> instance_specific_error(model, X, y, beta<span class="op">=</span>beta, sigma<span class="op">=</span>sigma, n_test<span class="op">=</span>n_test, rng<span class="op">=</span>rng)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        covered <span class="op">=</span> ci[<span class="st">'lower'</span>] <span class="op">&lt;=</span> err_xy <span class="op">&lt;=</span> ci[<span class="st">'upper'</span>]</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>        output.append({</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>            <span class="st">'replicate'</span>: r,</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>            <span class="st">'err_xy'</span>: err_xy,</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>            <span class="st">'cv'</span>: ci[<span class="st">'estimate'</span>],</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>            <span class="st">'lower'</span>: ci[<span class="st">'lower'</span>],</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>            <span class="st">'upper'</span>: ci[<span class="st">'upper'</span>],</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>            <span class="st">'covered'</span>: covered</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(output)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="f5d7df66" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>coverage_results <span class="op">=</span> run_naive_coverage_simulation(R<span class="op">=</span><span class="dv">1000</span>, n<span class="op">=</span><span class="dv">100</span>, p<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>coverage_results[<span class="st">"covered"</span>].mean()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="15">
+<pre><code>np.float64(0.798)</code></pre>
+</div>
+</div>
+<p>For a nominal 90% interval, we want <span class="math inline">\(P(\Err_{XY} \in \text{CI}) \approx 0.9\)</span>. However, the actual coverage is much lower.</p>
+<p>Now vary <span class="math inline">\(n\in \{40, 100, 200, 400, 800, 1600\}\)</span> and see how the coverage changes.</p>
+<div id="a90f7e85" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> coverage_by_n(n_values, R<span class="op">=</span><span class="dv">500</span>, p<span class="op">=</span><span class="dv">20</span>, K<span class="op">=</span><span class="dv">10</span>, seed<span class="op">=</span><span class="dv">6400</span>):</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> []</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j, n <span class="kw">in</span> <span class="bu">enumerate</span>(n_values):</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> run_naive_coverage_simulation(R<span class="op">=</span>R, n<span class="op">=</span>n, p<span class="op">=</span>p, K<span class="op">=</span>K, seed<span class="op">=</span>seed<span class="op">+</span>j)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>        coverage <span class="op">=</span> result[<span class="st">"covered"</span>].mean()</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>        rows.append({<span class="st">'n'</span>: n, <span class="st">'coverage'</span>: coverage, <span class="st">'miscoverage'</span>: <span class="dv">1</span><span class="op">-</span>coverage})</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(rows)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="f2fd45ab" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>n_values <span class="op">=</span> [<span class="dv">40</span>, <span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">400</span>, <span class="dv">600</span>, <span class="dv">800</span>, <span class="dv">1000</span>, <span class="dv">1200</span>, <span class="dv">1400</span>, <span class="dv">1600</span>]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>coverage_curve <span class="op">=</span> coverage_by_n(n_values, R<span class="op">=</span><span class="dv">500</span>, p<span class="op">=</span><span class="dv">20</span>, K<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>coverage_curve.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">n</th>
+<th data-quarto-table-cell-role="th">coverage</th>
+<th data-quarto-table-cell-role="th">miscoverage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>40</td>
+<td>0.628</td>
+<td>0.372</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>100</td>
+<td>0.768</td>
+<td>0.232</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>200</td>
+<td>0.842</td>
+<td>0.158</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>400</td>
+<td>0.864</td>
+<td>0.136</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>600</td>
+<td>0.890</td>
+<td>0.110</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Plot:</p>
+<div id="7452e9f7" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>ax.plot(coverage_curve[<span class="st">'n'</span>], coverage_curve[<span class="st">'miscoverage'</span>], marker<span class="op">=</span><span class="st">'o'</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="fl">0.1</span>, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Nominal miscoverage'</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">'Sample size n'</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">'Miscoverage'</span>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'Coverage of Naive CV Intervals'</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_files/figure-html/cell-19-output-1.png" width="598" height="451" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can compare our simulation results with the <a href="#fig-coverage-cv" class="quarto-xref">Figure&nbsp;<span>2</span></a> in the paper. The miscoverage is much higher than the nominal 10% for small <span class="math inline">\(n\)</span>, and only approaches the nominal level as <span class="math inline">\(n\)</span> becomes large.</p>
+<div id="fig-coverage-cv" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-coverage-cv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/coverage-cv.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-coverage-cv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Coverage of naive CV intervals as a function of sample size.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="the-nested-cv-mse-idea" class="level3" data-number="6.3">
+<h3 data-number="6.3" class="anchored" data-anchor-id="the-nested-cv-mse-idea"><span class="header-section-number">6.3</span> The nested CV MSE idea</h3>
+<p>For one outer split <span class="math inline">\(\mathcal I = \mathcal I_{\text{(train)}} \cup \mathcal I_{\text{(out)}}\)</span>, we can compute the inner CV estimate <span class="math inline">\(\widehat{\Err}_{\tilde X \tilde Y}\)</span> by CV inside the training data, and <span class="math inline">\(\overline e^{\text{(out)}}\)</span> by evaluating the fitted model on the outer holdout set. Then we can estimate</p>
+<p><span class="math display">\[
+(a) = (\widehat{\Err}_{\tilde X \tilde Y} - \overline e^{\text{(out)}})^2
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+(b) = \frac{s^2_{\text{(out)}}}{|\mathcal I_{\text{(out)}}|}.
+\]</span></p>
+<p>By <a href="#lem-holdout-mse-identity" class="quarto-xref">Lemma&nbsp;<span>2</span></a>, <span class="math inline">\(\text{MSE} = \E[(a) - (b)]\)</span>.</p>
+<div id="cc1f22dc" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nested_mse_estimate(model, X, y, K<span class="op">=</span><span class="dv">10</span>, B<span class="op">=</span><span class="dv">200</span>, test_fraction<span class="op">=</span><span class="va">None</span>, seed<span class="op">=</span><span class="dv">6400</span>):</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> test_fraction <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>        test_fraction <span class="op">=</span> <span class="dv">1</span> <span class="op">/</span> K</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(seed)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    a_values <span class="op">=</span> []</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    b_values <span class="op">=</span> []</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    inner_errors <span class="op">=</span> []</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="bu">len</span>(y)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> b <span class="kw">in</span> <span class="bu">range</span>(B):</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>        split_seed <span class="op">=</span> <span class="bu">int</span>(rng.integers(<span class="dv">0</span>, <span class="dv">2</span><span class="op">**</span><span class="dv">31</span><span class="op">-</span><span class="dv">1</span>))</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>        train_idx, out_idx <span class="op">=</span> train_test_split(np.arange(n), test_size <span class="op">=</span> test_fraction, random_state<span class="op">=</span>split_seed)</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>        X_train, y_train <span class="op">=</span> X[train_idx], y[train_idx]</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>        X_out, y_out <span class="op">=</span> X[out_idx], y[out_idx]</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># inner CV estimate</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>        inner_err <span class="op">=</span> cv_error(model, X_train, y_train, K<span class="op">=</span>K<span class="op">-</span><span class="dv">1</span>, seed<span class="op">=</span>split_seed)</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>        <span class="co"># fit on entire outer-training set</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>        fitted <span class="op">=</span> clone(model)</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>        fitted.fit(X_train, y_train)</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>        out_pred <span class="op">=</span> fitted.predict(X_out)</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>        out_losses <span class="op">=</span> (out_pred <span class="op">-</span> y_out) <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>        out_error <span class="op">=</span> np.mean(out_losses)</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>        <span class="co"># term (a) </span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>        a_hat <span class="op">=</span> (inner_err <span class="op">-</span> out_error) <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># term (b) </span></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>        b_hat <span class="op">=</span> np.var(out_losses, ddof<span class="op">=</span><span class="dv">1</span>) <span class="op">/</span> <span class="bu">len</span>(out_losses)</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>        a_values.append(a_hat)</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>        b_values.append(b_hat)</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>        inner_errors.append(inner_err)</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>    mse_ncv <span class="op">=</span> (np.mean(a_values) <span class="op">-</span> np.mean(b_values))</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>    mse_ncv <span class="op">=</span> <span class="bu">max</span>(mse_ncv, <span class="dv">0</span>)  <span class="co"># ensure non-negative</span></span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>    err_ncv <span class="op">=</span> np.mean(inner_errors)</span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>      <span class="st">"err_ncv"</span>: err_ncv,</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>      <span class="st">"mse_ncv"</span>: mse_ncv,</span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><a href="#thm-ncv-mse-estimator" class="quarto-xref">Theorem&nbsp;<span>3</span></a> states that the unadjusted quantity corresponds to a slightly smaller effective sample size. Bates et al.&nbsp;recommend the approximate rescaling <span class="math inline">\(\widehat{\text{MSE}} = \frac{K-1}{K}\widehat{\text{MSE}}^{(NCV)}\)</span> to account for this.</p>
+<div id="206e42cb" class="cell" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nested_cv_interval(model, X, y, K<span class="op">=</span><span class="dv">10</span>, B<span class="op">=</span><span class="dv">200</span>, alpha<span class="op">=</span><span class="fl">0.1</span>, seed<span class="op">=</span><span class="dv">6400</span>):</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> scipy.stats <span class="im">import</span> norm</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> nested_mse_estimate(model, X, y, K<span class="op">=</span>K, B<span class="op">=</span>B, seed<span class="op">=</span>seed)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    mse_adjusted <span class="op">=</span> (K<span class="op">-</span><span class="dv">1</span>)<span class="op">/</span>K <span class="op">*</span> result[<span class="st">'mse_ncv'</span>]</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    se <span class="op">=</span> np.sqrt(mse_adjusted)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> norm.ppf(<span class="dv">1</span> <span class="op">-</span> alpha <span class="op">/</span> <span class="dv">2</span>)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    center <span class="op">=</span> result[<span class="st">'err_ncv'</span>]</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">'estimate'</span>: center,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">'mse'</span>: mse_adjusted,</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">'lower'</span>: center <span class="op">-</span> z <span class="op">*</span> se,</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>      <span class="st">'upper'</span>: center <span class="op">+</span> z <span class="op">*</span> se</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Comparing naive CV and NCV</strong></p>
+</blockquote>
+<div id="64d41c33" class="cell" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compare_cv_ncv(R<span class="op">=</span><span class="dv">1000</span>, n<span class="op">=</span><span class="dv">100</span>, p<span class="op">=</span><span class="dv">20</span>, K<span class="op">=</span><span class="dv">10</span>, B<span class="op">=</span><span class="dv">100</span>, n_test<span class="op">=</span><span class="dv">50_000</span>, seed<span class="op">=</span><span class="dv">6400</span>):</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(seed)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> np.zeros(p)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> LinearRegression()</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> []</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(R):</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>        X, y <span class="op">=</span> simulate_linear_data(n<span class="op">=</span>n, p<span class="op">=</span>p, beta<span class="op">=</span>beta, rng<span class="op">=</span>rng)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>        err_xy <span class="op">=</span> instance_specific_error(model, X, y, beta<span class="op">=</span>beta, n_test<span class="op">=</span>n_test, rng<span class="op">=</span>rng)</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>        naive <span class="op">=</span> naive_cv_interval(model, X, y, K<span class="op">=</span>K, alpha<span class="op">=</span><span class="fl">0.10</span>, seed<span class="op">=</span>r)</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>        ncv <span class="op">=</span> nested_cv_interval(model, X, y, K<span class="op">=</span>K, B<span class="op">=</span>B, alpha<span class="op">=</span><span class="fl">0.10</span>, seed<span class="op">=</span>r)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>        rows.append({</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>            <span class="st">'replicate'</span>: r,</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>            <span class="st">'err_xy'</span>: err_xy,</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>            <span class="st">'cv_lower'</span>: naive[<span class="st">'lower'</span>],</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>            <span class="st">'cv_upper'</span>: naive[<span class="st">'upper'</span>],</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>            <span class="st">'ncv_lower'</span>: ncv[<span class="st">'lower'</span>],</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>            <span class="st">'ncv_upper'</span>: ncv[<span class="st">'upper'</span>],</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>            <span class="st">'cv_cover'</span>: naive[<span class="st">'lower'</span>] <span class="op">&lt;=</span> err_xy <span class="op">&lt;=</span> naive[<span class="st">'upper'</span>],</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>            <span class="st">'ncv_cover'</span>: ncv[<span class="st">'lower'</span>] <span class="op">&lt;=</span> err_xy <span class="op">&lt;=</span> ncv[<span class="st">'upper'</span>],</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>        })</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(rows)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="c0ba9f98" class="cell" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>comparison <span class="op">=</span> compare_cv_ncv(R<span class="op">=</span><span class="dv">300</span>, n<span class="op">=</span><span class="dv">100</span>, p<span class="op">=</span><span class="dv">20</span>, B<span class="op">=</span><span class="dv">100</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>comparison[[<span class="st">'cv_cover'</span>, <span class="st">'ncv_cover'</span>]].mean()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="22">
+<pre><code>cv_cover     0.81
+ncv_cover    0.81
+dtype: float64</code></pre>
+</div>
+</div>
+<p>The hypothesis is</p>
+<p><span class="math display">\[
+P(\Err_{XY} \in \text{CI}^{(NCV)}) &gt; P(\Err_{XY} \in \text{CI}^{(CV)}),
+\]</span></p>
+<p>when ordinary CV undercovers.</p>
+</section>
+<section id="what-happens-under-regularization" class="level3" data-number="6.4">
+<h3 data-number="6.4" class="anchored" data-anchor-id="what-happens-under-regularization"><span class="header-section-number">6.4</span> What happens under regularization?</h3>
+<p>Bates et al. <a href="#thm-conditional-independence" class="quarto-xref">Theorem&nbsp;<span>1</span></a> applies to unregularized OLS. In the discussion, however, they report that with regularization, <span class="math inline">\(\widehat{\Err}^{(CV)}\)</span> appears to track <span class="math inline">\(\Err_{XY}\)</span> somewhat more closely.</p>
+<p>Consider ridge regression</p>
+<p><span class="math display">\[
+\hat \theta_{\lambda} =\arg\min_\theta \left\{\sum_{i=1}^n (Y_i - X_i^\top \theta)^2 + \lambda ||\theta||_2^2\right\}.
+\]</span></p>
+<p>Let <span class="math inline">\(\lambda \in \{0,0.01, 0.1, 1, 10, 100\}\)</span>. For each value, we then estimate <span class="math inline">\(\Corr(\widehat{\Err}^{(CV)}, \Err_{XY})\)</span>.</p>
+<div id="5482023a" class="cell" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_regularization_study(alphas, R<span class="op">=</span><span class="dv">1000</span>, n<span class="op">=</span><span class="dv">100</span>, p<span class="op">=</span><span class="dv">20</span>, K<span class="op">=</span><span class="dv">10</span>, n_test<span class="op">=</span><span class="dv">20_000</span>, seed<span class="op">=</span><span class="dv">6400</span>):</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(seed)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> np.zeros(p)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> []</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> alpha <span class="kw">in</span> alphas:</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> alpha <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>            model <span class="op">=</span> LinearRegression()</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>            model <span class="op">=</span> Ridge(alpha<span class="op">=</span>alpha)</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(R):</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>            X, y <span class="op">=</span> simulate_linear_data(n<span class="op">=</span>n, p<span class="op">=</span>p, beta<span class="op">=</span>beta, rng<span class="op">=</span>rng)</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>            cv_err <span class="op">=</span> cv_error(model, X, y, K<span class="op">=</span>K, seed<span class="op">=</span>r)</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>            err_xy <span class="op">=</span> instance_specific_error(model, X, y, beta<span class="op">=</span>beta, n_test<span class="op">=</span>n_test, rng<span class="op">=</span>rng)</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>            rows.append({</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">'alpha'</span>: alpha, </span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>                <span class="st">'replicate'</span>: r,</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">'cv_error'</span>: cv_err,</span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">'err_xy'</span>: err_xy</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>            })</span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(rows)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="865e3dad" class="cell" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>alphas <span class="op">=</span> [<span class="dv">0</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>]</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>ridge_results <span class="op">=</span> run_regularization_study(alphas, R<span class="op">=</span><span class="dv">1000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="bc080023" class="cell" data-execution_count="25">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>ridge_summary <span class="op">=</span> (ridge_results.groupby(<span class="st">'alpha'</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(<span class="kw">lambda</span> g: pd.Series({</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">'correlation'</span>: g[<span class="st">'cv_error'</span>].corr(g[<span class="st">'err_xy'</span>]),</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Err'</span>: g[<span class="st">'err_xy'</span>].mean(),</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MSE_to_Err'</span>: np.mean((g[<span class="st">'cv_error'</span>] <span class="op">-</span> g[<span class="st">'err_xy'</span>].mean())<span class="op">**</span><span class="dv">2</span>),</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MSE_to_Err_XY'</span>: np.mean((g[<span class="st">'cv_error'</span>] <span class="op">-</span> g[<span class="st">'err_xy'</span>])<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    }), include_groups <span class="op">=</span> <span class="va">False</span>).reset_index()</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>ridge_summary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="25">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">alpha</th>
+<th data-quarto-table-cell-role="th">correlation</th>
+<th data-quarto-table-cell-role="th">Err</th>
+<th data-quarto-table-cell-role="th">MSE_to_Err</th>
+<th data-quarto-table-cell-role="th">MSE_to_Err_XY</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0.00</td>
+<td>0.032077</td>
+<td>1.269866</td>
+<td>0.050168</td>
+<td>0.057842</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0.01</td>
+<td>-0.014981</td>
+<td>1.266303</td>
+<td>0.051876</td>
+<td>0.061420</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>0.10</td>
+<td>-0.008641</td>
+<td>1.264147</td>
+<td>0.046032</td>
+<td>0.054903</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>1.00</td>
+<td>-0.002615</td>
+<td>1.257995</td>
+<td>0.047885</td>
+<td>0.056215</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>10.00</td>
+<td>-0.014666</td>
+<td>1.205320</td>
+<td>0.040235</td>
+<td>0.045425</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>100.00</td>
+<td>0.054007</td>
+<td>1.056672</td>
+<td>0.025351</td>
+<td>0.025504</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Plot the correlation:</p>
+<div id="8915fbdb" class="cell" data-execution_count="26">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>))</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>ax.plot(ridge_summary[<span class="st">'alpha'</span>], ridge_summary[<span class="st">'correlation'</span>], marker<span class="op">=</span><span class="st">'o'</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>ax.set_xscale(<span class="st">'symlog'</span>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="vs">r'Ridge penalty </span><span class="dv">$</span><span class="er">\</span><span class="vs">lambda</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="vs">r'</span><span class="dv">$\m</span><span class="vs">athrm{Corr}</span><span class="kw">(</span><span class="dv">\w</span><span class="vs">idehat{</span><span class="dv">\m</span><span class="vs">athrm{Err}}</span><span class="dv">^</span><span class="vs">{</span><span class="kw">(</span><span class="vs">CV</span><span class="kw">)</span><span class="vs">}, </span><span class="dv">\m</span><span class="vs">athrm{Err}_{XY}</span><span class="kw">)</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'Does Regularization Make CV Track Err_</span><span class="sc">{XY}</span><span class="st"> Better?'</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_files/figure-html/cell-27-output-1.png" width="617" height="453" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>When <span class="math inline">\(\lambda=0\)</span>, we have unregularized OLS, and the correlation is near zero. As <span class="math inline">\(\lambda&gt;0\)</span>, this shifts us outside of <a href="#thm-conditional-independence" class="quarto-xref">Theorem&nbsp;<span>1</span></a>.</p>
+</section>
+<section id="np-scaling" class="level3" data-number="6.5">
+<h3 data-number="6.5" class="anchored" data-anchor-id="np-scaling"><span class="header-section-number">6.5</span> <span class="math inline">\(n/p\)</span> scaling</h3>
+<p>The paper also suggests that standard CV intervals <em>should</em> behave better when <span class="math inline">\(n/p\)</span> is larger. Let <span class="math inline">\(n/p \in \{2, 5, 10, 20\}\)</span> and <span class="math inline">\(\lambda\in \{0, 1, 10\}\)</span>. For each combination, we estimate the miscoverage of naive CV intervals.</p>
+<div id="815b2292" class="cell" data-execution_count="27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_np_regularization_grid(ratios<span class="op">=</span>(<span class="dv">2</span>,<span class="dv">5</span>,<span class="dv">10</span>, <span class="dv">20</span>), alphas<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">10</span>), p<span class="op">=</span><span class="dv">20</span>, R<span class="op">=</span><span class="dv">1000</span>, seed<span class="op">=</span><span class="dv">123</span>):</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    frames <span class="op">=</span> []</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> ratio <span class="kw">in</span> ratios:</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>        n <span class="op">=</span> <span class="bu">int</span>(ratio <span class="op">*</span> p)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> run_regularization_study(alphas<span class="op">=</span>alphas, R<span class="op">=</span>R, n<span class="op">=</span>n, p<span class="op">=</span>p, n_test <span class="op">=</span> <span class="dv">20_000</span> ,seed<span class="op">=</span>seed<span class="op">+</span>n)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>        result[<span class="st">'n'</span>] <span class="op">=</span> n</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>        result[<span class="st">'p'</span>] <span class="op">=</span> p</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>        result[<span class="st">'n_over_p'</span>] <span class="op">=</span> ratio</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>        frames.append(result)</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.concat(frames, ignore_index<span class="op">=</span><span class="va">True</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="ef36bd8b" class="cell" data-execution_count="28">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>grid_results <span class="op">=</span> run_np_regularization_grid()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="ed1e9275" class="cell" data-execution_count="29">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>grid_summary <span class="op">=</span> (grid_results.groupby([<span class="st">'n_over_p'</span>, <span class="st">'alpha'</span>])</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(<span class="kw">lambda</span> g: pd.Series({</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">'correlation'</span>: g[<span class="st">'cv_error'</span>].corr(g[<span class="st">'err_xy'</span>]),</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MSE_to_ERR_XY'</span>: np.mean((g[<span class="st">'cv_error'</span>] <span class="op">-</span> g[<span class="st">'err_xy'</span>])<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    }), include_groups <span class="op">=</span> <span class="va">False</span>).reset_index()</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>grid_summary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="29">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">n_over_p</th>
+<th data-quarto-table-cell-role="th">alpha</th>
+<th data-quarto-table-cell-role="th">correlation</th>
+<th data-quarto-table-cell-role="th">MSE_to_ERR_XY</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>2</td>
+<td>0</td>
+<td>0.051568</td>
+<td>1.178937</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2</td>
+<td>1</td>
+<td>0.078614</td>
+<td>0.656691</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>2</td>
+<td>10</td>
+<td>0.163279</td>
+<td>0.190942</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>5</td>
+<td>0</td>
+<td>0.003923</td>
+<td>0.055859</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>5</td>
+<td>1</td>
+<td>-0.005621</td>
+<td>0.057272</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>5</td>
+<td>10</td>
+<td>0.041492</td>
+<td>0.046154</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>10</td>
+<td>0</td>
+<td>-0.033975</td>
+<td>0.016721</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>10</td>
+<td>1</td>
+<td>-0.009363</td>
+<td>0.015909</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>10</td>
+<td>10</td>
+<td>0.032155</td>
+<td>0.014894</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>20</td>
+<td>0</td>
+<td>0.003801</td>
+<td>0.006608</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>20</td>
+<td>1</td>
+<td>0.028191</td>
+<td>0.006445</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>20</td>
+<td>10</td>
+<td>0.018259</td>
+<td>0.005926</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Plot:</p>
+<div id="3a361845" class="cell" data-execution_count="30">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>))</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> alpha, group <span class="kw">in</span> grid_summary.groupby(<span class="st">'alpha'</span>):</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    ax.plot(group[<span class="st">'n_over_p'</span>], group[<span class="st">'correlation'</span>], marker<span class="op">=</span><span class="st">'o'</span>, label<span class="op">=</span><span class="ss">f'alpha=</span><span class="sc">{</span>alpha<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="vs">r'</span><span class="dv">$</span><span class="vs">n/p</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="vs">r'</span><span class="dv">$\m</span><span class="vs">athrm{Corr}</span><span class="kw">(</span><span class="dv">\w</span><span class="vs">idehat{</span><span class="dv">\m</span><span class="vs">athrm{Err}}</span><span class="dv">^</span><span class="vs">{</span><span class="kw">(</span><span class="vs">CV</span><span class="kw">)</span><span class="vs">}, </span><span class="dv">\m</span><span class="vs">athrm{Err}_{XY}</span><span class="kw">)</span><span class="dv">$</span><span class="vs">'</span>)</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'Instance-specific Information in CV'</span>)</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02_files/figure-html/cell-31-output-1.png" width="626" height="450" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="nonlinear-dgp" class="level3" data-number="6.6">
+<h3 data-number="6.6" class="anchored" data-anchor-id="nonlinear-dgp"><span class="header-section-number">6.6</span> Nonlinear DGP</h3>
+<p>We now consider a nonlinear DGP. A simple example is</p>
+<p><span class="math display">\[
+Y = 2\sin(X_1) + X_2^2 + X_3X_4 + \epsilon, \quad \epsilon \sim \mathcal N(0, 1)
+\]</span></p>
+<p>We can compare it with a random forest.</p>
+<div id="8018871c" class="cell" data-execution_count="31">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_nonlinear_data(n, p, sigma <span class="op">=</span> <span class="fl">1.0</span>, rng<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rng <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>        rng <span class="op">=</span> np.random.default_rng()</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> rng.normal(size<span class="op">=</span>(n, p))</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    mu <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> np.sin(X[:, <span class="dv">0</span>]) <span class="op">+</span> X[:, <span class="dv">1</span>] <span class="op">**</span> <span class="dv">2</span> <span class="op">+</span> X[:, <span class="dv">2</span>] <span class="op">*</span> X[:, <span class="dv">3</span>]</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>    eps <span class="op">=</span> rng.normal(loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span>sigma, size<span class="op">=</span>n)</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> mu <span class="op">+</span> eps</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> X, y</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A generic instance-specific error function can be used for any model.</p>
+<div id="c31f38e6" class="cell" data-execution_count="32">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nonlinear_instance_error(model, X, y, p<span class="op">=</span><span class="dv">20</span>, sigma<span class="op">=</span><span class="fl">1.0</span>, n_test<span class="op">=</span><span class="dv">50_000</span>, rng<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> rng <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>        rng <span class="op">=</span> np.random.default_rng()</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    fitted <span class="op">=</span> clone(model)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    fitted.fit(X, y)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    X_test, y_test <span class="op">=</span> simulate_nonlinear_data(n<span class="op">=</span>n_test, p<span class="op">=</span>p, sigma<span class="op">=</span>sigma, rng<span class="op">=</span>rng)</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> fitted.predict(X_test)</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> mse(y_test, pred)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>And the comparison:</p>
+<div id="77bcf335" class="cell" data-execution_count="33">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nonlinear_model_study(R<span class="op">=</span><span class="dv">1000</span>, n<span class="op">=</span><span class="dv">200</span>, p<span class="op">=</span><span class="dv">10</span>, K<span class="op">=</span><span class="dv">10</span>, seed<span class="op">=</span><span class="dv">6400</span>):</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(seed)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    models <span class="op">=</span> {</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">'OLS'</span>: LinearRegression(),</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Ridge'</span>: Ridge(alpha<span class="op">=</span><span class="dv">10</span>),</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'RandomForest'</span>: RandomForestRegressor(n_estimators<span class="op">=</span><span class="dv">200</span>, max_features<span class="op">=</span><span class="st">'sqrt'</span>, random_state<span class="op">=</span>seed)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> []</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> name, model <span class="kw">in</span> models.items():</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(R):</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>            X, y <span class="op">=</span> simulate_nonlinear_data(n<span class="op">=</span>n, p<span class="op">=</span>p, rng<span class="op">=</span>rng)</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>            cv_err <span class="op">=</span> cv_error(model, X, y, K<span class="op">=</span>K, seed<span class="op">=</span>r)</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>            err_xy <span class="op">=</span> nonlinear_instance_error(model, X, y, p<span class="op">=</span>p, rng<span class="op">=</span>rng)</span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>            rows.append({</span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>                <span class="st">'model'</span>: name,</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">'replicate'</span>: r,</span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>                <span class="st">'cv_error'</span>: cv_err,</span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">'err_xy'</span>: err_xy</span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>            })</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame(rows)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="b3a84dda" class="cell" data-execution_count="34">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>nonlinear_results <span class="op">=</span> nonlinear_model_study()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="dd774024" class="cell" data-execution_count="35">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>nonlinear_summary <span class="op">=</span> (nonlinear_results.groupby(<span class="st">'model'</span>)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">apply</span>(<span class="kw">lambda</span> g: pd.Series({</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">'Err'</span>: g[<span class="st">'err_xy'</span>].mean(),</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">'CV mean'</span>: g[<span class="st">'cv_error'</span>].mean(),</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">'correlation'</span>: g[<span class="st">'cv_error'</span>].corr(g[<span class="st">'err_xy'</span>]),</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MSE_to_Err'</span>: np.mean((g[<span class="st">'cv_error'</span>] <span class="op">-</span> g[<span class="st">'err_xy'</span>].mean())<span class="op">**</span><span class="dv">2</span>),</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">'MSE_to_Err_XY'</span>: np.mean((g[<span class="st">'cv_error'</span>] <span class="op">-</span> g[<span class="st">'err_xy'</span>])<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    }), include_groups <span class="op">=</span> <span class="va">False</span>).reset_index()</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>nonlinear_summary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="35">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">model</th>
+<th data-quarto-table-cell-role="th">Err</th>
+<th data-quarto-table-cell-role="th">CV mean</th>
+<th data-quarto-table-cell-role="th">correlation</th>
+<th data-quarto-table-cell-role="th">MSE_to_Err</th>
+<th data-quarto-table-cell-role="th">MSE_to_Err_XY</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>OLS</td>
+<td>4.564629</td>
+<td>4.641992</td>
+<td>0.161246</td>
+<td>0.654052</td>
+<td>0.637437</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>RandomForest</td>
+<td>3.020148</td>
+<td>3.033445</td>
+<td>-0.262731</td>
+<td>0.201931</td>
+<td>0.256935</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>Ridge</td>
+<td>4.536925</td>
+<td>4.583644</td>
+<td>0.136254</td>
+<td>0.586109</td>
+<td>0.576136</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>For this part, the main question we ask is whether <span class="math inline">\(\Err\)</span> versus <span class="math inline">\(\Err_{XY}\)</span> continues to matter when the learner is nonlinear and potentially unstable.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
@@ -691,6 +1657,7 @@ Efron, Bradley. 1986. <span>“How Biased Is the Apparent Error Rate of a Predic
 Efron, Bradley, and Gail Gong. 1983. <span>“A Leisurely Look at the Bootstrap, the Jackknife, and Cross-Validation.”</span> <em>American Statistician</em> 37 (1): 36–48. <a href="https://doi.org/10.1080/00031305.1983.10483087">https://doi.org/10.1080/00031305.1983.10483087</a>.
 </div>
 </div>
+</section>
 </section>
 
 </main> <!-- /main -->
