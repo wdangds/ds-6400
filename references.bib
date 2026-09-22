@@ -1,3 +1,19 @@
+@article{apleyVisualizingEffectsPredictor2020,
+  title = {Visualizing the Effects of Predictor Variables in Black Box Supervised Learning Models},
+  author = {Apley, Daniel W. and Zhu, Jingyu},
+  year = 2020,
+  month = sep,
+  journal = {Journal of the Royal Statistical Society Series B (Statistical Methodology)},
+  volume = {82},
+  number = {4},
+  pages = {1059--1086},
+  issn = {1369-7412},
+  doi = {10.1111/rssb.12377},
+  urldate = {2026-09-21},
+  abstract = {In many supervised learning applications, understanding and visualizing the effects of the predictor variables on the predicted response is of paramount importance. A shortcoming of black box supervised learning models (e.g. complex trees, neural networks, boosted trees, random forests, nearest neighbours, local kernel-weighted methods and support vector regression) in this regard is their lack of interpretability or transparency. Partial dependence plots, which are the most popular approach for visualizing the effects of the predictors with black box supervised learning models, can produce erroneous results if the predictors are strongly correlated, because they require extrapolation of the response at predictor values that are far outside the multivariate envelope of the training data. As an alternative to partial dependence plots, we present a new visualization approach that we term accumulated local effects plots, which do not require this unreliable extrapolation with correlated predictors. Moreover, accumulated local effects plots are far less computationally expensive than partial dependence plots. We also provide an R package ALEPlot as supplementary material to implement our proposed method.},
+  langid = {english}
+}
+
 @misc{austernAsymptoticsCrossvalidation2020,
   title = {Asymptotics of Cross-Validation},
   author = {Austern, Morgane and Zhou, Wenda},
@@ -159,6 +175,60 @@
   langid = {english}
 }
 
+@article{friedmanGreedyFunctionApproximation2001,
+  title = {Greedy Function Approximation: A Gradient Boosting Machine},
+  shorttitle = {Greedy Function Approximation},
+  author = {Friedman, Jerome H.},
+  year = 2001,
+  month = oct,
+  journal = {Annals of Statistics},
+  volume = {29},
+  number = {5},
+  pages = {1189--1232},
+  publisher = {Institute of Mathematical Statistics},
+  issn = {0090-5364, 2168-8966},
+  doi = {10.1214/aos/1013203451},
+  urldate = {2026-09-21},
+  abstract = {Function estimation/approximation is viewed from the perspective of numerical optimization in function space, rather than parameter space. A connection is made between stagewise additive expansions and steepest-descent minimization. A general gradient descent ``boosting'' paradigm is developed for additive expansions based on any fitting criterion.Specific algorithms are presented for least-squares, least absolute deviation, and Huber-M loss functions for regression, and multiclass logistic likelihood for classification. Special enhancements are derived for the particular case where the individual additive components are regression trees, and tools for interpreting such ``TreeBoost'' models are presented. Gradient boosting of regression trees produces competitive, highly robust, interpretable procedures for both regression and classification, especially appropriate for mining less than clean data. Connections between this approach and the boosting methods of Freund and Shapire and Friedman, Hastie and Tibshirani are discussed.},
+  langid = {english},
+  keywords = {62-02,62-07,62-08,62G08,62H30,68T10,boosting,decision trees,Function estimation,robust nonparametric regression}
+}
+
+@article{friedmanMultipleAdditiveRegression2003,
+  title = {Multiple Additive Regression Trees with Application in Epidemiology},
+  author = {Friedman, Jerome H. and Meulman, Jacqueline J.},
+  year = 2003,
+  journal = {Statistics in Medicine},
+  volume = {22},
+  number = {9},
+  pages = {1365--1381},
+  issn = {1097-0258},
+  doi = {10.1002/sim.1501},
+  urldate = {2026-09-21},
+  abstract = {Predicting future outcomes based on knowledge obtained from past observational data is a common application in a wide variety of areas of scientific research. In the present paper, prediction will be focused on various grades of cervical preneoplasia and neoplasia. Statistical tools used for prediction should of course possess predictive accuracy, and preferably meet secondary requirements such as speed, ease of use, and interpretability of the resulting predictive model. A new automated procedure based on an extension (called `boosting') of regression and classification tree (CART) models is described. The resulting tool is a fast `off-the-shelf' procedure for classification and regression that is competitive in accuracy with more customized approaches, while being fairly automatic to use (little tuning), and highly robust especially when applied to less than clean data. Additional tools are presented for interpreting and visualizing the results of such multiple additive regression tree (MART) models. Copyright \copyright{} 2003 John Wiley \& Sons, Ltd.},
+  langid = {english},
+  keywords = {boosting,cervical cancer,data mining,MART,predictive learning,regression trees}
+}
+
+@article{goldsteinPeekingBlackBox2015,
+  title = {Peeking inside the Black Box: Visualizing Statistical Learning with Plots of Individual Conditional Expectation},
+  shorttitle = {Peeking inside the Black Box},
+  author = {Goldstein, Alex and Kapelner, Adam and Bleich, Justin and Pitkin, Emil},
+  year = 2015,
+  journal = {Journal of Computational and Graphical Statistics},
+  volume = {24},
+  number = {1},
+  eprint = {43304932},
+  eprinttype = {jstor},
+  pages = {44--65},
+  publisher = {[American Statistical Association, Taylor \& Francis, Ltd., Institute of Mathematical Statistics, Interface Foundation of America]},
+  issn = {1061-8600},
+  doi = {10.1080/10618600.2014.907095},
+  urldate = {2026-09-21},
+  abstract = {This article presents individual conditional expectation (ICE) plots, a tool for visualizing the model estimated by any supervised learning algorithm. Classical partial dependence plots (PDPs) help visualize the average partial relationship between the predicted response and one or more features. In the presence of substantial interaction effects, the partial response relationship can be heterogeneous. Thus, an average curve, such as the PDP, can obfuscate the complexity of the modeled relationship. Accordingly, ICE plots refine the PDP by graphing the functional relationship between the predicted response and the feature for individual observations. Specifically, ICE plots highlight the variation in the fitted values across the range of a covariate, suggesting where and to what extent heterogeneities might exist. In addition to providing a plotting suite for exploratory analysis, we include a visual test for additive structure in the data-generating model. Through simulated examples and real datasets, we demonstrate how ICE plots can shed light on estimated models in ways PDPs cannot. Procedures outlined are available in the R package ICEbox.},
+  langid = {english}
+}
+
 @book{harrellRegressionModelingStrategies2015,
   title = {Regression Modeling Strategies: With Applications to Linear Models, Logistic and Ordinal Regression, and Survival Analysis},
   shorttitle = {Regression Modeling Strategies},
@@ -173,6 +243,12 @@
   isbn = {978-3-319-19424-0 978-3-319-19425-7},
   langid = {english},
   keywords = {Generalized least squares,knitr reproducible documents,Linear models,Logistic regression,Predictive modeling,R statistical software,Regression analysis,Survival analysis}
+}
+
+@article{molnarInterpretableMachineLearning,
+  title = {Interpretable Machine Learning},
+  author = {Molnar, Christoph},
+  langid = {english}
 }
 
 @misc{perlazaGeneralizationErrorMachine2024,

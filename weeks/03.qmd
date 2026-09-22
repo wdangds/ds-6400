@@ -1,0 +1,150 @@
+---
+title: "Accumulated Local Effects Plots"
+jupyter: ds-6400
+tags: 
+  - visualization
+  - local effects
+  - machine learning
+  - interpretability
+  - explainable AI
+---
+
+Modern machine learning models can produce accurate predictions while being difficult to interpret. Accumulated Local Effects (ALE) is a model agnostic interpretation method designed to answer the question: 
+
+> *How does a particular feature influence the model's predictions?*
+
+Its goal is to summarize how the prediction of a fitted model changes as one feature changes, while accounting for the dependence between features. ALE plots are similar to Partial Dependence Plots (PDPs), but they are more robust to correlated features and can provide more accurate interpretations in such cases.
+
+## Motivation
+
+### Partial Dependence
+
+For simplicity, first consider the two-dimensional case $\mathbf X=(X_1, X_2)$. The partial dependence function of $X_1$ is defined as:
+
+$$
+f_{1, \PD}(x_1) = \E[f(x_1, X_2)] = \int p_2(x_2) f(x_1,x_2)dx_2
+$${#eq-pd}
+
+where $p_2(x_2)$ is the marginal distribution of $X_2$. Given observations $\{x_i=(x_{i,1}, x_{i,2}): i=1, \ldots, n\}$, the estimate of @eq-pd is given by 
+
+$$
+\hat f_{1, \PD(x_1)} = \frac{1}{n} \sum_{i=1}^n f(x_1, x_{i,2})
+$$
+
+![How $f_{1, \PD(x_1)}$ is estimated.](figs/pd-a.png){#fig-pd-a}
+
+@fig-pd-a illustrate the weakness of PD. @apleyVisualizingEffectsPredictor2020 construct dependent predictors lying approximately along a line. The PD function is estimated by averaging the predictions over the marginal distribution of $X_2$. However, this can lead to unrealistic combinations of features that do not occur in the data, resulting in misleading interpretations.
+
+### Marginal Effects
+
+An alternative approach is to replace the marginal density by the conditional density. We define the marginal-plot function:
+
+$$
+f_{1, M}(x_1) = \E[f(x_1, X_2)|X_1=x_1] = \int p_{2|1}(x_2|x_1) f(x_1,x_2)dx_2.
+$${#eq-marginal}
+
+An estimate of @eq-marginal is given by
+
+$$
+\hat f_{1, M}(x_1) = \frac{1}{n(x_1)}\sum_{i\in N(x_1)} f(x_1, x_{i,2})
+$$
+
+where $N(x_1)\subset \{1, \ldots, n\}$ is the subset of row indices $i$ for which $x_{i, 1}$ is close to $x_1$, and $n(x_1)$ is the number of such rows.
+
+![How $f_{1, M(x_1)}$ is estimated.](figs/pd-b.png){#fig-pd-b}
+
+@fig-pd-b shows that this keeps the evaluation close to the observed data cloud. However, the M-plot is like regressing $Y$ on $X_1$ while ignoring $X_2$. If both predictors affect the response and the predictors are dependent, then the apparent effect of $X_1$ includes some of the effect of $X_2$. This is called __omitted variable bias__ and can lead to misleading interpretations.
+
+## Accumulated Local Effects (ALE)
+
+The central idea of ALE is to work with _local changes of the fitted function_ rather than prediction levels. For two predictors and a differentiable fitted function, @apleyVisualizingEffectsPredictor2020 first introduce
+
+$$
+f^{1}(x_1, x_2) = \frac{\partial f(x_1, x_2)}{\partial x_1}
+$$
+
+This is the local effect of $X_1$ on the prediction at $(x_1, x_2)$. The ALE function is defined as
+
+$$
+\begin{aligned}
+f_{1, \ALE}(x_1) &= \int_{x_{\min, 1}}^{x_1} \E[f^{1}(x_1, X_2)|X_1=z_1] dz_1 - \text{constant} \\
+&= \int_{x_{\min, 1}}^{x_1} \int p_{2|1}(x_2|z_1) f^{1}(z_1,x_2)dx_2 dz_1 - \text{constant}
+\end{aligned}
+$${#eq-ale}
+
+where $x_{\min, 1}$ is some value chosen near the lower bound of the effective support of $p_1(\cdot)$. This construction can be explained in three stages. First, calculate the local effect $f^{1}(x_1, x_2)$ at each observation $(x_{i,1}, x_{i,2})$. Second, average these local effects over the conditional distribution of $X_2$ given $X_1=x_1$. Third, integrate the averaged local effects over $x_1$ to obtain the ALE function. 
+
+![Computation of $f_{1, \ALE}(x_1)$.](figs/ale-plot.png){#fig-ale}
+
+@fig-ale visualizes the computation of $f_{1, \ALE}(x_1)$ at $x_1=0.3$. Instead of evaluating $f$ over an entire vertical line as PD does, ALE works with local changes near points supported by the conditional distribution. 
+
+### Uncertered ALE main effect
+
+@eq-ale assumes differentiability, while models such as trees are not differentiable. 
+
+We assume that $\mathbf{X}$ is continuous and has compact support $\mathcal{S}$, and let the support of $X_j$ be interval $\mathcal S_j=[x_{\min,j}, x_{\max,j}]$ for each $j\in \{1, 2, \ldots, d\}$. For a partition with $K$ intervals, we write 
+
+$$
+\mathcal P_{j}^{K} \coloneqq \{z_{k, j}^K: k=0, 1, \ldots, K\}
+$$
+
+where $z_{0, j}^K=x_{\min,j}$ and $z_{K, j}^K=x_{\max,j}$. We then define the fineness of the partition by 
+
+$$
+\delta_{j, K} \coloneqq \max \{ |z_{k, j}^K - z_{k-1, j}^K|: k=1, 2, \ldots, K \}
+$$
+
+As $K\to \infty$, we have $\delta_{j, K}\to 0$. Let $X_{\\ j}$ denote all predictors except $X_j$.
+
+
+::: {#def-uncentered-ale}
+
+## Uncentered ALE main effect
+
+Provided the limit exists and is independent of the particular sequence of partitions, the uncentered ALE main (which is also known as the first-order) effect of $X_j$ is defined as
+
+$$
+g_{j, \ALE}(x_j) \coloneqq \lim_{K\to \infty} \sum_{k=1}^{k_j^K (x_j)} \E\left[f(z_{k,j}^K, \mathbf{X}_{\\ j})- f(z_{k-1,j}^K, \mathbf{X}_{\\ j})\mid X_j \in (z_{k-1,j}^K, z_{k,j}^K)\right]
+$$
+
+:::
+
+@apleyVisualizingEffectsPredictor2020 then show that the finite-difference definition can be reduced to the derivative representation under regularity conditions.
+
+::: {#thm-ale-derivative}
+
+## Uncentered ALE Main Effect for differentiable $f$
+
+Let $f^{j}(x_j, \mathbf{x}_{\\ j}) \coloneqq \frac{\partial f(x_j, \mathbf{x}_{\\ j})}{\partial x_j}$ denote the partial derivative of $f$ with respect to $x_j$ when it exists. In @def-uncentered-ale, suppose that
+
+1. $f$ is differentiable in $x_j$ on $\mathcal S$,
+2. $f^{j}$ is continuous in $(x_j, \mathbf {x}_{\\ j})$ on $\mathcal S$, and
+3. $\E[f^j(X_j, \mathbf{X}_{\\ j})\mid X_j=z_j]$ is continuous in $z_j$ on $\mathcal S_j$.
+
+Then, for each $x_j \in \mathcal S_j$,
+
+$$
+g_{j, \ALE}(x_j) = \int_{x_{\min,j}}^{x_j} \E[f^j(X_j, \mathbf{X}_{\\ j})\mid X_j=z_j] dz_j
+$$
+
+:::
+At first glance, $\int \frac{\partial f(x_j, \mathbf{x}_{\\ j})}{\partial x_j} dz_j$ may seem to be equal to $f(x_j, \mathbf{x}_{\\ j})$. However, this is not the case because the integral is taken with respect to $z_j$, while the partial derivative is taken with respect to $x_j$. Consequently, differentiation first isolates the local effect of $X_j$, conditional averaging restricts the calculation to the observed data cloud, and integration reconstructs the cumulative across the range of $X_j$. 
+
+We can also define the (centered) ALE main effect of $X_j$, which is denoted by $f_{j, \ALE}(x_j)$ and is obtained by centering the uncentered ALE main effect:
+
+$$
+\begin{aligned}
+f_{j, \ALE}(x_j) &\coloneqq g_{j, \ALE}(x_j) - \E[g_{j, \ALE}(X_j)]\\
+& = g_{j, \ALE}(x_j) - \int p_j(z_j)g_{j, \ALE}(z_j) dz_j
+\end{aligned}
+$$
+
+### Additive recovery property
+
+Suppose $f(x) = \sum_{j=1}^d f_j(x_j)$ is an additive function. Then, both ALE and PD recover the true component $f_j(x_j)$ up to an additive constant:
+
+$$
+f_{j, \ALE}(x_j) = f_j(x_j) + C_j.
+$$
+
+Thus, when the fitted prediction function is additive, the ALE main-effect curve recovers the individual predictor effect regardless of how black-box the model is. However, if the fitted function is not additive, then the ALE main effect is not equal to the true component $f_j(x_j)$, but it still provides a useful summary of the effect of $X_j$ on the prediction.

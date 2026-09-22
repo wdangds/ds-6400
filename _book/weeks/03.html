@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Appendix A — OLS, Linear Invariance, and Conditional Independence – DS 6400 Weekly Writing</title>
+<title>3&nbsp; Accumulated Local Effects Plots – DS 6400 Weekly Writing</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -33,7 +52,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../references.html" rel="prev">
+<link href="../references.html" rel="next">
+<link href="../weeks/02.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -101,9 +121,6 @@ window.MathJax = {
   }
 };
 </script>
-<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
-<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
-<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -147,7 +164,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../appendices/ols-cv-independence.html">Appendices</a></li><li class="breadcrumb-item"><a href="../appendices/ols-cv-independence.html"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">OLS, Linear Invariance, and Conditional Independence</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/03.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -201,7 +218,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../weeks/03.html" class="sidebar-item-text sidebar-link">
+  <a href="../weeks/03.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></span></a>
   </div>
 </li>
@@ -224,7 +241,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../appendices/ols-cv-independence.html" class="sidebar-item-text sidebar-link active">
+  <a href="../appendices/ols-cv-independence.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">OLS, Linear Invariance, and Conditional Independence</span></span></a>
   </div>
 </li>
@@ -240,19 +257,25 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup"><span class="header-section-number">1</span> Setup</a></li>
-  <li><a href="#geometry" id="toc-geometry" class="nav-link" data-scroll-target="#geometry"><span class="header-section-number">2</span> Geometry</a></li>
-  <li><a href="#why-linear-invariance-matters" id="toc-why-linear-invariance-matters" class="nav-link" data-scroll-target="#why-linear-invariance-matters"><span class="header-section-number">3</span> Why linear invariance matters</a></li>
-  <li><a href="#why-the-theorem-follows" id="toc-why-the-theorem-follows" class="nav-link" data-scroll-target="#why-the-theorem-follows"><span class="header-section-number">4</span> Why the theorem follows</a></li>
+  <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation"><span class="header-section-number">1</span> Motivation</a>
+  <ul class="collapse">
+  <li><a href="#partial-dependence" id="toc-partial-dependence" class="nav-link" data-scroll-target="#partial-dependence"><span class="header-section-number">1.1</span> Partial Dependence</a></li>
+  <li><a href="#marginal-effects" id="toc-marginal-effects" class="nav-link" data-scroll-target="#marginal-effects"><span class="header-section-number">1.2</span> Marginal Effects</a></li>
+  </ul></li>
+  <li><a href="#accumulated-local-effects-ale" id="toc-accumulated-local-effects-ale" class="nav-link" data-scroll-target="#accumulated-local-effects-ale"><span class="header-section-number">2</span> Accumulated Local Effects (ALE)</a>
+  <ul class="collapse">
+  <li><a href="#uncertered-ale-main-effect" id="toc-uncertered-ale-main-effect" class="nav-link" data-scroll-target="#uncertered-ale-main-effect"><span class="header-section-number">2.1</span> Uncertered ALE main effect</a></li>
+  <li><a href="#additive-recovery-property" id="toc-additive-recovery-property" class="nav-link" data-scroll-target="#additive-recovery-property"><span class="header-section-number">2.2</span> Additive recovery property</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../appendices/ols-cv-independence.html">Appendices</a></li><li class="breadcrumb-item"><a href="../appendices/ols-cv-independence.html"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">OLS, Linear Invariance, and Conditional Independence</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/03.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Appendix A — OLS, Linear Invariance, and Conditional Independence</h1>
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></h1>
 </div>
 
 
@@ -269,102 +292,139 @@ window.Quarto = {
 </header>
 
 
-<p>This appendix expands the linear-model argument behind the conditional-independence result in Week 2. The goal is to separate the algebra from the main narrative, where the main point is conceptual: cross-validation can be a reasonable estimator of average prediction error while still being independent of the particular fitted model’s conditional prediction error.</p>
-<section id="setup" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="setup"><span class="header-section-number">1</span> Setup</h2>
-<p>Assume the homoscedastic Gaussian linear model</p>
-<p><span id="eq-app-linear-model"><span class="math display">\[
-\mathbf Y = \mathbf X\theta + \epsilon,
-\qquad
-\epsilon \mid \mathbf X \sim N(0, \sigma^2 I_n).
+<p>Modern machine learning models can produce accurate predictions while being difficult to interpret. Accumulated Local Effects (ALE) is a model agnostic interpretation method designed to answer the question:</p>
+<blockquote class="blockquote">
+<p><em>How does a particular feature influence the model’s predictions?</em></p>
+</blockquote>
+<p>Its goal is to summarize how the prediction of a fitted model changes as one feature changes, while accounting for the dependence between features. ALE plots are similar to Partial Dependence Plots (PDPs), but they are more robust to correlated features and can provide more accurate interpretations in such cases.</p>
+<section id="motivation" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="motivation"><span class="header-section-number">1</span> Motivation</h2>
+<section id="partial-dependence" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="partial-dependence"><span class="header-section-number">1.1</span> Partial Dependence</h3>
+<p>For simplicity, first consider the two-dimensional case <span class="math inline">\(\mathbf X=(X_1, X_2)\)</span>. The partial dependence function of <span class="math inline">\(X_1\)</span> is defined as:</p>
+<p><span id="eq-pd"><span class="math display">\[
+f_{1, \PD}(x_1) = \E[f(x_1, X_2)] = \int p_2(x_2) f(x_1,x_2)dx_2
 \tag{1}\]</span></span></p>
-<p>Let <span class="math inline">\(\mathcal A\)</span> be ordinary least squares. Conditional on <span class="math inline">\(\mathbf X\)</span>, the fitted parameter is</p>
+<p>where <span class="math inline">\(p_2(x_2)\)</span> is the marginal distribution of <span class="math inline">\(X_2\)</span>. Given observations <span class="math inline">\(\{x_i=(x_{i,1}, x_{i,2}): i=1, \ldots, n\}\)</span>, the estimate of <a href="#eq-pd" class="quarto-xref">Equation&nbsp;<span>1</span></a> is given by</p>
 <p><span class="math display">\[
-\hat \theta
-=
-(\mathbf X^\top \mathbf X)^{-1}\mathbf X^\top \mathbf Y
-=
-\theta + (\mathbf X^\top \mathbf X)^{-1}\mathbf X^\top \epsilon.
+\hat f_{1, \PD(x_1)} = \frac{1}{n} \sum_{i=1}^n f(x_1, x_{i,2})
 \]</span></p>
-<p>Thus, after conditioning on <span class="math inline">\(\mathbf X\)</span>, every source of randomness comes from the noise vector <span class="math inline">\(\epsilon\)</span>.</p>
+<div id="fig-pd-a" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pd-a-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/pd-a.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pd-a-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: How <span class="math inline">\(f_{1, \PD(x_1)}\)</span> is estimated.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-pd-a" class="quarto-xref">Figure&nbsp;<span>1</span></a> illustrate the weakness of PD. <span class="citation" data-cites="apleyVisualizingEffectsPredictor2020">Apley and Zhu (<a href="../references.html#ref-apleyVisualizingEffectsPredictor2020" role="doc-biblioref">2020</a>)</span> construct dependent predictors lying approximately along a line. The PD function is estimated by averaging the predictions over the marginal distribution of <span class="math inline">\(X_2\)</span>. However, this can lead to unrealistic combinations of features that do not occur in the data, resulting in misleading interpretations.</p>
 </section>
-<section id="geometry" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="geometry"><span class="header-section-number">2</span> Geometry</h2>
-<p>OLS decomposes the response into a fitted component and a residual component:</p>
+<section id="marginal-effects" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="marginal-effects"><span class="header-section-number">1.2</span> Marginal Effects</h3>
+<p>An alternative approach is to replace the marginal density by the conditional density. We define the marginal-plot function:</p>
+<p><span id="eq-marginal"><span class="math display">\[
+f_{1, M}(x_1) = \E[f(x_1, X_2)|X_1=x_1] = \int p_{2|1}(x_2|x_1) f(x_1,x_2)dx_2.
+\tag{2}\]</span></span></p>
+<p>An estimate of <a href="#eq-marginal" class="quarto-xref">Equation&nbsp;<span>2</span></a> is given by</p>
 <p><span class="math display">\[
-\mathbf Y
-=
-\underbrace{H\mathbf Y}_{\text{projection onto column space of } \mathbf X}
-+
-\underbrace{(I-H)\mathbf Y}_{\text{residual}},
-\qquad
-H = \mathbf X(\mathbf X^\top \mathbf X)^{-1}\mathbf X^\top.
+\hat f_{1, M}(x_1) = \frac{1}{n(x_1)}\sum_{i\in N(x_1)} f(x_1, x_{i,2})
 \]</span></p>
-<p>Because <span class="math inline">\((I-H)\mathbf X\theta = 0\)</span>, the residual vector depends only on the noise:</p>
+<p>where <span class="math inline">\(N(x_1)\subset \{1, \ldots, n\}\)</span> is the subset of row indices <span class="math inline">\(i\)</span> for which <span class="math inline">\(x_{i, 1}\)</span> is close to <span class="math inline">\(x_1\)</span>, and <span class="math inline">\(n(x_1)\)</span> is the number of such rows.</p>
+<div id="fig-pd-b" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pd-b-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/pd-b.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pd-b-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: How <span class="math inline">\(f_{1, M(x_1)}\)</span> is estimated.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-pd-b" class="quarto-xref">Figure&nbsp;<span>2</span></a> shows that this keeps the evaluation close to the observed data cloud. However, the M-plot is like regressing <span class="math inline">\(Y\)</span> on <span class="math inline">\(X_1\)</span> while ignoring <span class="math inline">\(X_2\)</span>. If both predictors affect the response and the predictors are dependent, then the apparent effect of <span class="math inline">\(X_1\)</span> includes some of the effect of <span class="math inline">\(X_2\)</span>. This is called <strong>omitted variable bias</strong> and can lead to misleading interpretations.</p>
+</section>
+</section>
+<section id="accumulated-local-effects-ale" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="accumulated-local-effects-ale"><span class="header-section-number">2</span> Accumulated Local Effects (ALE)</h2>
+<p>The central idea of ALE is to work with <em>local changes of the fitted function</em> rather than prediction levels. For two predictors and a differentiable fitted function, <span class="citation" data-cites="apleyVisualizingEffectsPredictor2020">Apley and Zhu (<a href="../references.html#ref-apleyVisualizingEffectsPredictor2020" role="doc-biblioref">2020</a>)</span> first introduce</p>
 <p><span class="math display">\[
-(I-H)\mathbf Y = (I-H)\epsilon.
+f^{1}(x_1, x_2) = \frac{\partial f(x_1, x_2)}{\partial x_1}
 \]</span></p>
-<p>The fitted-model error, however, depends on the coefficient error</p>
+<p>This is the local effect of <span class="math inline">\(X_1\)</span> on the prediction at <span class="math inline">\((x_1, x_2)\)</span>. The ALE function is defined as</p>
+<p><span id="eq-ale"><span class="math display">\[
+\begin{aligned}
+f_{1, \ALE}(x_1) &amp;= \int_{x_{\min, 1}}^{x_1} \E[f^{1}(x_1, X_2)|X_1=z_1] dz_1 - \text{constant} \\
+&amp;= \int_{x_{\min, 1}}^{x_1} \int p_{2|1}(x_2|z_1) f^{1}(z_1,x_2)dx_2 dz_1 - \text{constant}
+\end{aligned}
+\tag{3}\]</span></span></p>
+<p>where <span class="math inline">\(x_{\min, 1}\)</span> is some value chosen near the lower bound of the effective support of <span class="math inline">\(p_1(\cdot)\)</span>. This construction can be explained in three stages. First, calculate the local effect <span class="math inline">\(f^{1}(x_1, x_2)\)</span> at each observation <span class="math inline">\((x_{i,1}, x_{i,2})\)</span>. Second, average these local effects over the conditional distribution of <span class="math inline">\(X_2\)</span> given <span class="math inline">\(X_1=x_1\)</span>. Third, integrate the averaged local effects over <span class="math inline">\(x_1\)</span> to obtain the ALE function.</p>
+<div id="fig-ale" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ale-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/ale-plot.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ale-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Computation of <span class="math inline">\(f_{1, \ALE}(x_1)\)</span>.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-ale" class="quarto-xref">Figure&nbsp;<span>3</span></a> visualizes the computation of <span class="math inline">\(f_{1, \ALE}(x_1)\)</span> at <span class="math inline">\(x_1=0.3\)</span>. Instead of evaluating <span class="math inline">\(f\)</span> over an entire vertical line as PD does, ALE works with local changes near points supported by the conditional distribution.</p>
+<section id="uncertered-ale-main-effect" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="uncertered-ale-main-effect"><span class="header-section-number">2.1</span> Uncertered ALE main effect</h3>
+<p><a href="#eq-ale" class="quarto-xref">Equation&nbsp;<span>3</span></a> assumes differentiability, while models such as trees are not differentiable.</p>
+<p>We assume that <span class="math inline">\(\mathbf{X}\)</span> is continuous and has compact support <span class="math inline">\(\mathcal{S}\)</span>, and let the support of <span class="math inline">\(X_j\)</span> be interval <span class="math inline">\(\mathcal S_j=[x_{\min,j}, x_{\max,j}]\)</span> for each <span class="math inline">\(j\in \{1, 2, \ldots, d\}\)</span>. For a partition with <span class="math inline">\(K\)</span> intervals, we write</p>
 <p><span class="math display">\[
-\hat \theta - \theta
-=
-(\mathbf X^\top \mathbf X)^{-1}\mathbf X^\top \epsilon.
+\mathcal P_{j}^{K} \coloneqq \{z_{k, j}^K: k=0, 1, \ldots, K\}
 \]</span></p>
-<p>So the two quantities are driven by two different projections of the same Gaussian noise vector.</p>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart LR
-    A["Gaussian noise epsilon"]
-    B["Fitted-direction component X^T epsilon"]
-    C["Residual component (I-H) epsilon"]
-    D["Conditional prediction error Err_XY"]
-    E["Linearly invariant estimator such as CV"]
+<p>where <span class="math inline">\(z_{0, j}^K=x_{\min,j}\)</span> and <span class="math inline">\(z_{K, j}^K=x_{\max,j}\)</span>. We then define the fineness of the partition by</p>
+<p><span class="math display">\[
+\delta_{j, K} \coloneqq \max \{ |z_{k, j}^K - z_{k-1, j}^K|: k=1, 2, \ldots, K \}
+\]</span></p>
+<p>As <span class="math inline">\(K\to \infty\)</span>, we have <span class="math inline">\(\delta_{j, K}\to 0\)</span>. Let <span class="math inline">\(X_{\\ j}\)</span> denote all predictors except <span class="math inline">\(X_j\)</span>.</p>
+<div id="def-uncentered-ale" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Uncentered ALE main effect)</strong></span> Provided the limit exists and is independent of the particular sequence of partitions, the uncentered ALE main (which is also known as the first-order) effect of <span class="math inline">\(X_j\)</span> is defined as</p>
+<p><span class="math display">\[
+g_{j, \ALE}(x_j) \coloneqq \lim_{K\to \infty} \sum_{k=1}^{k_j^K (x_j)} \E\left[f(z_{k,j}^K, \mathbf{X}_{\\ j})- f(z_{k-1,j}^K, \mathbf{X}_{\\ j})\mid X_j \in (z_{k-1,j}^K, z_{k,j}^K)\right]
+\]</span></p>
+</div>
+<p><span class="citation" data-cites="apleyVisualizingEffectsPredictor2020">Apley and Zhu (<a href="../references.html#ref-apleyVisualizingEffectsPredictor2020" role="doc-biblioref">2020</a>)</span> then show that the finite-difference definition can be reduced to the derivative representation under regularity conditions.</p>
+<div id="thm-ale-derivative" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1 (Uncentered ALE Main Effect for differentiable <span class="math inline">\(f\)</span>)</strong></span> Let <span class="math inline">\(f^{j}(x_j, \mathbf{x}_{\\ j}) \coloneqq \frac{\partial f(x_j, \mathbf{x}_{\\ j})}{\partial x_j}\)</span> denote the partial derivative of <span class="math inline">\(f\)</span> with respect to <span class="math inline">\(x_j\)</span> when it exists. In <a href="#def-uncentered-ale" class="quarto-xref">Definition&nbsp;<span>1</span></a>, suppose that</p>
+<ol type="1">
+<li><span class="math inline">\(f\)</span> is differentiable in <span class="math inline">\(x_j\)</span> on <span class="math inline">\(\mathcal S\)</span>,</li>
+<li><span class="math inline">\(f^{j}\)</span> is continuous in <span class="math inline">\((x_j, \mathbf {x}_{\\ j})\)</span> on <span class="math inline">\(\mathcal S\)</span>, and</li>
+<li><span class="math inline">\(\E[f^j(X_j, \mathbf{X}_{\\ j})\mid X_j=z_j]\)</span> is continuous in <span class="math inline">\(z_j\)</span> on <span class="math inline">\(\mathcal S_j\)</span>.</li>
+</ol>
+<p>Then, for each <span class="math inline">\(x_j \in \mathcal S_j\)</span>,</p>
+<p><span class="math display">\[
+g_{j, \ALE}(x_j) = \int_{x_{\min,j}}^{x_j} \E[f^j(X_j, \mathbf{X}_{\\ j})\mid X_j=z_j] dz_j
+\]</span></p>
+</div>
+<p>At first glance, <span class="math inline">\(\int \frac{\partial f(x_j, \mathbf{x}_{\\ j})}{\partial x_j} dz_j\)</span> may seem to be equal to <span class="math inline">\(f(x_j, \mathbf{x}_{\\ j})\)</span>. However, this is not the case because the integral is taken with respect to <span class="math inline">\(z_j\)</span>, while the partial derivative is taken with respect to <span class="math inline">\(x_j\)</span>. Consequently, differentiation first isolates the local effect of <span class="math inline">\(X_j\)</span>, conditional averaging restricts the calculation to the observed data cloud, and integration reconstructs the cumulative across the range of <span class="math inline">\(X_j\)</span>.</p>
+<p>We can also define the (centered) ALE main effect of <span class="math inline">\(X_j\)</span>, which is denoted by <span class="math inline">\(f_{j, \ALE}(x_j)\)</span> and is obtained by centering the uncentered ALE main effect:</p>
+<p><span class="math display">\[
+\begin{aligned}
+f_{j, \ALE}(x_j) &amp;\coloneqq g_{j, \ALE}(x_j) - \E[g_{j, \ALE}(X_j)]\\
+&amp; = g_{j, \ALE}(x_j) - \int p_j(z_j)g_{j, \ALE}(z_j) dz_j
+\end{aligned}
+\]</span></p>
+</section>
+<section id="additive-recovery-property" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="additive-recovery-property"><span class="header-section-number">2.2</span> Additive recovery property</h3>
+<p>Suppose <span class="math inline">\(f(x) = \sum_{j=1}^d f_j(x_j)\)</span> is an additive function. Then, both ALE and PD recover the true component <span class="math inline">\(f_j(x_j)\)</span> up to an additive constant:</p>
+<p><span class="math display">\[
+f_{j, \ALE}(x_j) = f_j(x_j) + C_j.
+\]</span></p>
+<p>Thus, when the fitted prediction function is additive, the ALE main-effect curve recovers the individual predictor effect regardless of how black-box the model is. However, if the fitted function is not additive, then the ALE main effect is not equal to the true component <span class="math inline">\(f_j(x_j)\)</span>, but it still provides a useful summary of the effect of <span class="math inline">\(X_j\)</span> on the prediction.</p>
 
-    A --&gt; B --&gt; D
-    A --&gt; C --&gt; E
-</pre>
-</div>
-<p></p></figure><p></p>
-</div>
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-apleyVisualizingEffectsPredictor2020" class="csl-entry" role="listitem">
+Apley, Daniel W., and Jingyu Zhu. 2020. <span>“Visualizing the Effects of Predictor Variables in Black Box Supervised Learning Models.”</span> <em>Journal of the Royal Statistical Society Series B (Statistical Methodology)</em> 82 (4): 1059–86. <a href="https://doi.org/10.1111/rssb.12377">https://doi.org/10.1111/rssb.12377</a>.
 </div>
 </div>
 </section>
-<section id="why-linear-invariance-matters" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="why-linear-invariance-matters"><span class="header-section-number">3</span> Why linear invariance matters</h2>
-<p>A prediction-error estimator <span class="math inline">\(\widehat \Err\)</span> is linearly invariant if adding any linear signal <span class="math inline">\(x_i^\top \kappa\)</span> to every response does not change the estimator. In symbols,</p>
-<p><span class="math display">\[
-\widehat \Err((x_i,y_i)_{i=1}^n, U)
-=
-\widehat \Err((x_i,y_i+x_i^\top\kappa)_{i=1}^n, U).
-\]</span></p>
-<p>For OLS with squared-error loss, cross-validation has this property. Adding <span class="math inline">\(x_i^\top\kappa\)</span> shifts the fitted values in each training fold by the same linear signal. The held-out residuals are unchanged, so the squared held-out errors are unchanged.</p>
-<p>Therefore, conditional on <span class="math inline">\(\mathbf X\)</span>, a linearly invariant estimator can depend on <span class="math inline">\(\mathbf Y\)</span> only through residual information orthogonal to the column space of <span class="math inline">\(\mathbf X\)</span>:</p>
-<p><span class="math display">\[
-\widehat \Err = g((I-H)\epsilon, U)
-\]</span></p>
-<p>for some function <span class="math inline">\(g\)</span>.</p>
-</section>
-<section id="why-the-theorem-follows" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="why-the-theorem-follows"><span class="header-section-number">4</span> Why the theorem follows</h2>
-<p>The conditional prediction error of the final OLS model depends on the fitted coefficient error, which is determined by <span class="math inline">\(\mathbf X^\top \epsilon\)</span>. A linearly invariant estimator such as OLS cross-validation depends on the residual component <span class="math inline">\((I-H)\epsilon\)</span>.</p>
-<p>Under the Gaussian linear model, orthogonal projections of a Gaussian vector are independent. Since</p>
-<p><span class="math display">\[
-H\epsilon \perp\!\!\!\perp (I-H)\epsilon \mid \mathbf X,
-\]</span></p>
-<p>we get the key separation:</p>
-<p><span class="math display">\[
-\widehat \Err
-\indep
-\Err_{XY}
-\mid
-\mathbf X.
-\]</span></p>
-<p>This does not mean cross-validation is useless. It means that, in this setting, cross-validation is estimating a population-level or repeated-sample target more naturally than it is estimating the realized conditional error of the exact fitted model in hand.</p>
-
-
 </section>
 
 </main> <!-- /main -->
@@ -770,11 +830,14 @@ H\epsilon \perp\!\!\!\perp (I-H)\epsilon \mid \mathbf X,
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../references.html" class="pagination-link" aria-label="References">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">References</span>
+      <a href="../weeks/02.html" class="pagination-link" aria-label="40 years of Predictive Performance Estimation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">40 years of Predictive Performance Estimation</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../references.html" class="pagination-link" aria-label="References">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
