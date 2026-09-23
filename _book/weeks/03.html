@@ -267,6 +267,16 @@ window.Quarto = {
   <li><a href="#uncertered-ale-main-effect" id="toc-uncertered-ale-main-effect" class="nav-link" data-scroll-target="#uncertered-ale-main-effect"><span class="header-section-number">2.1</span> Uncertered ALE main effect</a></li>
   <li><a href="#additive-recovery-property" id="toc-additive-recovery-property" class="nav-link" data-scroll-target="#additive-recovery-property"><span class="header-section-number">2.2</span> Additive recovery property</a></li>
   </ul></li>
+  <li><a href="#estimating-and-construction-of-an-ale-plot" id="toc-estimating-and-construction-of-an-ale-plot" class="nav-link" data-scroll-target="#estimating-and-construction-of-an-ale-plot"><span class="header-section-number">3</span> Estimating and Construction of an ALE Plot</a>
+  <ul class="collapse">
+  <li><a href="#accumulation" id="toc-accumulation" class="nav-link" data-scroll-target="#accumulation"><span class="header-section-number">3.1</span> Accumulation</a></li>
+  <li><a href="#interval-width-and-stability" id="toc-interval-width-and-stability" class="nav-link" data-scroll-target="#interval-width-and-stability"><span class="header-section-number">3.2</span> Interval width and stability</a></li>
+  </ul></li>
+  <li><a href="#reading-an-ale-plot" id="toc-reading-an-ale-plot" class="nav-link" data-scroll-target="#reading-an-ale-plot"><span class="header-section-number">4</span> Reading an ALE Plot</a>
+  <ul class="collapse">
+  <li><a href="#interpreting-the-ordinate" id="toc-interpreting-the-ordinate" class="nav-link" data-scroll-target="#interpreting-the-ordinate"><span class="header-section-number">4.1</span> Interpreting the ordinate</a></li>
+  <li><a href="#interpreting-the-slope" id="toc-interpreting-the-slope" class="nav-link" data-scroll-target="#interpreting-the-slope"><span class="header-section-number">4.2</span> Interpreting the slope</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -384,9 +394,9 @@ Figure&nbsp;3: Computation of <span class="math inline">\(f_{1, \ALE}(x_1)\)</sp
 <p>As <span class="math inline">\(K\to \infty\)</span>, we have <span class="math inline">\(\delta_{j, K}\to 0\)</span>. Let <span class="math inline">\(X_{\\ j}\)</span> denote all predictors except <span class="math inline">\(X_j\)</span>.</p>
 <div id="def-uncentered-ale" class="theorem definition">
 <p><span class="theorem-title"><strong>Definition 1 (Uncentered ALE main effect)</strong></span> Provided the limit exists and is independent of the particular sequence of partitions, the uncentered ALE main (which is also known as the first-order) effect of <span class="math inline">\(X_j\)</span> is defined as</p>
-<p><span class="math display">\[
+<p><span id="eq-ale-uncentered-theory"><span class="math display">\[
 g_{j, \ALE}(x_j) \coloneqq \lim_{K\to \infty} \sum_{k=1}^{k_j^K (x_j)} \E\left[f(z_{k,j}^K, \mathbf{X}_{\\ j})- f(z_{k-1,j}^K, \mathbf{X}_{\\ j})\mid X_j \in (z_{k-1,j}^K, z_{k,j}^K)\right]
-\]</span></p>
+\tag{4}\]</span></span></p>
 </div>
 <p><span class="citation" data-cites="apleyVisualizingEffectsPredictor2020">Apley and Zhu (<a href="../references.html#ref-apleyVisualizingEffectsPredictor2020" role="doc-biblioref">2020</a>)</span> then show that the finite-difference definition can be reduced to the derivative representation under regularity conditions.</p>
 <div id="thm-ale-derivative" class="theorem">
@@ -417,11 +427,105 @@ f_{j, \ALE}(x_j) &amp;\coloneqq g_{j, \ALE}(x_j) - \E[g_{j, \ALE}(X_j)]\\
 f_{j, \ALE}(x_j) = f_j(x_j) + C_j.
 \]</span></p>
 <p>Thus, when the fitted prediction function is additive, the ALE main-effect curve recovers the individual predictor effect regardless of how black-box the model is. However, if the fitted function is not additive, then the ALE main effect is not equal to the true component <span class="math inline">\(f_j(x_j)\)</span>, but it still provides a useful summary of the effect of <span class="math inline">\(X_j\)</span> on the prediction.</p>
+</section>
+</section>
+<section id="estimating-and-construction-of-an-ale-plot" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="estimating-and-construction-of-an-ale-plot"><span class="header-section-number">3</span> Estimating and Construction of an ALE Plot</h2>
+<p>In practice, ALE plots are estimated from a fintie dataset. To be summarized, this can be done by replacing the infinite sequence of increasingly fine partitions by a fixed partition and replace the conditional expectation by sample averages.</p>
+<p>Suppose <span class="math inline">\(X_j\)</span> is divided into <span class="math inline">\(K\)</span> intervals <span class="math inline">\((z_{0,j}, z_{1,j}], (z_{1,j}, z_{2,j}], \ldots, (z_{K-1,j}, z_{K,j}]\)</span>. Let <span class="math inline">\(N_j(k)=(z_{k-1,j}, z_{k,j}]\)</span> be a fine partition of the sample range of <span class="math inline">\(X_j\)</span>.</p>
+<p>For every observation <span class="math inline">\(i\in N_j(k)\)</span>, we then evaluate the fitted model <span class="math inline">\(f(z_{k, j}, \mathbf x_{i,\\j})\)</span> and <span class="math inline">\(f(z_{k-1, j}, \mathbf x_{i, \\j})\)</span> and compute the difference</p>
+<p><span class="math display">\[
+\Delta_{i,k} = f(z_{k, j}, \mathbf x_{i, \\j}) - f(z_{k-1, j}, \mathbf x_{i, \\j})
+\]</span></p>
+<p>This can be interpreted as</p>
+<blockquote class="blockquote">
+<p>For observation <span class="math inline">\(i\)</span>, how much does the fitted prediction change when <span class="math inline">\(X_j\)</span> moves across interval <span class="math inline">\(k\)</span>, with all remaining predictors fixed at their observed values?</p>
+</blockquote>
+<p>The local average effect is then</p>
+<p><span class="math display">\[
+\overline \Delta_k = \frac{1}{n_j(k)} \sum_{\{i: x_{i,j} \in N_j(k)\}} \Delta_{i,k}
+\]</span></p>
+<section id="accumulation" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="accumulation"><span class="header-section-number">3.1</span> Accumulation</h3>
+<p>For a value <span class="math inline">\(x_j\)</span> falling in interval <span class="math inline">\(k_j(x_j)\)</span>, the estimated uncertered ALE is</p>
+<p><span id="eq-ale-uncentered"><span class="math display">\[
+\hat g_{j, \ALE}(x_j) = \sum_{k=1}^{k_j(x_j)}\frac{1}{n_j(k)} \sum_{\{i: x_{i,j} \in N_j(k)\}} \{f(z_{k, j}, \mathbf x_{i, \\j}) - f(z_{k-1, j}, \mathbf x_{i, \\j})\}
+\tag{5}\]</span></span></p>
+<p>So the procedure is therefore:</p>
+<p><span class="math display">\[
+\boxed{
+    \text{partition} \to \text{difference} \to \text{local average} \to \text{accumulation}
+}
+\]</span></p>
+<p>Centering is then applied to obtain the estimated ALE main effect:</p>
+<p><span class="math display">\[
+\hat f_{j, \ALE}(x_j) = \hat g_{j, \ALE}(x_j) - \frac{1}{n} \sum_{i=1}^n \hat g_{j, \ALE}(x_{i,j})
+\]</span></p>
+<div id="thm-ale-consistent" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 2 (Consistency of the ALE main effect estimator)</strong></span> Consider a sequence of partitions <span class="math inline">\(\{\mathcal P_j^K: K=1, 2, \ldots\}\)</span> as in <a href="#def-uncentered-ale" class="quarto-xref">Definition&nbsp;<span>1</span></a> such that <span class="math inline">\(\delta_{j, K}\to 0\)</span> as <span class="math inline">\(K\to \infty\)</span>. Denote the estimator (<a href="#eq-ale-uncentered" class="quarto-xref">Equation&nbsp;<span>5</span></a>) of the uncentered ALE main effect of <span class="math inline">\(X_j\)</span> using partition <span class="math inline">\(\mathcal P_j^K\)</span> and sample size <span class="math inline">\(n\)</span> by</p>
+<p><span class="math display">\[
+\hat g_{j, \ALE, K, n}(x) = \sum_{k=1}^{k_j^K(x)} \frac{\sum_{i=1}^n \mathbb{I}(X_{i,j} \in (z_{k-1,j}, z_{k,j}])[f(z_{k, j}, \mathbf x_{i, \\j}) - f(z_{k-1, j}, \mathbf x_{i, \\j})]}{\sum_{i=1}^n \mathbb{I}(X_{i,j} \in (z_{k-1,j}, z_{k,j}])}
+\]</span></p>
+<p>where <span class="math inline">\(\mathbb{I}(\cdot)\)</span> denotes the indicator function of an event. Assume that <span class="math inline">\(\{\mathbf{X}_i: i=1,2, \ldots\}\)</span> is an i.i.d. sequence of random vectors drawn from <span class="math inline">\(p(\cdot)\)</span>, and let <span class="math inline">\(P\)</span> denote the probability measure on the underlying probability space of this random sequence. Let</p>
+<p><span class="math display">\[
+g_{j, \ALE, K}(x) = \sum_{k=1}^{k_j^K(x)} \E[f(z_{k, j}, \mathbf X_{\\j}) - f(z_{k-1, j}, \mathbf X_{\\j})\mid X_j \in (z_{k-1,j}, z_{k,j}]]
+\]</span></p>
+<p>denote the finite-<span class="math inline">\(K\)</span> version of <span class="math inline">\(g_{j, \ALE}(x)\)</span> in <a href="#eq-ale-uncentered-theory" class="quarto-xref">Equation&nbsp;<span>4</span></a> using the same partition <span class="math inline">\(\mathcal P_j^K\)</span> as the estimator. Then <span class="math inline">\(\hat g_{j, \ALE, K, n}(x)\)</span> is a strongly consistent estimator of <span class="math inline">\(g_{j, \ALE, K}(x)\)</span> in the following sense. For each <span class="math inline">\(x\in \mathcal S_j\)</span>, each <span class="math inline">\(\epsilon&gt;0\)</span>, and each <span class="math inline">\(K\)</span>,</p>
+<p><span class="math display">\[
+\lim_{n\to \infty} \hat{g}_{j, \ALE, K, n}(x) = g_{j, \ALE, K}(x) \quad a.s. -P
+\]</span></p>
+<p>with <span class="math inline">\(|g_{j, \ALE, K}(x) - g_{j, \ALE}(x)| &lt; \epsilon\)</span> if <span class="math inline">\(K\)</span> is sufficiently large.</p>
+<p>Moreover, there exists a sequence of sample size <span class="math inline">\(\{n_K: K=1, 2, \ldots\}\)</span> such that, as <span class="math inline">\(K\to \infty\)</span>, <span class="math inline">\(\hat g_{j, \ALE, K, n_K}(x) \to g_{j, \ALE}(x)\)</span> both in probability and in mean.</p>
+</div>
+<p>The importance of this result is that <span style="color:purple">the ALE main effect estimator is consistent, meaning that as the sample size increases and the partition becomes finer, the estimated ALE main effect converges to the true ALE main effect.</span> This provides a theoretical guarantee for the reliability of ALE plots in practice.</p>
+</section>
+<section id="interval-width-and-stability" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="interval-width-and-stability"><span class="header-section-number">3.2</span> Interval width and stability</h3>
+<p>If <span class="math inline">\(K\)</span> is too small, intervals are wide and the differences are not local.</p>
+<p>If <span class="math inline">\(K\)</span> is too large, each interval contains relatively few observations and the estimated conditional averages can become noisy. Thus, the choice of <span class="math inline">\(K\)</span> is a trade-off between bias and variance. Quantile partitions help by keeping roughly similar numbers of observations in each interval, but for a strong skewed predictors, quantile intervals may have very different widths.</p>
+</section>
+</section>
+<section id="reading-an-ale-plot" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="reading-an-ale-plot"><span class="header-section-number">4</span> Reading an ALE Plot</h2>
+<section id="interpreting-the-ordinate" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="interpreting-the-ordinate"><span class="header-section-number">4.1</span> Interpreting the ordinate</h3>
+<p>Because the ALE main effect is centered, <span class="math inline">\(\E[\hat f_{j, \ALE}(X_j)] = 0\)</span>. Suppose <span class="math inline">\(f_{j, \ALE}(x_j)=-2\)</span>. The interpretation is that the main effect associated with <span class="math inline">\(X_j=x_j\)</span> lowers the model prediction by approximately 2 response units relative to the predictor’s average main effect <span class="citation" data-cites="molnarInterpretableMachineLearning">Molnar (<a href="../references.html#ref-molnarInterpretableMachineLearning" role="doc-biblioref">n.d.</a>)</span>. A value of zero means that the accumulated effect at that predictor value is at the centered average reference level.</p>
+</section>
+<section id="interpreting-the-slope" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="interpreting-the-slope"><span class="header-section-number">4.2</span> Interpreting the slope</h3>
+<p>The local behavior of the curve is often more informative than its absolute height. If</p>
+<p><span class="math display">\[
+\frac{\partial f_{j, \ALE}(x_j)}{\partial x_j} &gt; 0
+\]</span></p>
+<p>then the fitted prediction tends to increase as <span class="math inline">\(X_j\)</span> increase in that region, and vice versa.</p>
+<div id="fig-tree-plot-apley" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tree-plot-apley-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/tree-plot-apley.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tree-plot-apley-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Depiction of the first eight splits in the tree fitted to the example data
+</figcaption>
+</figure>
+</div>
+<div id="fig-tree-pd-ale-m-apley" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tree-pd-ale-m-apley-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/tree-pd-ale-m-apley.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tree-pd-ale-m-apley-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Fot the tree model fitted to the example data, plot of ALE, PD, M, and the true main effect of <span class="math inline">\(X_j\)</span>
+</figcaption>
+</figure>
+</div>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
 <div id="ref-apleyVisualizingEffectsPredictor2020" class="csl-entry" role="listitem">
 Apley, Daniel W., and Jingyu Zhu. 2020. <span>“Visualizing the Effects of Predictor Variables in Black Box Supervised Learning Models.”</span> <em>Journal of the Royal Statistical Society Series B (Statistical Methodology)</em> 82 (4): 1059–86. <a href="https://doi.org/10.1111/rssb.12377">https://doi.org/10.1111/rssb.12377</a>.
+</div>
+<div id="ref-molnarInterpretableMachineLearning" class="csl-entry" role="listitem">
+Molnar, Christoph. n.d. <em>Interpretable Machine Learning</em>.
 </div>
 </div>
 </section>
