@@ -122,6 +122,29 @@
   content: ".";
 }
 
+/* Keep generated figures inside the readable page column, even when code chunks use a large figsize. */
+.quarto-figure,
+.cell-output-display,
+figure {
+  max-width: 100%;
+}
+
+.cell-output-display {
+  overflow-x: visible;
+}
+
+.quarto-figure img,
+.cell-output-display img,
+.cell-output-display svg,
+figure img,
+p > img {
+  display: block;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+}
+
 @media (max-width: 700px) {
   .derivation-note {
     display: block;
