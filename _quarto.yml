@@ -24,6 +24,7 @@ book:
         - weeks/01.qmd
         - weeks/02.qmd
         - weeks/03.qmd
+        - weeks/04.qmd
     - references.qmd
   appendices:
     - appendices/ols-cv-independence.qmd

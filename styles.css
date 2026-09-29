@@ -145,6 +145,26 @@ p > img {
   max-width: 100%;
 }
 
+pre.pseudo {
+  background: #f6f8fa;
+  border: 1px solid #d8dee4;
+  border-left: 4px solid #4e7896;
+  border-radius: 6px;
+  color: #24292f;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin: 1.25rem 0;
+  overflow-x: auto;
+  padding: 1rem 1.15rem;
+}
+
+pre.pseudo code {
+  background: transparent;
+  color: inherit;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  white-space: pre;
+}
+
 @media (max-width: 700px) {
   .derivation-note {
     display: block;

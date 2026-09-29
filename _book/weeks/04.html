@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4&nbsp; Are the Forests really Random? – DS 6400 Weekly Writing</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../references.html" rel="next">
+<link href="../weeks/03.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5ccb035bea26c1e21f80f44cf7c27909.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+window.MathJax = {
+  loader: {
+    load: ["[tex]/mathtools"]
+  },
+  tex: {
+    packages: {"[+]": ["mathtools"]},
+    macros: {
+      R: "\\mathbb{R}",
+      N: "\\mathbb{N}",
+      Z: "\\mathbb{Z}",
+      Q: "\\mathbb{Q}",
+      C: "\\mathbb{C}",
+      E: "\\mathbb{E}",
+      Var: "\\operatorname{Var}",
+      Cov: "\\operatorname{Cov}",
+      Corr: "\\operatorname{Corr}",
+      argmin: "\\operatorname*{arg\\,min}",
+      argmax: "\\operatorname*{arg\\,max}",
+      ind: "\\mathbb{1}",
+      Err: "\\operatorname{Err}",
+      err: "\\operatorname{err}",
+      var: "\\operatorname{var}",
+      indep: "\\perp\\!\\!\\!\\perp",
+      PD: "\\operatorname{PD}",
+      ALE: "\\operatorname{ALE}",
+      mg: "\\operatorname{mg}",
+      av: "\\operatorname{av}",
+      PE: "\\operatorname{PE}",
+      mr: "\\operatorname{mr}",
+      rmg: "\\operatorname{rmg}",
+      sd: "\\operatorname{sd}"
+    }
+  }
+};
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/04.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Are the Forests really Random?</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">DS 6400 Weekly Writing</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Weekly Writing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Apparent Error to Modern Error: Efron’s Optimism and Evaluation of Predictive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">40 years of Predictive Performance Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/04.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Are the Forests really Random?</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/ols-cv-independence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">OLS, Linear Invariance, and Conditional Independence</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#from-cart-to-random-forests" id="toc-from-cart-to-random-forests" class="nav-link active" data-scroll-target="#from-cart-to-random-forests"><span class="header-section-number">1</span> From CART to Random Forests</a>
+  <ul class="collapse">
+  <li><a href="#the-starting-point-cart" id="toc-the-starting-point-cart" class="nav-link" data-scroll-target="#the-starting-point-cart"><span class="header-section-number">1.1</span> The starting point: CART</a></li>
+  <li><a href="#why-one-tree-is-not-enough" id="toc-why-one-tree-is-not-enough" class="nav-link" data-scroll-target="#why-one-tree-is-not-enough"><span class="header-section-number">1.2</span> Why one tree is not enough</a></li>
+  <li><a href="#bagging" id="toc-bagging" class="nav-link" data-scroll-target="#bagging"><span class="header-section-number">1.3</span> Bagging</a></li>
+  <li><a href="#randomizing-the-trees-themselves" id="toc-randomizing-the-trees-themselves" class="nav-link" data-scroll-target="#randomizing-the-trees-themselves"><span class="header-section-number">1.4</span> Randomizing the trees themselves</a></li>
+  </ul></li>
+  <li><a href="#random-forests" id="toc-random-forests" class="nav-link" data-scroll-target="#random-forests"><span class="header-section-number">2</span> Random Forests</a>
+  <ul class="collapse">
+  <li><a href="#the-random-vector-formulation" id="toc-the-random-vector-formulation" class="nav-link" data-scroll-target="#the-random-vector-formulation"><span class="header-section-number">2.1</span> The Random-vector formulation</a></li>
+  <li><a href="#forest-ri" id="toc-forest-ri" class="nav-link" data-scroll-target="#forest-ri"><span class="header-section-number">2.2</span> Forest-RI</a></li>
+  </ul></li>
+  <li><a href="#characterizing-the-accuracy-of-random-forests" id="toc-characterizing-the-accuracy-of-random-forests" class="nav-link" data-scroll-target="#characterizing-the-accuracy-of-random-forests"><span class="header-section-number">3</span> Characterizing the accuracy of random forests</a>
+  <ul class="collapse">
+  <li><a href="#margin-and-generalization-error" id="toc-margin-and-generalization-error" class="nav-link" data-scroll-target="#margin-and-generalization-error"><span class="header-section-number">3.1</span> Margin and generalization error</a></li>
+  <li><a href="#population-margin-and-strength" id="toc-population-margin-and-strength" class="nav-link" data-scroll-target="#population-margin-and-strength"><span class="header-section-number">3.2</span> Population Margin and Strength</a></li>
+  </ul></li>
+  <li><a href="#constructing-and-monitoring-the-forest" id="toc-constructing-and-monitoring-the-forest" class="nav-link" data-scroll-target="#constructing-and-monitoring-the-forest"><span class="header-section-number">4</span> Constructing and monitoring the forest</a>
+  <ul class="collapse">
+  <li><a href="#out-of-bag-observations" id="toc-out-of-bag-observations" class="nav-link" data-scroll-target="#out-of-bag-observations"><span class="header-section-number">4.1</span> Out-of-bag observations</a></li>
+  <li><a href="#forest-ri-1" id="toc-forest-ri-1" class="nav-link" data-scroll-target="#forest-ri-1"><span class="header-section-number">4.2</span> Forest-RI</a></li>
+  <li><a href="#forest-rc" id="toc-forest-rc" class="nav-link" data-scroll-target="#forest-rc"><span class="header-section-number">4.3</span> Forest-RC</a></li>
+  </ul></li>
+  <li><a href="#behavior-of-random-forests" id="toc-behavior-of-random-forests" class="nav-link" data-scroll-target="#behavior-of-random-forests"><span class="header-section-number">5</span> Behavior of Random Forests</a>
+  <ul class="collapse">
+  <li><a href="#why-using-fewer-variables-can-improve-the-forest" id="toc-why-using-fewer-variables-can-improve-the-forest" class="nav-link" data-scroll-target="#why-using-fewer-variables-can-improve-the-forest"><span class="header-section-number">5.1</span> Why using fewer variables can improve the forest</a></li>
+  <li><a href="#relation-to-boosting" id="toc-relation-to-boosting" class="nav-link" data-scroll-target="#relation-to-boosting"><span class="header-section-number">5.2</span> Relation to boosting</a></li>
+  <li><a href="#robustness-to-label-noise" id="toc-robustness-to-label-noise" class="nav-link" data-scroll-target="#robustness-to-label-noise"><span class="header-section-number">5.3</span> Robustness to label noise</a></li>
+  <li><a href="#many-weak-predictors-and-many-weak-trees" id="toc-many-weak-predictors-and-many-weak-trees" class="nav-link" data-scroll-target="#many-weak-predictors-and-many-weak-trees"><span class="header-section-number">5.4</span> Many weak predictors and many weak trees</a></li>
+  <li><a href="#variable-importance-from-oob-perturbation" id="toc-variable-importance-from-oob-perturbation" class="nav-link" data-scroll-target="#variable-importance-from-oob-perturbation"><span class="header-section-number">5.5</span> Variable importance from OOB perturbation</a></li>
+  <li><a href="#regression-forests" id="toc-regression-forests" class="nav-link" data-scroll-target="#regression-forests"><span class="header-section-number">5.6</span> Regression forests</a></li>
+  </ul></li>
+  <li><a href="#random-forests-in-practice" id="toc-random-forests-in-practice" class="nav-link" data-scroll-target="#random-forests-in-practice"><span class="header-section-number">6</span> Random Forests in Practice</a>
+  <ul class="collapse">
+  <li><a href="#constructing-the-data" id="toc-constructing-the-data" class="nav-link" data-scroll-target="#constructing-the-data"><span class="header-section-number">6.1</span> Constructing the data</a></li>
+  <li><a href="#building-a-single-tree" id="toc-building-a-single-tree" class="nav-link" data-scroll-target="#building-a-single-tree"><span class="header-section-number">6.2</span> Building a single tree</a></li>
+  <li><a href="#growing-the-tree-recursively" id="toc-growing-the-tree-recursively" class="nav-link" data-scroll-target="#growing-the-tree-recursively"><span class="header-section-number">6.3</span> Growing the tree recursively</a></li>
+  <li><a href="#from-one-tree-to-a-random-forest" id="toc-from-one-tree-to-a-random-forest" class="nav-link" data-scroll-target="#from-one-tree-to-a-random-forest"><span class="header-section-number">6.4</span> From one tree to a random forest</a></li>
+  <li><a href="#forest-prediction-and-oob-evaluation" id="toc-forest-prediction-and-oob-evaluation" class="nav-link" data-scroll-target="#forest-prediction-and-oob-evaluation"><span class="header-section-number">6.5</span> Forest prediction and OOB evaluation</a></li>
+  <li><a href="#visualizing-the-prediction-relationship" id="toc-visualizing-the-prediction-relationship" class="nav-link" data-scroll-target="#visualizing-the-prediction-relationship"><span class="header-section-number">6.6</span> Visualizing the prediction relationship</a></li>
+  </ul></li>
+  <li><a href="#considerations-for-using-random-forests" id="toc-considerations-for-using-random-forests" class="nav-link" data-scroll-target="#considerations-for-using-random-forests"><span class="header-section-number">7</span> Considerations for using Random Forests</a>
+  <ul class="collapse">
+  <li><a href="#data-assumptions" id="toc-data-assumptions" class="nav-link" data-scroll-target="#data-assumptions"><span class="header-section-number">7.1</span> Data assumptions</a></li>
+  <li><a href="#randomization-must-preserve-tree-strength" id="toc-randomization-must-preserve-tree-strength" class="nav-link" data-scroll-target="#randomization-must-preserve-tree-strength"><span class="header-section-number">7.2</span> Randomization must preserve tree strength</a></li>
+  <li><a href="#the-number-of-trees" id="toc-the-number-of-trees" class="nav-link" data-scroll-target="#the-number-of-trees"><span class="header-section-number">7.3</span> The number of trees</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/04.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Are the Forests really Random?</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Are the Forests really Random?</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="from-cart-to-random-forests" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="from-cart-to-random-forests"><span class="header-section-number">1</span> From CART to Random Forests</h2>
+<p>Random forests are the result of a sequence of ideas about how to improve the performance of decision trees. The first idea was to use <strong>bagging</strong> (bootstrap aggregating) to reduce the variance of a single decision tree. Bagging involves training multiple decision trees on different bootstrap samples of the training data and then averaging their predictions. After bagging, <span class="citation" data-cites="breimanRandomForests2001">Breiman (<a href="../references.html#ref-breimanRandomForests2001" role="doc-biblioref">2001</a>)</span> introduced the idea of <strong>random feature selection</strong> to further reduce the correlation between the trees in the ensemble. This means that at each split in a decision tree, only a random subset of features is considered for splitting, which helps to decorrelate the trees and improve the overall performance of the random forest.</p>
+<section id="the-starting-point-cart" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="the-starting-point-cart"><span class="header-section-number">1.1</span> The starting point: CART</h3>
+<p>The basic object underlying a random forest is a <em>decision tree</em>. The original algorithm is called CART (Classification and Regression Trees) and was introduced by <span class="citation" data-cites="breimanClassificationRegressionTrees2017">Breiman et al. (<a href="../references.html#ref-breimanClassificationRegressionTrees2017" role="doc-biblioref">2017</a>)</span>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://dataaspirant.com/wp-content/uploads/2017/01/B03905_05_01-compressor.png" class="img-fluid figure-img"></p>
+<figcaption>How Decision Tree Works. Source: DataAspirant</figcaption>
+</figure>
+</div>
+<p>Suppose the training sample is <span class="math inline">\(\mathcal D = \{x_i, y_i\}_{i=1}^n\)</span> where <span class="math inline">\(x_i = (x_{i1}, \ldots, x_{iM})\in \R^M\)</span> contains <span class="math inline">\(M\)</span> predictors and <span class="math inline">\(y_i\)</span> is the response. A tree recursively divides the predictor space into terminal regions <span class="math inline">\(R_1, \ldots, R_J\)</span> and the resulting predictors can be represented as a piecewise constant function: <span class="math display">\[
+T(x) = \sum_{j=1}^J c_j \mathbf I\{x\in R_j\},
+\]</span> where <span class="math inline">\(\mathbf I\{\cdot\}\)</span> is the indicator function and <span class="math inline">\(c_j\)</span> is the predicted value for region <span class="math inline">\(R_j\)</span>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/simple-tree.png" class="img-fluid figure-img"></p>
+<figcaption>Simple Decision Tree</figcaption>
+</figure>
+</div>
+<section id="regression-trees" class="level4" data-number="1.1.1">
+<h4 data-number="1.1.1" class="anchored" data-anchor-id="regression-trees"><span class="header-section-number">1.1.1</span> Regression Trees</h4>
+<p>For regression, <span class="math inline">\(\mathbf{Y}\in \R\)</span>. If region <span class="math inline">\(R_j\)</span> contains <span class="math inline">\(N_j\)</span> observations, CART uses the mean response</p>
+<p><span class="math display">\[
+\hat c_j = \frac{1}{N_j} \sum_{i: x_i\in R_j} y_i
+\]</span></p>
+<p>Thus</p>
+<p><span class="math display">\[
+\hat T(x) = \sum_{j=1}^J \hat c_j \mathbf I\{x\in R_j\}
+\]</span></p>
+<p>To split a node <span class="math inline">\(R\)</span>, consider a predictor <span class="math inline">\(X_m\)</span> and threshold <span class="math inline">\(s\)</span>. The candidate split is</p>
+<p><span class="math display">\[
+\begin{aligned}
+R_L(m, s) &amp;= \{x\in R: x_m \leq s\} \\
+R_R(m, s) &amp;= \{x\in R: x_m &gt; s\}.
+\end{aligned}
+\]</span></p>
+<p>CART chooses the pair <span class="math inline">\((m, s)\)</span> giving the largest reduction in squared error, equivalently</p>
+<p><span class="math display">\[
+(m^*, s^*) = \arg\min_{m,s}\left[\min_{c_L} \sum_{i: x_i\in R_L(m, s)} (y_i - c_L)^2 + \min_{c_R} \sum_{i: x_i\in R_R(m, s)} (y_i - c_R)^2\right]
+\]</span></p>
+<p>The optimal constants are the means in the two child nodes, so we can rewrite the optimization as</p>
+<p><span class="math display">\[
+(m^*, s^*) = \arg\min_{m,s}\left[\sum_{i: x_i\in R_L(m, s)} (y_i - \frac{1}{N_L} \sum_{j: x_j\in R_L(m, s)} y_j)^2 + \sum_{i: x_i\in R_R(m, s)} (y_i - \frac{1}{N_R} \sum_{j: x_j\in R_R(m, s)} y_j)^2\right]
+\]</span></p>
+<p>The main idea is <em>recursive local optimization</em> (aka greedy search). At each node, we search for the split that most effectively separates the responses, and then we repeat the process on the resulting child nodes. The recursion stops when a stopping criterion is met, such as a minimum number of observations in a node or a maximum tree depth.</p>
+</section>
+<section id="classification-trees" class="level4" data-number="1.1.2">
+<h4 data-number="1.1.2" class="anchored" data-anchor-id="classification-trees"><span class="header-section-number">1.1.2</span> Classification Trees</h4>
+<p>For classification, <span class="math inline">\(\mathbf{Y}\in \{1, \ldots, K\}\)</span> for <span class="math inline">\(K\)</span> classes. Within node <span class="math inline">\(R\)</span>, we can estimate the class probabilities as</p>
+<p><span class="math display">\[
+\hat p(k\mid R) = \frac{1}{N_R} \sum_{i: x_i\in R} \mathbf I\{y_i = k\}
+\]</span></p>
+<p>The node predicts the majority class, i.e., <span class="math inline">\(\hat c_R = \arg\max_k \hat p(k\mid R)\)</span>. A common criterion for splitting is the Gini index, which measures the impurity of a node:</p>
+<p><span class="math display">\[
+G(R) = \sum_{k=1}^K \hat p(k\mid R)(1 - \hat p(k\mid R)) = 1 - \sum_{k=1}^K \hat p(k\mid R)^2
+\]</span></p>
+<p>For a proposed split producing <span class="math inline">\(R_L\)</span> and <span class="math inline">\(R_R\)</span>, the impurity reduction is</p>
+<p><span class="math display">\[
+\Delta I = G(R) - \frac{N_L}{N_R^{(\text{parent})}} G(R_L) - \frac{N_R}{N_R^{(\text{parent})}} G(R_R)
+\]</span></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/gini-impurity.png" class="img-fluid figure-img"></p>
+<figcaption>Gini Impurity</figcaption>
+</figure>
+</div>
+<p>The tree then chooses the split that maximizes <span class="math inline">\(\Delta I\)</span>. Other impurity measures include cross-entropy (or deviance) and misclassification error.</p>
+<p>Thus a single decision tree can be viewed mathematically as a data-dependent partition <span class="math inline">\(\mathcal X = \bigcup_{j=1}^J R_j\)</span> together with a constant prediction <span class="math inline">\(c_j\)</span> for each region.</p>
+</section>
+</section>
+<section id="why-one-tree-is-not-enough" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="why-one-tree-is-not-enough"><span class="header-section-number">1.2</span> Why one tree is not enough</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/8/8c/Greedy-search-path-example.gif" class="img-fluid figure-img"></p>
+<figcaption>Greedy Search Unstability</figcaption>
+</figure>
+</div>
+<p>A decision tree has several advantages: it is easy to interpret, can handle both numerical and categorical data, and can capture non-linear relationships. However, it also has significant drawbacks: its recursive structure can make it <strong>unstable</strong>. A small change in the training sample can change an early split; once an early split changes, all later splits can change as well.</p>
+<p>Symbolically, if a learning algorithm <span class="math inline">\(A\)</span> maps a data set into a tree <span class="math inline">\(T=A(\mathcal D)\)</span>, then two slightly different data sets <span class="math inline">\(\mathcal D\)</span> and <span class="math inline">\(\mathcal D'\)</span> can produce very different trees <span class="math inline">\(T\)</span> and <span class="math inline">\(T'\)</span>. To solve this problem, <span class="citation" data-cites="breimanBaggingPredictors1996">Breiman (<a href="../references.html#ref-breimanBaggingPredictors1996" role="doc-biblioref">1996</a>)</span> proposed to use <strong>bagging</strong> (bootstrap aggregating) to reduce the variance of a single decision tree.</p>
+</section>
+<section id="bagging" class="level3" data-number="1.3">
+<h3 data-number="1.3" class="anchored" data-anchor-id="bagging"><span class="header-section-number">1.3</span> Bagging</h3>
+<p>For tree <span class="math inline">\(b\)</span>, we draw a bootstrap sample <span class="math inline">\(\mathcal D_b^* \sim \text{Bootstrap}(\mathcal D)\)</span> meaning that <span class="math inline">\(N\)</span> observations are sampled with replacement from the original observations.</p>
+<p>A tree is then fitted to each bootstrap sample,</p>
+<p><span class="math display">\[
+T_b = A(\mathcal D_b^*).
+\]</span></p>
+<p>For regression, bagging averages them:</p>
+<p><span class="math display">\[
+\hat f_\text{bag}(x) = \frac{1}{B} \sum_{b=1}^B T_b(x).
+\]</span></p>
+<p>For classification, bagging uses majority voting:</p>
+<p><span class="math display">\[
+\hat y_\text{bag}(x) = \arg\max_k \sum_{b=1}^B \mathbf I\{T_b(x) = k\}
+\]</span></p>
+<p>The conceptual change from a single tree to bagging is that we are now averaging over many trees, which reduces the variance of the predictions. The bias of the model remains roughly the same, but the variance is reduced because averaging multiple trees smooths out the fluctuations caused by the instability of individual trees.</p>
+<p>However, this raises another question</p>
+<blockquote class="blockquote">
+<p>What if all the trees are too similar?</p>
+</blockquote>
+<p>If the trees make highly correlated errors, then averaging them cannot remove much of that error. This is where the idea of <strong>random feature selection</strong> comes in, which is the key innovation of random forests.</p>
+</section>
+<section id="randomizing-the-trees-themselves" class="level3" data-number="1.4">
+<h3 data-number="1.4" class="anchored" data-anchor-id="randomizing-the-trees-themselves"><span class="header-section-number">1.4</span> Randomizing the trees themselves</h3>
+<p>During the 1990s, several related ideas appeared for producing more diverse trees. <span class="citation" data-cites="amitShapeQuantizationRecognition1997">Amit and Geman (<a href="../references.html#ref-amitShapeQuantizationRecognition1997" role="doc-biblioref">1997</a>)</span> constructed randomized trees for shape recognition and searched over random subsets of a very large family of potential image features. <span class="citation" data-cites="hoRandomSubspaceMethod1998">Ho (<a href="../references.html#ref-hoRandomSubspaceMethod1998" role="doc-biblioref">1998</a>)</span> trained trees in randomly selected feature subspaces. Instead of giving every tree every predictor, different trees see different subsets of the predictor space. On the other hand, instead of only pertubing the training data, <span class="citation" data-cites="dietterichExperimentalComparisonThree2000">Dietterich (<a href="../references.html#ref-dietterichExperimentalComparisonThree2000" role="doc-biblioref">2000</a>)</span> proposed randomly perturbing the tree construction algorithm itself. For example, instead of always choosing the best split at each node, one could randomly select among the top <span class="math inline">\(k\)</span> splits. This introduces additional randomness into the tree-building process, further decorrelating the trees in the ensemble.</p>
+<p>At the same time, <span class="citation" data-cites="freundDecisiontheoreticGeneralizationOnline1997">Freund and Schapire (<a href="../references.html#ref-freundDecisiontheoreticGeneralizationOnline1997" role="doc-biblioref">1997</a>)</span> showed that many individual limited classifiers could be combined into a powerful ensemble, although boosting obtains diversity through <strong>adaptive reweighting</strong> rather than independent randomization.</p>
+<p><span class="citation" data-cites="breimanRandomForests2001">Breiman (<a href="../references.html#ref-breimanRandomForests2001" role="doc-biblioref">2001</a>)</span> central idea is that various randomization mechanisms can all be represented by a <em>random vector controlling tree construction</em>. This abstraction is what Breiman calls a <strong>random forest</strong>.</p>
+</section>
+</section>
+<section id="random-forests" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="random-forests"><span class="header-section-number">2</span> Random Forests</h2>
+<section id="the-random-vector-formulation" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="the-random-vector-formulation"><span class="header-section-number">2.1</span> The Random-vector formulation</h3>
+<p>Let <span class="math inline">\(\Theta_1, \Theta_2, \ldots\)</span> be independent random vectors having the same distribution. Tree <span class="math inline">\(k\)</span> is written as <span class="math inline">\(h(\mathbf x, \Theta_k)\)</span>, where <span class="math inline">\(\mathbf x\)</span> is the input vector, while <span class="math inline">\(\Theta_k\)</span> represents <em>whatever random choices were used to construct tree <span class="math inline">\(k\)</span></em>. For example, <span class="math inline">\(\Theta_k\)</span> might encode the bootstrap sample, the randomly selected predictors at different nodes, randomized split choices, or some combination of these.</p>
+<div id="thm-rf" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1</strong></span> A random forest is a classifier consisting of a collection of tree-structured classifiers <span class="math inline">\(\{h(\mathbf x, \Theta_k), k=1,\ldots,\}\)</span> where <span class="math inline">\(\{\Theta_k\}\overset{\text{i.i.d.}}{\sim} P_\theta\)</span> and each tree casts a unit vote for the most popular class at input <span class="math inline">\(\mathbf x\)</span>.</p>
+</div>
+<p>Note that the random vectors <span class="math inline">\(\Theta_k\)</span> are independent and identically distributed (i.i.d.) according to some distribution <span class="math inline">\(P_\theta\)</span>. The randomness in the construction of each tree ensures that the trees are diverse, which is crucial for the success of the random forest algorithm.</p>
+</section>
+<section id="forest-ri" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="forest-ri"><span class="header-section-number">2.2</span> Forest-RI</h3>
+<p>The particular version most closely corresponding to what is now called a random forest is Breiman’s <strong>Forest-RI</strong>, or random-input forests. Let <span class="math inline">\(M\)</span> denote the total number of input variables and <span class="math inline">\(F\)</span> is the number randomly made available at each node.</p>
+<p>For each tree <span class="math inline">\(k\)</span>, we first generate a bootstrap training set <span class="math inline">\(T_k\)</span> from the original traning sample <span class="math inline">\(T\)</span>. Then, at each node, we randomly select</p>
+<p><span class="math display">\[
+\mathcal F_{kt} \subseteq \{1, \ldots, M\}, \quad |\mathcal F_{kt}| = F
+\]</span></p>
+<p>We then use CART to search for only the <span class="math inline">\(F\)</span> selected inputs:</p>
+<p><span class="math display">\[
+(m^*, s^*) = \arg\max_{\substack{m \in \mathcal F_{kt} \\ s}} \Delta I(m,s)
+\]</span></p>
+<p>The tree is grown to maximum size is not pruned. So instead of just randomizes the observations as in bagging (<span class="math inline">\(T \to T_k\)</span>), RI also randomizes the inputs (<span class="math inline">\(\{1, \ldots, M\} \to \mathcal F_{kt}\)</span>). Consequently,</p>
+<p><span class="math display">\[
+\boxed{\text{Random Forests = Bagging + Random Feature Selection}}
+\]</span></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Why Random Feature Selection?">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Why Random Feature Selection?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Suppose predictor <span class="math inline">\(X_1\)</span> is very strong. In ordinary bagging, <span class="math inline">\(X_1\)</span> may appear nea the top of every tree, so all the trees will be very similar even though they are trained on different bootstrap samples.</p>
+<p>Rnadom feature selection sometimes removes <span class="math inline">\(X_1\)</span> from consideration (<span class="math inline">\(X_1\not \in \mathcal F_{kt}\)</span>). The tree must then discover an alternative route. Individual trees may become weaker, but the collection becomes less correlated.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="characterizing-the-accuracy-of-random-forests" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="characterizing-the-accuracy-of-random-forests"><span class="header-section-number">3</span> Characterizing the accuracy of random forests</h2>
+<p>We (may) wonder why should a large collection of randomized trees work? In <span class="citation" data-cites="breimanRandomForests2001">Breiman (<a href="../references.html#ref-breimanRandomForests2001" role="doc-biblioref">2001</a>)</span>, Breiman provides a theoretical analysis of the accuracy of random forests. First, as more trees are added, the forest converges. Second, predictive quality is governed by a trade-off between <strong>tree strength</strong> and <strong>tree correlation</strong>.</p>
+<section id="margin-and-generalization-error" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="margin-and-generalization-error"><span class="header-section-number">3.1</span> Margin and generalization error</h3>
+<p>Consider classifiers <span class="math inline">\(h_1(\mathbf x), \ldots, h_K(\mathbf x)\)</span>, and for an observation <span class="math inline">\((\mathbf X, Y)\)</span>, we define the <em>margin function</em> as</p>
+<p><span class="math display">\[
+\mg(\mathbf X, Y) = \underbrace{\av_k \mathbf{I}\{h_k(\mathbf X) = Y\}}_{\substack{\text{proportion of trees}\\ \text{voting for the correct class}}} - \underbrace{\max_{j\neq Y} \av_k \mathbf{I}\{h_k(\mathbf X) = j\}}_{\substack{\text{largest proportion voting} \\ \text{for any incorrect class}}}.
+\]</span></p>
+<p>Thus <span class="math inline">\(\mg(\mathbf X, Y)&gt;0\)</span> means that the correct class receives more votes than every competing class, while <span class="math inline">\(\mg(\mathbf X, Y)&lt;0\)</span> means that some wrong clas defeats the correct class. The <strong>generalization error</strong> is then defined as the probability of a negative margin:</p>
+<p><span class="math display">\[
+\PE^* = \mathbb P_{\mathbf X, Y}(\mg(\mathbf X, Y) &lt; 0)
+\]</span></p>
+<blockquote class="blockquote">
+<p><strong>Convergence of the forest</strong></p>
+</blockquote>
+<p>For a random forest, <span class="math inline">\(h_k(\mathbf x) = h(\mathbf x, \Theta_k)\)</span>. Since the <span class="math inline">\(\Theta_k\)</span> are iid, the Strong Law of Large Numbers implies, for a fixed class <span class="math inline">\(j\)</span>,</p>
+<p><span class="math display">\[
+\frac{1}{K} \sum_{k=1}^K \mathbf I\{h_k(\mathbf X) = j\} \to \mathbb P_\Theta(h(\mathbf X, \Theta) = j) \quad \text{as } K\to\infty
+\]</span></p>
+<div id="thm-convergence-rf" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 2</strong></span> As the number of trees increases, for almost surely all sequence <span class="math inline">\(\Theta_1,\ldots\)</span>, <span class="math inline">\(\PE^*\)</span> converges to</p>
+<p><span class="math display">\[
+\mathbb P_{\mathbf X, Y}(P_\theta(h(\mathbf X, \Theta) = Y) - \max_{j\neq Y} P_\Theta(h(\mathbf X, \Theta) = j) &lt; 0)
+\]</span></p>
+</div>
+<p>The theorem says that <em>holding the data-generating procedure for the trees fixed</em>, repeatedly adding iid randomized trees causes the ensemble vote to stabilize. The error approaches a limiting value rather than becoming increasingly random because more trees are added.</p>
+</section>
+<section id="population-margin-and-strength" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="population-margin-and-strength"><span class="header-section-number">3.2</span> Population Margin and Strength</h3>
+<div id="def-margin-strength" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1</strong></span> The margin function for a random forest is</p>
+<p><span class="math display">\[
+\mr(\mathbf X, Y) = P_\Theta(h(\mathbf X, \Theta) = Y) - \max_{j\neq Y} P_\Theta(h(\mathbf X, \Theta) = j)
+\]</span></p>
+<p>and the strength of the set of classifiers <span class="math inline">\(\{h(\mathbf x, \Theta)\}\)</span> is</p>
+<p><span class="math display">\[
+s = \E_{\mathbf X, Y}[\mr(\mathbf X, Y)].
+\]</span></p>
+</div>
+<p>Strength measures the expected margin by which the randomized tree-generating mechanism favors the correct class. Large positive <span class="math inline">\(s\)</span> means that, on average, the forest’s tree distribution strongly favors the correct class.</p>
+<p>Because <span class="math inline">\(\PE^*=\mathbb P(\mr(\mathbf X, Y) &lt; 0)\)</span> and <span class="math inline">\(\E[\mr(\mathbf X, Y)] = s\)</span>, we can use Chebyshev’s inequality to bound the generalization error in terms of the strength and variance of the margin function:</p>
+<p><span class="math display">\[
+\PE^* \leq \frac{\var(\mr(\mathbf X, Y))}{s^2}
+\]</span></p>
+<div class="derivation-note">
+<p><span class="derivation-note-trigger" tabindex="0">Where does this inequality come from?</span></p>
+<div class="derivation-note-body">
+<p>We want to bound <span class="math inline">\(\mathbb P(\mr(\mathbf X, Y) &lt; 0)\)</span> in terms of the mean and variance of <span class="math inline">\(\mr(\mathbf X, Y)\)</span>. We know that <span class="math inline">\(\E[\mr(\mathbf X, Y)] = s\)</span> and <span class="math inline">\(\var(\mr(\mathbf X, Y)) = \sigma^2\)</span>.</p>
+<p>Draw the idea on a number line:</p>
+<p><span class="math display">\[
+\underbrace{\text{error region}}_{\text{mr&lt;0}}   \qquad  0 \qquad  s=\underbrace{\E[\mr(\mathbf X, Y)]}_{\text{mean}}
+\]</span></p>
+<p>If <span class="math inline">\(\mr&lt;0\)</span>, then <span class="math inline">\(\mr\)</span> must be at least distance <span class="math inline">\(s\)</span> below its mean $s. Indead, if <span class="math inline">\(\mr&lt;0\)</span>, then <span class="math inline">\(\mr - s &lt; -s\)</span>. Thus <span class="math inline">\(| \mr - s | &gt; s\)</span>. So the event <span class="math inline">\(\{\mr &lt; 0\}\)</span> is contained in the event <span class="math inline">\(\{|\mr - s| &gt; s\}\)</span>. Symbolically, we have</p>
+<p><span class="math display">\[
+\{\mr &lt; 0\} \subseteq \{|\mr - s| &gt; s\} \implies \mathbb P(\mr &lt; 0) \leq \mathbb P(|\mr - s| &gt; s)
+\]</span></p>
+<p>Now we can apply Chebyshev’s inequality, which states that for any random variable <span class="math inline">\(X\)</span> with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>,</p>
+<p><span class="math display">\[
+\mathbb P(|X - \mu| &gt; k) \leq \frac{\sigma^2}{k^2}.
+\]</span></p>
+<p>Then</p>
+<p><span class="math display">\[
+\mathbb P(|\mr - s| &gt; s) \leq \frac{\var(\mr)}{s^2}
+\]</span></p>
+<p>Combining the two inequalities gives us the desired result:</p>
+<p><span class="math display">\[
+\PE^* = \mathbb P(\mr &lt; 0) \leq \mathbb P(|\mr - s| &gt; s) \leq \frac{\var(\mr)}{s^2}
+\]</span></p>
+</div>
+</div>
+<p>We then let the most competitive wrong class is</p>
+<p><span class="math display">\[
+\hat j(\mathbf X, Y) = \arg\max_{j\neq Y} P_\Theta(h(\mathbf X, \Theta) = j)
+\]</span></p>
+<p>Then</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mr(\mathbf X, Y) &amp;= P_\Theta(h(\mathbf X, \Theta) = Y) - P_\Theta(h(\mathbf X, \Theta) = \hat j(\mathbf X, Y)) \\
+&amp;= \E_\Theta[\mathbf I\{h(\mathbf X, \Theta) = Y\} - \mathbf I\{h(\mathbf X, \Theta) = \hat j(\mathbf X, Y)\}]
+\end{aligned}
+\]</span></p>
+<div id="def-raw-margin" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2</strong></span> The <em>raw margin function</em> is</p>
+<p><span class="math display">\[
+\rmg(\Theta, \mathbf X, Y) = \mathbf I\{h(\mathbf X, \Theta) = Y\} - \mathbf I\{h(\mathbf X, \Theta) = \hat j(\mathbf X, Y)\}
+\]</span></p>
+<p>Consequently, the margin function is the expected raw margin:</p>
+<p><span class="math display">\[
+\mr(\mathbf X, Y) = \E_\Theta[\rmg(\Theta, \mathbf X, Y)]
+\]</span></p>
+</div>
+<p>As we can see, <span class="math inline">\(\rmg\)</span> belongs to an individual randomized tree, while <span class="math inline">\(\mr\)</span> belongs to the infinite forest. Take two independent tree-generating vectors</p>
+<p><span class="math display">\[
+\Theta, \Theta' \overset{\text{i.i.d.}}{\sim} P_\Theta
+\]</span></p>
+<p>The variance of the forest margin can then be related to the covariance of their raw margins. Let <span class="math inline">\(\rho(\Theta, \Theta')\)</span> denote the correlation, over <span class="math inline">\((\mathbf X, Y)\)</span> between <span class="math inline">\(\rmg(\Theta, \mathbf X, Y)\)</span> and <span class="math inline">\(\rmg(\Theta', \mathbf X, Y)\)</span>, and let</p>
+<p><span class="math display">\[
+\sd(\Theta) = \sqrt{\var_{\mathbf X, Y}[\rmg(\Theta, \mathbf X, Y)]}
+\]</span></p>
+<p>We then define an average weighted correlation <span class="math inline">\(\overline{\rho}\)</span> so that</p>
+<p><span class="math display">\[
+\var(mr) = \overline{\rho} (\E_\Theta\sd(\Theta))^2.
+\]</span></p>
+<p>The derivation and weighting are given in the paper’s equation (5)-(8). Since</p>
+<p><span class="math display">\[
+\E_Theta\var(\Theta) \leq \E_\Theta(\E_{\mathbf X, Y}[\rmg(\Theta, \mathbf X, Y)])^2 - s^2 \leq 1-s^2
+\]</span></p>
+<p>we obtain Breiman’s bound on the generalization error.</p>
+<div id="thm-strength-correlation-bound" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 3 (The Strength-Correlation Bound)</strong></span> An upper bound for the generalization error is given by</p>
+<p><span class="math display">\[
+\PE^* \leq \overline{\rho} \frac{1-s^2}{s^2}
+\]</span></p>
+</div>
+<p>A good forests wants <span class="math inline">\(s\)</span> large and <span class="math inline">\(\overline{\rho}\)</span> small. Allowing every tree to examine every predictor can make individual trees strong, but it can also make them highly correlated. Strongly randomizing the trees can make them almost independent, but it can also make them weak. Random forest design is therefore a balancing problem between tree strength and tree correlation.</p>
+<div id="def-trade-off-ratio" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3</strong></span> The c/s2 raito for a random forest is defined as</p>
+<p><span class="math display">\[
+\frac{c}{s^2} = \frac{\overline{\rho}}{s^2}
+\]</span></p>
+</div>
+<p>For two classes the interpretation simplifies to</p>
+<p><span class="math display">\[
+\mr(\mathbf X, Y) = 2 P_\Theta(h(\mathbf X, \Theta) = Y) - 1
+\]</span></p>
+<p>Hence positive strength corresponds to a randomized tree being correct more often than random guessing:</p>
+<p><span class="math display">\[
+\E_{\mathbf X, Y}[\mr(\mathbf X, Y)] &gt; 0 \iff \E_{\mathbf X, Y}[P_\Theta(h(\mathbf X, \Theta) = Y)] &gt; \frac{1}{2}
+\]</span></p>
+<p>Therefore, individual trees must be better than random guessing, but they do not need to be very strong. The correlation <span class="math inline">\(\overline{\rho}\)</span> is the average correlation between the raw margins of two independent trees. If the trees are highly correlated, then their errors will also be correlated, and averaging them will not reduce the overall error much. Conversely, if the trees are weakly correlated, then averaging them will lead to a more significant reduction in error.</p>
+</section>
+</section>
+<section id="constructing-and-monitoring-the-forest" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="constructing-and-monitoring-the-forest"><span class="header-section-number">4</span> Constructing and monitoring the forest</h2>
+<section id="out-of-bag-observations" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="out-of-bag-observations"><span class="header-section-number">4.1</span> Out-of-bag observations</h3>
+<p>Recall that each bootstrap training set <span class="math inline">\(T_k\)</span> contains <span class="math inline">\(N\)</span> draws with replacement from the original <span class="math inline">\(N\)</span> observations. For a particular observation <span class="math inline">\(i\)</span>, the probability that it is not selected on one draw is</p>
+<p><span class="math display">\[
+1-\frac{1}{N}.
+\]</span></p>
+<p>The probability that it is omitted from all <span class="math inline">\(N\)</span> bootstrap draws is</p>
+<p><span class="math display">\[
+\left(1-\frac{1}{N}\right)^N \to e^{-1} \approx 0.368
+\]</span></p>
+<p>Thus roughly 36.8% - approximately one third of the observations are absent from any particular bootstrap sample. These observations are the tree’s <strong>out-of-bag observations</strong>. For training observation <span class="math inline">\((x_i, y_i)\)</span>, we define</p>
+<p><span class="math display">\[
+\mathcal K_i = \{k:(x_i, y_i)\not \in T_k\}.
+\]</span></p>
+<p>Only trees in <span class="math inline">\(K_i\)</span> are allowed to predict <span class="math inline">\(x_i\)</span>. The OOB classifer is therefore</p>
+<p><span class="math display">\[
+\hat y_i^\text{OOB} = \arg\max_j \sum_{k\in \mathcal K_i} \mathbf I\{h(x_i, \Theta_k) = j\}
+\]</span></p>
+<p>The OOB error estimate is</p>
+<p><span class="math display">\[
+\hat{\PE}_{\text{OOB}} = \frac{1}{N} \sum_{i=1}^N \mathbf I\{\hat y_i^\text{OOB} \neq y_i\}
+\]</span></p>
+<p>This is the consequence of bagging: the observations omitted while constructing each tree can be used to estimate the error of that tree.</p>
+</section>
+<section id="forest-ri-1" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="forest-ri-1"><span class="header-section-number">4.2</span> Forest-RI</h3>
+<p>In Forest-RI, there are <span class="math inline">\(M\)</span> original predictors. At every node, sample <span class="math inline">\(F\)</span> of them and search only those variables for the best CART split. Symbolically,</p>
+<p><span class="math display">\[
+\mathcal F \sim \text{random subset of } \{1,\ldots, M\}, \qquad |\mathcal F| = F
+\]</span></p>
+<p>followed by</p>
+<p><span class="math display">\[
+(m^*, s^*) = \arg\max_{m\in \mathcal F, s} \Delta I(m, s)
+\]</span></p>
+<p>If <span class="math inline">\(F\)</span> is large, each node has a good chance of seeing the strongest variables, but different trees will repeatedly discover similar splits. If <span class="math inline">\(F\)</span> is small, the opposite occurs.</p>
+</section>
+<section id="forest-rc" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="forest-rc"><span class="header-section-number">4.3</span> Forest-RC</h3>
+<p><span class="citation" data-cites="breimanRandomForests2001">Breiman (<a href="../references.html#ref-breimanRandomForests2001" role="doc-biblioref">2001</a>)</span> also proposed a second construction, <strong>Forest-RC</strong>. Instead of choosing only original variables, generate random linear combinations. At a node, select <span class="math inline">\(L\)</span> inputs and coefficients</p>
+<p><span class="math display">\[
+\alpha_1, \ldots, \alpha_L \overset{\text{i.i.d.}}{\sim} \text{Uniform}(-1, 1)
+\]</span></p>
+<p>A candidate feature has the form</p>
+<p><span class="math display">\[
+Z = \sum_{\ell=1}^L \alpha_\ell X_{j_\ell}
+\]</span></p>
+<p>We then search over <span class="math inline">\(F\)</span> such random features for the best split. This is a more general form of randomization, as it allows for combinations of features rather than just individual features. It can be particularly useful when the relationship between the predictors and the response is complex and not easily captured by single features.</p>
+</section>
+</section>
+<section id="behavior-of-random-forests" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="behavior-of-random-forests"><span class="header-section-number">5</span> Behavior of Random Forests</h2>
+<section id="why-using-fewer-variables-can-improve-the-forest" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="why-using-fewer-variables-can-improve-the-forest"><span class="header-section-number">5.1</span> Why using fewer variables can improve the forest</h3>
+<div id="fig-sonar-data" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-sonar-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/sonar-data.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-sonar-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Effect of number of inputs on sonar data
+</figcaption>
+</figure>
+</div>
+<p>For the sonar data in <a href="#fig-sonar-data" class="quarto-xref">Figure&nbsp;<span>1</span></a>, Breiman varies <span class="math inline">\(F\)</span>, the number of candidate variables available at a node. Initially, increasing <span class="math inline">\(F\)</span> improves tree strength, but after around <span class="math inline">\(F=4\)</span>, strength becomes nearly constant while tree correlation continues to increase. Corresponding, test and out-of-bag error begin increasing. So when <span class="math inline">\(F\)</span> increases, <span class="math inline">\(s\)</span> increases, but when <span class="math inline">\(s\)</span> is nearly constant, increasing <span class="math inline">\(F\)</span> only increases <span class="math inline">\(\overline{\rho}\)</span>, which increases the generalization error.</p>
+</section>
+<section id="relation-to-boosting" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="relation-to-boosting"><span class="header-section-number">5.2</span> Relation to boosting</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://substackcdn.com/image/fetch/$s_!Gt1_!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff66c6d20-d1ca-4f56-be77-07e12a3d1981_786x1098.gif" class="img-fluid figure-img"></p>
+<figcaption>Boosting vs Bagging. Source: substackcdn</figcaption>
+</figure>
+</div>
+<p>Unlike a random forest, AdaBoost is sequential. The weight distribution used to train the next classifier depends on the errors made previously. If <span class="math inline">\(w^{(k)}\)</span> denotes the training weights at iteration <span class="math inline">\(k\)</span>, we can write the dynamics as</p>
+<p><span class="math display">\[
+w^{(k+1)} = \phi(w^{(k)})
+\]</span></p>
+<p>where <span class="math inline">\(\phi\)</span> is a deterministic function of the previous weights. We then defines an operator</p>
+<p><span class="math display">\[
+Tf(w) = f(\phi(w))
+\]</span></p>
+<p>and conjectures that this transformation have an invariant distribution. Under that conjecture, the long-run boosting sequence could behave like sampling classifiers from a distribution over weights, making its limiting behavior resemble a form of random forest.</p>
+<p>However, this is just a conjecture. More condition are needed to make this rigorous.</p>
+</section>
+<section id="robustness-to-label-noise" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="robustness-to-label-noise"><span class="header-section-number">5.3</span> Robustness to label noise</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/tab-4.png" class="img-fluid figure-img"></p>
+<figcaption>Increases in error rate due to noise (%)</figcaption>
+</figure>
+</div>
+<p><span class="citation" data-cites="breimanRandomForests2001">Breiman (<a href="../references.html#ref-breimanRandomForests2001" role="doc-biblioref">2001</a>)</span> compares Random Forests-RI, Forest-RC, and AdaBoost under artificial label noise. He changes approximately 5% of the training labels and observes that AdaBoost can degrade significantly more than the random forest procedures.</p>
+<p>Boosting repeatedly increases the influence of misclassified observations. If an observation is mislabled, it may remain persistently difficult to classify, causing the algorithm to devote increasing attention to noise. Random forests do not have this problem because each tree is built independently, and the averaging process helps to mitigate the impact of mislabeled data.</p>
+</section>
+<section id="many-weak-predictors-and-many-weak-trees" class="level3" data-number="5.4">
+<h3 data-number="5.4" class="anchored" data-anchor-id="many-weak-predictors-and-many-weak-trees"><span class="header-section-number">5.4</span> Many weak predictors and many weak trees</h3>
+<p><span class="citation" data-cites="breimanRandomForests2001">Breiman (<a href="../references.html#ref-breimanRandomForests2001" role="doc-biblioref">2001</a>)</span> also introduces a problem with <span class="math inline">\(M=1000\)</span> binary predictors, each carrying little information. Individual trees perform poorly, however, Breiman shows that Forest-RI can achieve good ensemble performance when the tree correlations remain low. So if <span class="math inline">\(\overline \rho\)</span> is small, the ensemble can still perform well even if individual trees are weak.</p>
+</section>
+<section id="variable-importance-from-oob-perturbation" class="level3" data-number="5.5">
+<h3 data-number="5.5" class="anchored" data-anchor-id="variable-importance-from-oob-perturbation"><span class="header-section-number">5.5</span> Variable importance from OOB perturbation</h3>
+<p>Suppose <span class="math inline">\(X_m\)</span> is predictor <span class="math inline">\(m\)</span>. For each tree, take its OOB observations and randomly permute the values of <span class="math inline">\(X_m\)</span>:</p>
+<p><span class="math display">\[
+(x_{1m}, \ldots, x_{nm}) \to (x_{\pi(1)m}, \ldots, x_{\pi(n)m})
+\]</span></p>
+<p>where <span class="math inline">\(\pi\)</span> is a random permutation of <span class="math inline">\(\{1, \ldots, n\}\)</span> and leaving the other variables unchanged. We then compute the OOB error again. A simple permutation-importance measure can be written as</p>
+<p><span class="math display">\[
+VI_m = \Err_{\text{OOB}}^{\text{perm(m)}}- \Err_{\text{OOB}}
+\]</span></p>
+<p>If destroying the association between <span class="math inline">\(X_m\)</span> and the response causes a large increase in prediction error, <span class="math inline">\(X_m\)</span> is considered important.</p>
+<p>We also talk about the <em>correlated predictors</em>. Suppose <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> are highly correlated, and both encode the same predictive information. Permuting <span class="math inline">\(X_1\)</span> can hurt because the forest uses it; permuting <span class="math inline">\(X_2\)</span> can also hurt because the forest uses it. Yet once <span class="math inline">\(X_1\)</span> is available, adding <span class="math inline">\(X_2\)</span> may provide almost no additional information. In this case, the importance of <span class="math inline">\(X_2\)</span> may appear low even though it is predictive. This is a limitation of permutation-based variable importance measures in the presence of correlated predictors.</p>
+</section>
+<section id="regression-forests" class="level3" data-number="5.6">
+<h3 data-number="5.6" class="anchored" data-anchor-id="regression-forests"><span class="header-section-number">5.6</span> Regression forests</h3>
+<p>Now suppose <span class="math inline">\(h(\mathbf x, \Theta) \in \R\)</span> is a regression tree. For one numerical predictor <span class="math inline">\(h(x)\)</span>, we define the mean-squared generalization error as</p>
+<p><span class="math display">\[
+\E_{\mathbf X, Y}[(Y - h(\mathbf X))^2]
+\]</span></p>
+<p>A <span class="math inline">\(K\)</span>-tree regression forest predicts</p>
+<p><span class="math display">\[
+\hat f_K(\mathbf x) = \av_k h(\mathbf x, \Theta_k) = \frac{1}{K} \sum_{k=1}^K h(\mathbf x, \Theta_k)
+\]</span></p>
+<div id="thm-convergence-rf-regression" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 4</strong></span> As the number of trees in the forest goes to infinity, almost surely,</p>
+<p><span class="math display">\[
+\E_{\mathbf X, Y}[(Y - \av_k h(\mathbf X, \Theta_k))^2] \to \E_{\mathbf X, Y}[(Y - \E_\Theta[h(\mathbf X, \Theta)])^2]
+\]</span></p>
+</div>
+<p>Thus averaging increasingly many randomized regression trees again converges to a stable limiting predictor <span class="math inline">\(f_{RF}(x) = \E_\Theta[h(x, \Theta)]\)</span>.</p>
+<p>We can also define</p>
+<p><span class="math display">\[
+\PE^*(\text{forest}) = \E_{\mathbf X, Y}[(Y - \E_{\Theta}[h(\mathbf X, \Theta)])^2]
+\]</span></p>
+<p>and average individual-tree errors</p>
+<p><span class="math display">\[
+\PE^*(\text{tree}) = \E_\Theta \E_{\mathbf X, Y}[(Y - h(\mathbf X, \Theta_k))^2]
+\]</span></p>
+<div id="thm-strength-correlation-bound-regression" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 5</strong></span> Assume that for all <span class="math inline">\(\Theta\)</span>, <span class="math inline">\(\E Y = \E_Xh(\mathbf X, \Theta)\)</span>. Then</p>
+<p><span class="math display">\[
+\PE^*(\text{forest}) \leq \overline{\rho} \PE^*(\text{tree})
+\]</span></p>
+<p>where <span class="math inline">\(\overline{\rho}\)</span> is the weighted correlation between the residuals <span class="math inline">\(Y-h(\mathbf X, \Theta)\)</span> and <span class="math inline">\(Y-h(\mathbf X, \Theta')\)</span> where <span class="math inline">\(\Theta, \Theta'\)</span> are independent.</p>
+</div>
+<p>So the classification and regression cases are similar. The generalization error of the forest is bounded by the correlation between the individual trees and their strength. If the trees are weakly correlated, then the ensemble can achieve good performance even if individual trees are weak.</p>
+</section>
+</section>
+<section id="random-forests-in-practice" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="random-forests-in-practice"><span class="header-section-number">6</span> Random Forests in Practice</h2>
+<p>The purpose of this section is to turn the mathematical description above into an algorithm. Rather than calling <code>sklearn.ensemble.RandomForestClassifier</code>, we will construct the essential pieces so that every line of code corresponds to an idea developed above.</p>
+<p>Following <span class="citation" data-cites="breimanRandomForests2001">Breiman (<a href="../references.html#ref-breimanRandomForests2001" role="doc-biblioref">2001</a>)</span>, let <span class="math inline">\(T= \{(x_i, y_i)\}_{i=1}^N, x_i\in \R^M\)</span>, where <span class="math inline">\(N\)</span> is the number of observations and <span class="math inline">\(M\)</span> the number of input variables. A random forest consists of tree classifiers <span class="math inline">\(h(\mathbf x, \Theta_k)\)</span>, where the random vectors <span class="math inline">\(\Theta_k\)</span> are independently generated. In Forest-RI construction, each tree receives a bootstrap sample of the training data, and at each node only <span class="math inline">\(F\)</span> randomly chosen variables are considered for splitting. The trees are then grown using CART.</p>
+<section id="constructing-the-data" class="level3" data-number="6.1">
+<h3 data-number="6.1" class="anchored" data-anchor-id="constructing-the-data"><span class="header-section-number">6.1</span> Constructing the data</h3>
+<p>For visualization, it is useful to work with only two predictors <span class="math inline">\(X = (X_1, X_2)\)</span>. We generate points uniformly inside a square and define the underlying class relationship by</p>
+<p><span class="math display">\[
+Y = \mathbf I\{X_1^2 + X_2^2 &gt; 2\}
+\]</span></p>
+<p>Thus observations near the center belong to class 0, while observations farther from the center belong to class 1. A small amount of label noise is added.</p>
+<div id="510afccd" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">6400</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">500</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> rng.uniform(<span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span>, size<span class="op">=</span>(N, <span class="dv">2</span>))</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> (X[:, <span class="dv">0</span>]<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> X[:, <span class="dv">1</span>]<span class="op">**</span><span class="dv">2</span> <span class="op">&gt;</span> <span class="dv">2</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># add a small amount of label noise</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>noise <span class="op">=</span> rng.random(N) <span class="op">&lt;</span> <span class="fl">0.08</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>y[noise] <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> y[noise]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="3e51ce8d" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">6</span>,<span class="dv">5</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>plt.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, s<span class="op">=</span><span class="dv">25</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"$X_1$"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"$X_2$"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Synthetic classification data"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04_files/figure-html/cell-3-output-1.png" width="527" height="450" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="building-a-single-tree" class="level3" data-number="6.2">
+<h3 data-number="6.2" class="anchored" data-anchor-id="building-a-single-tree"><span class="header-section-number">6.2</span> Building a single tree</h3>
+<p>A random forest is still built from decision trees. We therefore begin with CART. Suppose a node contains observations indexed by a region <span class="math inline">\(R\)</span>. For binary classification, let</p>
+<p><span class="math display">\[
+\hat p_k(R) = \frac{1}{N_R} \sum_{i: x_i\in R} \mathbf I\{y_i = k\}
+\]</span></p>
+<p>The Gini impurity is</p>
+<p><span class="math display">\[
+G(R) = 1 - \sum{k} \hat p_k(R)^2
+\]</span></p>
+<p>A completely pure node has <span class="math inline">\(G(R) = 0\)</span>. For a candidate split based on variable <span class="math inline">\(m\)</span> and threshold <span class="math inline">\(s\)</span>, the left and right child nodes are</p>
+<p><span class="math display">\[
+R_L(m, s) = \{x\in R: x_m \leq s\}, \quad R_R(m, s) = \{x\in R: x_m &gt; s\}
+\]</span></p>
+<p>The weighted impurity after the split is</p>
+<p><span class="math display">\[
+G_\text{split} = \frac{N_L}{N_R} G(R_L(m, s)) + \frac{N_R'}{N_R} G(R_R(m, s))
+\]</span></p>
+<p>where here <span class="math inline">\(N_R'\)</span> denotes the number of observations in the right child. Equivalently, we maximize the impurity reduction</p>
+<p><span class="math display">\[
+\Delta I = G(R) - G_\text{split}
+\]</span></p>
+<p>Since <span class="math inline">\(G(R)\)</span> is constant while examining candidate splits wihtin one node, minimizing <span class="math inline">\(G_\text{split}\)</span> is equivalent to maximizing <span class="math inline">\(\Delta I\)</span>.</p>
+<pre class="pseudo"><code>GINI(y)
+    count the observations in each class
+    convert the counts into class probabilities
+    return
+        1 - sum(probabilities^2)
+</code></pre>
+<div id="1acc466f" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gini(y):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Compute the Gini impurity of a set of labels y."""</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    classes, counts <span class="op">=</span> np.unique(y, return_counts<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    probabilities <span class="op">=</span> counts <span class="op">/</span> <span class="bu">len</span>(y)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span> <span class="op">-</span> np.<span class="bu">sum</span>(probabilities <span class="op">**</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>For example, consider a perfect mixed node,</p>
+<p><span class="math display">\[
+P(Y = 0) = P(Y = 1) = 0.5 \implies G(R) = 1 - (0.5^2 + 0.5^2) = 0.5
+\]</span></p>
+<p>A pure node has probabilites <span class="math inline">\((1, 0)\)</span> or <span class="math inline">\((0, 1)\)</span>, giving <span class="math inline">\(G(R) = 0\)</span>.</p>
+<p>Suppose the node currently contains the data <span class="math inline">\((\mathbf X, Y)\)</span>. For each possible variable <span class="math inline">\(m\)</span>, we consider candidate thresholds <span class="math inline">\(s\)</span>. For every candidate split we compute</p>
+<p><span class="math display">\[
+\frac{N_L}{N} G(y_L) + \frac{N_R}{N} G(y_R).
+\]</span></p>
+<p>The best split minimizes this quantity.</p>
+<pre class="pseudo"><code>BEST_SPLIT(X, y, candidates_features)
+    best_score = infty
+    for each feature m in candidates_features:
+        construct candidate thresholds
+        for each threshold s:
+            send observations with X_m &lt;= s to the left
+            send observations with X_m &gt; s to the right
+            
+            if either child is empty:
+                continue
+            
+            calculate Gini(left), Gini(right)
+            calculate weighted impurity
+
+            if weighted impurity &lt; best_score:
+                save:
+                    feature m, threshold s, left observations, right observations
+    return best split</code></pre>
+<div id="4bbaabff" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> best_split(X, y, candidate_features):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Find the best split for a node given candidate features."""</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="bu">len</span>(y)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    best_score <span class="op">=</span> np.inf</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    best_feature <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    best_threshold <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    best_left <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    best_right <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> feature <span class="kw">in</span> candidate_features:</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        values <span class="op">=</span> np.unique(X[:, feature])</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span>(values) <span class="op">&lt;=</span> <span class="dv">1</span>:</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span>  <span class="co"># No split possible</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        <span class="co"># thresholds halfway between adjacent observed values</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        thresholds <span class="op">=</span> (values[:<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> values[<span class="dv">1</span>:]) <span class="op">/</span> <span class="dv">2</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> threshold <span class="kw">in</span> thresholds:</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>            left <span class="op">=</span> X[:, feature] <span class="op">&lt;=</span> threshold</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>            right <span class="op">=</span> <span class="op">~</span>left</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> left.<span class="bu">sum</span>() <span class="op">==</span> <span class="dv">0</span> <span class="kw">or</span> right.<span class="bu">sum</span>() <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>                <span class="cf">continue</span>  <span class="co"># Skip empty splits</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>            score <span class="op">=</span> (left.<span class="bu">sum</span>() <span class="op">/</span> n) <span class="op">*</span> gini(y[left]) <span class="op">+</span> (right.<span class="bu">sum</span>() <span class="op">/</span> n) <span class="op">*</span> gini(y[right])</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> score <span class="op">&lt;</span> best_score:</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>                best_score <span class="op">=</span> score</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>                best_feature <span class="op">=</span> feature</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>                best_threshold <span class="op">=</span> threshold</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>                best_left <span class="op">=</span> left</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>                best_right <span class="op">=</span> right</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> best_feature, best_threshold, best_left, best_right</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Once the possible predictors have been specified, CART searches them and selects the best split according to its criterion.</p>
+</section>
+<section id="growing-the-tree-recursively" class="level3" data-number="6.3">
+<h3 data-number="6.3" class="anchored" data-anchor-id="growing-the-tree-recursively"><span class="header-section-number">6.3</span> Growing the tree recursively</h3>
+<p>A tree repeats the previous operation. At the root, <span class="math inline">\(R_0 = \R^M\)</span> contains all the training data. After one split,</p>
+<p><span class="math display">\[
+R_0 \to R_L, R_R
+\]</span></p>
+<p>Each child is then split again:</p>
+<p><span class="math display">\[
+\begin{aligned}
+R_L &amp;\to R_{LL}, R_{LR} \\
+R_R &amp;\to R_{RL}, R_{RR}
+\end{aligned}
+\]</span></p>
+<p>and the procedure continues recursively. We first need an object that stores a node.</p>
+<div id="750d5cbf" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Node:</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, feature<span class="op">=</span><span class="va">None</span>, threshold<span class="op">=</span><span class="va">None</span>, left<span class="op">=</span><span class="va">None</span>, right<span class="op">=</span><span class="va">None</span>, prediction<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.feature <span class="op">=</span> feature</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.threshold <span class="op">=</span> threshold</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.left <span class="op">=</span> left</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.right <span class="op">=</span> right</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.prediction <span class="op">=</span> prediction</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A terminal node needs only a prediction. For a classification, this is the majority class <span class="math inline">\(\hat c_R = \arg\max_k \hat p(k\mid R)\)</span>.</p>
+<div id="359f13db" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> majority_class(y):</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the majority class label from y."""</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    classes, counts <span class="op">=</span> np.unique(y, return_counts<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> classes[np.argmax(counts)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>For an ordinary CART tree, every node considers <span class="math inline">\(\{1, \ldots, M\}\)</span>. Forest-RI instead randomly samples <span class="math inline">\(\mathcal F\subseteq \{1, \ldots, M\}\)</span> of size <span class="math inline">\(F\)</span> at each node. CART then finds the best split within <span class="math inline">\(\mathcal F\)</span>. Thus the recursive algorithm becomes:</p>
+<pre class="pseudo"><code>GROW_TREE(X, y, F)
+    if node is pure
+        return leaf
+    if another stopping rule is reached
+        return leaf
+    randomly choose F predictors
+    among those F predictors:
+        find the best CART split
+
+    if no split exists:
+        return leaf
+    
+    recursively grow left and right children
+    return node</code></pre>
+<div id="72021774" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> grow_tree(X, y, F, rng, depth<span class="op">=</span><span class="dv">0</span>, max_depth<span class="op">=</span><span class="va">None</span>, min_samples_leaf<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Recursively grow a decision tree."""</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> min_samples_leaf <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        min_samples_leaf <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># stop if the node is pure</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(np.unique(y)) <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Node(prediction<span class="op">=</span>y[<span class="dv">0</span>])</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># depth restriction</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> max_depth <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="kw">and</span> depth <span class="op">&gt;=</span> max_depth:</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Node(prediction<span class="op">=</span>majority_class(y))</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># cannot split further</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(y) <span class="op">&lt;</span> <span class="dv">2</span><span class="op">*</span>min_samples_leaf:</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Node(prediction<span class="op">=</span>majority_class(y))</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    M <span class="op">=</span> X.shape[<span class="dv">1</span>]</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    F <span class="op">=</span> <span class="bu">min</span>(F, M) <span class="co"># Ensure F does not exceed number of features</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># random forest feature selection</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    candidate_features <span class="op">=</span> rng.choice(M, size<span class="op">=</span>F, replace<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># CART</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    feature, threshold, left, right <span class="op">=</span> best_split(X, y, candidate_features)</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> feature <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Node(prediction<span class="op">=</span>majority_class(y))</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> left.<span class="bu">sum</span>() <span class="op">&lt;</span> min_samples_leaf <span class="kw">or</span> right.<span class="bu">sum</span>() <span class="op">&lt;</span> min_samples_leaf:</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> Node(prediction<span class="op">=</span>majority_class(y))</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    left_child <span class="op">=</span> grow_tree(X[left], y[left], F, rng, depth <span class="op">+</span> <span class="dv">1</span>, max_depth, min_samples_leaf)</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>    right_child <span class="op">=</span> grow_tree(X[right], y[right], F, rng, depth <span class="op">+</span> <span class="dv">1</span>, max_depth, min_samples_leaf)</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Node(feature<span class="op">=</span>feature, threshold<span class="op">=</span>threshold, left<span class="op">=</span>left_child, right<span class="op">=</span>right_child)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Once a tree has been constructed, prediction itself contains no randomization. At a node with split <span class="math inline">\(x_m\leq s\)</span>, we move left if the condition holds and right otherwise.</p>
+<pre class="pseudo"><code>PREDICT_TREE(x, node)
+    if node is a leaf:
+        return its class
+    if x[node.feature] &lt;= node.threshold:
+        move to left child
+    else:
+        move to right child</code></pre>
+<div id="296e482c" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_tree_one(x, node):</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Predict the class label for a single observation x using the tree rooted at node."""</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> node.prediction <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> node.prediction</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> x[node.feature] <span class="op">&lt;=</span> node.threshold:</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> predict_tree_one(x, node.left)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> predict_tree_one(x, node.right)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>For multiple observations:</p>
+<div id="f17c80e4" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_tree(X, node):</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Predict class labels for multiple observations X using the tree rooted at node."""</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array([predict_tree_one(x, node) <span class="cf">for</span> x <span class="kw">in</span> X])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="from-one-tree-to-a-random-forest" class="level3" data-number="6.4">
+<h3 data-number="6.4" class="anchored" data-anchor-id="from-one-tree-to-a-random-forest"><span class="header-section-number">6.4</span> From one tree to a random forest</h3>
+<p>We now introduce the second source of randomness: boostrap sampling. For tree <span class="math inline">\(k\)</span>, we generate <span class="math inline">\(T_k\)</span> by sampling <span class="math inline">\(N\)</span> observations with replacement from <span class="math inline">\(T\)</span>.</p>
+<pre class="pseudo"><code>BOOTSTRAP(T)
+    sample N indicies from {1, ..., N} with replacement
+
+    observations selected at least once:
+        bootstrap trianing set
+    observations never selected:
+        out-of-bag observations
+    return both sets</code></pre>
+<div id="c547473d" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bootstrap_indices(N, rng):</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Generate bootstrap indices and out-of-bag indices."""</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    bootstrap <span class="op">=</span> rng.integers(<span class="dv">0</span>, N, size<span class="op">=</span>N)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    used <span class="op">=</span> np.zeros(N, dtype<span class="op">=</span><span class="bu">bool</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    used[np.unique(bootstrap)] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    oob <span class="op">=</span> np.where(<span class="op">~</span>used)[<span class="dv">0</span>]</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> bootstrap, oob</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Because sampling is with replacement, some observations occur multiple times, while others do not occur at all. For observation <span class="math inline">\(i\)</span>,</p>
+<p><span class="math display">\[
+\P(i \text{ is OOB}) = \left(1 - \frac{1}{N}\right)^N \to e^{-1} \approx 0.368
+\]</span></p>
+<p>Thus around 36.8% of the observations are available as internal test observations for each tree.</p>
+<p>Tree <span class="math inline">\(k\)</span> now has two random components:</p>
+<p><span class="math display">\[
+\Theta_k = \{\text{bootstrap sample, feature subsets at nodes}\}
+\]</span></p>
+<pre class="pseudo"><code>RANDOMIZED_TREE(T, F)
+    bootstrap a training sample T_k
+    begin at root
+    at every node:
+        randomly select F out of M predictors
+        among these F predictors, use CART to find the best split
+    continue recursively
+    return tree h(x, Theta_k)</code></pre>
+<div id="b88a5dd8" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>boostrap, oob <span class="op">=</span> bootstrap_indices(<span class="bu">len</span>(y), rng)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>tree <span class="op">=</span> grow_tree(X[boostrap], y[boostrap], F<span class="op">=</span><span class="dv">1</span>, rng<span class="op">=</span>rng)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><span class="citation" data-cites="breimanRandomForests2001">Breiman (<a href="../references.html#ref-breimanRandomForests2001" role="doc-biblioref">2001</a>)</span> random forest consists of iid randomized trees</p>
+<p><span class="math display">\[
+h(\mathbf x, \Theta_1), \ldots, h(\mathbf x, \Theta_K)
+\]</span></p>
+<pre class="pseudo"><code>RANDOM_FOREST(T, K, F)
+    forest = empty collection 
+    repeat k = 1, ..., K:
+        create boostrap sample T_k
+        construct randomized tree
+            h(x, Theta_k)
+        save tree
+    return forest</code></pre>
+<div id="3ddf04be" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> RandomForestScratch:</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, n_trees<span class="op">=</span><span class="dv">100</span>, F<span class="op">=</span><span class="dv">1</span>, max_depth<span class="op">=</span><span class="va">None</span>, min_samples_leaf<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span><span class="dv">6400</span>):</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.n_trees <span class="op">=</span> n_trees</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.F <span class="op">=</span> F</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.max_depth <span class="op">=</span> max_depth</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.min_samples_leaf <span class="op">=</span> min_samples_leaf</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.rng <span class="op">=</span> np.random.default_rng(random_state)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.trees <span class="op">=</span> []</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.oob_indices <span class="op">=</span> []</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> fit(<span class="va">self</span>, X, y):</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.trees <span class="op">=</span> []</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.oob_indices <span class="op">=</span> []</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>        N <span class="op">=</span> <span class="bu">len</span>(y)</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="va">self</span>.n_trees):</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>            bootstrap, oob <span class="op">=</span> bootstrap_indices(N, <span class="va">self</span>.rng)</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>            tree <span class="op">=</span> grow_tree(X[bootstrap], y[bootstrap], F<span class="op">=</span><span class="va">self</span>.F, rng<span class="op">=</span><span class="va">self</span>.rng, max_depth<span class="op">=</span><span class="va">self</span>.max_depth, min_samples_leaf<span class="op">=</span><span class="va">self</span>.min_samples_leaf)</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.trees.append(tree)</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.oob_indices.append(oob)</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="forest-prediction-and-oob-evaluation" class="level3" data-number="6.5">
+<h3 data-number="6.5" class="anchored" data-anchor-id="forest-prediction-and-oob-evaluation"><span class="header-section-number">6.5</span> Forest prediction and OOB evaluation</h3>
+<p>For classification, each tree casts one vote. For observation <span class="math inline">\(x\)</span>, define</p>
+<p><span class="math display">\[
+V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
+\]</span></p>
+<p>The random-forest prediction is</p>
+<p><span class="math display">\[
+\hat y(x) = \arg\max_j V_j(x)
+\]</span></p>
+<pre class="pseudo"><code>PREDICT_FOREST(x)
+    obtain prediction from every tree
+    count votes for every class
+    return class receiving the most votes</code></pre>
+<div id="df7aece1" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> RandomForestScratch:</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, n_trees<span class="op">=</span><span class="dv">100</span>, F<span class="op">=</span><span class="dv">1</span>, max_depth<span class="op">=</span><span class="va">None</span>, min_samples_leaf<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span><span class="dv">6400</span>):</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.n_trees <span class="op">=</span> n_trees</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.F <span class="op">=</span> F</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.max_depth <span class="op">=</span> max_depth</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.min_samples_leaf <span class="op">=</span> min_samples_leaf</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.rng <span class="op">=</span> np.random.default_rng(random_state)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.trees <span class="op">=</span> []</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.oob_indices <span class="op">=</span> []</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> fit(<span class="va">self</span>, X, y):</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.trees <span class="op">=</span> []</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.oob_indices <span class="op">=</span> []</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>        N <span class="op">=</span> <span class="bu">len</span>(y)</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="va">self</span>.n_trees):</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>            bootstrap, oob <span class="op">=</span> bootstrap_indices(N, <span class="va">self</span>.rng)</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>            tree <span class="op">=</span> grow_tree(X[bootstrap], y[bootstrap], F<span class="op">=</span><span class="va">self</span>.F, rng<span class="op">=</span><span class="va">self</span>.rng, max_depth<span class="op">=</span><span class="va">self</span>.max_depth, min_samples_leaf<span class="op">=</span><span class="va">self</span>.min_samples_leaf)</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.trees.append(tree)</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.oob_indices.append(oob)</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> predict(<span class="va">self</span>, X):</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>        all_predictions <span class="op">=</span> np.array([predict_tree(X, tree) <span class="cf">for</span> tree <span class="kw">in</span> <span class="va">self</span>.trees])</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>        predictions <span class="op">=</span> []</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(X.shape[<span class="dv">0</span>]):</span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>            values, counts <span class="op">=</span> np.unique(all_predictions[:, i], return_counts<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>            predictions.append(values[np.argmax(counts)])</span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.array(predictions)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We can now train the model.</p>
+<div id="7ddb89a0" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>forest <span class="op">=</span> RandomForestScratch(n_trees<span class="op">=</span><span class="dv">200</span>, F<span class="op">=</span><span class="dv">1</span>, max_depth<span class="op">=</span><span class="va">None</span>, min_samples_leaf<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span><span class="dv">6400</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>forest.fit(X, y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="14">
+<pre><code>&lt;__main__.RandomForestScratch at 0x16c0f2a50&gt;</code></pre>
+</div>
+</div>
+<p>Here <span class="math inline">\(M=2, F=1\)</span>, so each split allowed to examine only one randomly selected predictor. This is a very strong randomization, but it is sufficient to produce a good forest.</p>
+<p>The boostrap mechanism gives us an additional benefit. For observation <span class="math inline">\(i\)</span>, define</p>
+<p><span class="math display">\[
+\mathcal K_i = \{k: i \not \in T_k\}.
+\]</span></p>
+<p>Its OOB prediction uses only trees that did not train on observation <span class="math inline">\(i\)</span>:</p>
+<p><span class="math display">\[
+\hat y_i^\text{OOB} = \arg\max_j \sum_{k\in \mathcal K_i} \mathbf I\{h(x_i, \Theta_k) = j\}
+\]</span></p>
+<div id="67608fd1" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> oob_predict(forest, X):</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Compute OOB predictions for each observation."""</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span><span class="bu">len</span>(X)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    predictions <span class="op">=</span> np.full(N, np.nan)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(N):</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>        votes <span class="op">=</span> []</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> tree, oob <span class="kw">in</span> <span class="bu">zip</span>(forest.trees, forest.oob_indices):</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> i <span class="kw">in</span> oob:</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>                votes.append(predict_tree_one(X[i], tree))</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span>(votes) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>            values, counts <span class="op">=</span> np.unique(votes, return_counts <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>            predictions[i] <span class="op">=</span> values[np.argmax(counts)]</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> predictions</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="f4e57e36" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>oob_pred <span class="op">=</span> oob_predict(forest, X)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>valid <span class="op">=</span> <span class="op">~</span>np.isnan(oob_pred)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>oob_accuracy <span class="op">=</span> np.mean(oob_pred[valid] <span class="op">==</span> y[valid])</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"OOB accuracy: </span><span class="sc">{</span>oob_accuracy<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OOB accuracy: 0.8580</code></pre>
+</div>
+</div>
+</section>
+<section id="visualizing-the-prediction-relationship" class="level3" data-number="6.6">
+<h3 data-number="6.6" class="anchored" data-anchor-id="visualizing-the-prediction-relationship"><span class="header-section-number">6.6</span> Visualizing the prediction relationship</h3>
+<p>We want to see the learned function <span class="math inline">\(x\mapsto \hat y(x)\)</span>. Because our predictors are two-dimensional, we can visualize the decision boundary. We create a grid of points over the feature space and predict the class for each point.</p>
+<div id="5490c965" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_grid(X, points <span class="op">=</span> <span class="dv">250</span>):</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Create a grid of points over the feature space."""</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    x1 <span class="op">=</span> np.linspace(X[:, <span class="dv">0</span>].<span class="bu">min</span>() <span class="op">-</span> <span class="fl">0.2</span>, X[:, <span class="dv">0</span>].<span class="bu">max</span>() <span class="op">+</span> <span class="fl">0.2</span>, points)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    x2 <span class="op">=</span> np.linspace(X[:, <span class="dv">1</span>].<span class="bu">min</span>() <span class="op">-</span> <span class="fl">0.2</span>, X[:, <span class="dv">1</span>].<span class="bu">max</span>() <span class="op">+</span> <span class="fl">0.2</span>, points)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    xx1, xx2 <span class="op">=</span> np.meshgrid(x1, x2)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    grid <span class="op">=</span> np.column_stack([xx1.ravel(), xx2.ravel()])</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> xx1, xx2, grid</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>For every grid point <span class="math inline">\(x\)</span>, we evaluate <span class="math inline">\(\hat y(x)\)</span> and visualize the decision boundary.</p>
+<blockquote class="blockquote">
+<p><strong>One CART tree</strong></p>
+</blockquote>
+<p>First fit one CART tree using both features.</p>
+<div id="7a93a701" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>single_tree <span class="op">=</span> np.random.default_rng(<span class="dv">6400</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>single_tree <span class="op">=</span> grow_tree(X, y, F<span class="op">=</span><span class="dv">2</span>, rng<span class="op">=</span>single_tree, max_depth<span class="op">=</span><span class="va">None</span>, min_samples_leaf<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Here we use <span class="math inline">\(F=M=2\)</span>, so this is a standard CART tree.</p>
+<div id="0a076e72" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>xx1, xx2, grid <span class="op">=</span> make_grid(X)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>tree_prediction <span class="op">=</span> predict_tree(grid, single_tree).reshape(xx1.shape)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>))</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>plt.contourf(xx1, xx2, tree_prediction, alpha<span class="op">=</span><span class="fl">0.25</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>plt.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, s<span class="op">=</span><span class="dv">25</span>)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"$X_1$"</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"$X_2$"</span>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Decision boundary of a single CART tree"</span>)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04_files/figure-html/cell-20-output-1.png" width="601" height="450" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><em>One randomized tree</em></p>
+</blockquote>
+<p>Now we look at just one tree from the forest.</p>
+<div id="8d2b730c" class="cell" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>random_tree <span class="op">=</span> forest.trees[<span class="dv">0</span>]</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>random_prediction <span class="op">=</span> predict_tree(grid, random_tree).reshape(xx1.shape)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>))</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>plt.contourf(xx1, xx2, random_prediction, alpha<span class="op">=</span><span class="fl">0.25</span>)</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>plt.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, s<span class="op">=</span><span class="dv">25</span>)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"$X_1$"</span>)</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"$X_2$"</span>)</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Decision boundary of a single randomized tree"</span>)</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04_files/figure-html/cell-21-output-1.png" width="601" height="450" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><em>The complete random forest</em></p>
+</blockquote>
+<p>Now predict each grid point using all <span class="math inline">\(K\)</span> trees.</p>
+<div id="918198df" class="cell" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>forest_prediction <span class="op">=</span> forest.predict(grid).reshape(xx1.shape)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>))</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>plt.contourf(xx1, xx2, forest_prediction, alpha<span class="op">=</span><span class="fl">0.25</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>plt.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, s<span class="op">=</span><span class="dv">25</span>)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"$X_1$"</span>)</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"$X_2$"</span>)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Decision boundary of the random forest"</span>)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04_files/figure-html/cell-22-output-1.png" width="601" height="450" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Class-vote probabilty</strong></p>
+</blockquote>
+<p>We can calculate the proportion of trees voting for class 1 at each grid point. This gives us a probability estimate.</p>
+<p><span class="math display">\[
+\hat p_{RF}(1\mid x) = \frac{1}{K} \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = 1\}
+\]</span></p>
+<div id="c7e518d9" class="cell" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_vote_probability(forest, X):</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Compute the proportion of trees voting for class 1."""</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    votes <span class="op">=</span> np.array([predict_tree(X, tree) <span class="cf">for</span> tree <span class="kw">in</span> forest.trees])</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.mean(votes <span class="op">==</span> <span class="dv">1</span>, axis<span class="op">=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Compute it over the grid:</p>
+<div id="aa940fbe" class="cell" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>probability <span class="op">=</span> predict_vote_probability(forest, grid).reshape(xx1.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Plot:</p>
+<div id="1636daac" class="cell" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>))</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>contour <span class="op">=</span> plt.contourf(xx1, xx2, probability, levels<span class="op">=</span>np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">21</span>))</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>plt.contour(xx1, xx2, probability, levels<span class="op">=</span>[<span class="fl">0.5</span>])</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>plt.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, s<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>plt.colorbar(contour, label<span class="op">=</span><span class="st">"Fraction of trees voting for class 1"</span>)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"$X_1$"</span>)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"$X_2$"</span>)</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Random forest vote surface"</span>)</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04_files/figure-html/cell-25-output-1.png" width="600" height="450" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><em>Visualizing the role of the number of trees</em></p>
+</blockquote>
+<div id="af5d218f" class="cell" data-execution_count="25">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>tree_counts <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">200</span>]</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>oob_errors <span class="op">=</span> []</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> K <span class="kw">in</span> tree_counts:</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> RandomForestScratch(n_trees<span class="op">=</span>K, F<span class="op">=</span><span class="dv">1</span>, min_samples_leaf<span class="op">=</span><span class="dv">2</span>, random_state<span class="op">=</span><span class="dv">6400</span>)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>    model.fit(X, y)</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> oob_predict(model, X)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>    valid <span class="op">=</span> <span class="op">~</span>np.isnan(pred)</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>    error <span class="op">=</span> np.mean(pred[valid] <span class="op">!=</span> y[valid])</span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>    oob_errors.append(error)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Plot:</p>
+<div id="b1113dda" class="cell" data-execution_count="26">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>))</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>plt.plot(tree_counts, oob_errors, <span class="st">'o-'</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Number of trees"</span>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"OOB error"</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Random forest performance vs. number of trees"</span>)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="04_files/figure-html/cell-27-output-1.png" width="598" height="451" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The expected qualitative behavior is <span class="math inline">\(\PE_K\to \PE^*\)</span>. We can estimate the boudn directly in this case.</p>
+<div id="b4d14910" class="cell" data-execution_count="27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_rf_bound(forest, X, y):</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Estimate the strength-correlation bound for the random forest."""</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    K <span class="op">=</span> <span class="bu">len</span>(forest.trees)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span> <span class="bu">len</span>(y)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># store each tree's oob predictions</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>    oob_predictions <span class="op">=</span> np.full((K, N), np.nan)</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k, (tree, oob) <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">zip</span>(forest.trees, forest.oob_indices)):</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>        oob_predictions[k, oob] <span class="op">=</span> predict_tree(X[oob], tree)</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># oob vote probability of correct class</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>    correct <span class="op">=</span> np.full((K, N), np.nan)</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(K):</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>        mask <span class="op">=</span> <span class="op">~</span>np.isnan(oob_predictions[k])</span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>        correct[k, mask] <span class="op">=</span> (oob_predictions[k, mask] <span class="op">==</span> y[mask])</span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>    n_oob <span class="op">=</span> np.<span class="bu">sum</span>(<span class="op">~</span>np.isnan(correct), axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>    p_correct <span class="op">=</span> np.nansum(correct, axis<span class="op">=</span><span class="dv">0</span>) <span class="op">/</span> n_oob</span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># binary class margin </span></span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>    margins <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> p_correct <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># strength</span></span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>    s <span class="op">=</span> np.mean(margins)</span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># variance of margins</span></span>
+<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>    var_margin <span class="op">=</span> np.mean(margins <span class="op">**</span> <span class="dv">2</span>) <span class="op">-</span> s <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># estimate E[sd(Theta)]</span></span>
+<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a>    tree_sd <span class="op">=</span> []</span>
+<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(K):</span>
+<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a>        mask <span class="op">=</span> <span class="op">~</span>np.isnan(oob_predictions[k])</span>
+<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a>        tree_correct <span class="op">=</span> oob_predictions[k, mask] <span class="op">==</span> y[mask]</span>
+<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a>        p1 <span class="op">=</span> np.mean(tree_correct)</span>
+<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a>        <span class="co"># binary classification </span></span>
+<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a>        p2 <span class="op">=</span> <span class="dv">1</span><span class="op">-</span> p1</span>
+<span id="cb37-35"><a href="#cb37-35" aria-hidden="true" tabindex="-1"></a>        sd_k <span class="op">=</span> np.sqrt(p1<span class="op">+</span>p2 <span class="op">-</span> (p1 <span class="op">-</span> p2) <span class="op">**</span> <span class="dv">2</span>)</span>
+<span id="cb37-36"><a href="#cb37-36" aria-hidden="true" tabindex="-1"></a>        tree_sd.append(sd_k)</span>
+<span id="cb37-37"><a href="#cb37-37" aria-hidden="true" tabindex="-1"></a>    mean_sd <span class="op">=</span> np.mean(tree_sd)</span>
+<span id="cb37-38"><a href="#cb37-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-39"><a href="#cb37-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># average correlation</span></span>
+<span id="cb37-40"><a href="#cb37-40" aria-hidden="true" tabindex="-1"></a>    rho_bar <span class="op">=</span> var_margin<span class="op">/</span>mean_sd <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb37-41"><a href="#cb37-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-42"><a href="#cb37-42" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Breiman's bound</span></span>
+<span id="cb37-43"><a href="#cb37-43" aria-hidden="true" tabindex="-1"></a>    chebyshev_bound <span class="op">=</span> var_margin <span class="op">/</span> mean_sd <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb37-44"><a href="#cb37-44" aria-hidden="true" tabindex="-1"></a>    theorem_bound <span class="op">=</span> rho_bar <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> s <span class="op">**</span> <span class="dv">2</span>) <span class="op">/</span> s <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb37-45"><a href="#cb37-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-46"><a href="#cb37-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb37-47"><a href="#cb37-47" aria-hidden="true" tabindex="-1"></a>        <span class="st">"strength"</span>: s, </span>
+<span id="cb37-48"><a href="#cb37-48" aria-hidden="true" tabindex="-1"></a>        <span class="st">"margin_variance"</span>: var_margin,</span>
+<span id="cb37-49"><a href="#cb37-49" aria-hidden="true" tabindex="-1"></a>        <span class="st">"mean_tree_sd"</span>: mean_sd,</span>
+<span id="cb37-50"><a href="#cb37-50" aria-hidden="true" tabindex="-1"></a>        <span class="st">"rho_bar"</span>: rho_bar,</span>
+<span id="cb37-51"><a href="#cb37-51" aria-hidden="true" tabindex="-1"></a>        <span class="st">"chebyshev_bound"</span>: chebyshev_bound,</span>
+<span id="cb37-52"><a href="#cb37-52" aria-hidden="true" tabindex="-1"></a>        <span class="st">"theorem_bound"</span>: theorem_bound</span>
+<span id="cb37-53"><a href="#cb37-53" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="1b9c44c8" class="cell" data-execution_count="28">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> estimate_rf_bound(forest, X, y)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, value <span class="kw">in</span> results.items():</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>value<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>strength: 0.5420
+margin_variance: 0.2866
+mean_tree_sd: 0.8379
+rho_bar: 0.4082
+chebyshev_bound: 0.4082
+theorem_bound: 0.9814</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="considerations-for-using-random-forests" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="considerations-for-using-random-forests"><span class="header-section-number">7</span> Considerations for using Random Forests</h2>
+<section id="data-assumptions" class="level3" data-number="7.1">
+<h3 data-number="7.1" class="anchored" data-anchor-id="data-assumptions"><span class="header-section-number">7.1</span> Data assumptions</h3>
+<p>For many problems, we sometimes assume that the training set is independently drawn from the distribution of the random vector <span class="math inline">\((\mathbf X, Y)\)</span>. Therefore, although random forests impose few assumptions about the shape of relationship <span class="math inline">\(Y = f(\mathbf X) + \epsilon\)</span>, they still depend on the predictive assumption that</p>
+<p><span class="math display">\[
+P_\text{train}(\mathbf X, Y) \approx P_\text{future}(\mathbf X, Y)
+\]</span></p>
+<p>If the future population differs significantly from the training data, the model may not generalize well.</p>
+</section>
+<section id="randomization-must-preserve-tree-strength" class="level3" data-number="7.2">
+<h3 data-number="7.2" class="anchored" data-anchor-id="randomization-must-preserve-tree-strength"><span class="header-section-number">7.2</span> Randomization must preserve tree strength</h3>
+<p>Recall that</p>
+<p><span class="math display">\[
+\PE^* \leq \overline{\rho} \frac{1-s^2}{s^2}
+\]</span></p>
+<p>where <span class="math inline">\(s\)</span> is the strength of the classifiers and <span class="math inline">\(\overline{\rho}\)</span> measures their average correlation. If the randomization is too strong, the individual trees may become too weak, leading to poor ensemble performance. Conversely, if the randomization is too weak, the trees may be highly correlated, which can also degrade performance. Therefore, it is crucial to balance the level of randomization to maintain both tree strength and low correlation.</p>
+</section>
+<section id="the-number-of-trees" class="level3" data-number="7.3">
+<h3 data-number="7.3" class="anchored" data-anchor-id="the-number-of-trees"><span class="header-section-number">7.3</span> The number of trees</h3>
+<p>Another concern is the number of trees <span class="math inline">\(K\)</span>. <span class="citation" data-cites="breimanRandomForests2001">Breiman (<a href="../references.html#ref-breimanRandomForests2001" role="doc-biblioref">2001</a>)</span> shows that, with iid random vectors <span class="math inline">\(\Theta_k\)</span>, the forest vote approaches a limiting vote distribution as <span class="math inline">\(K\to \infty\)</span>. Thus increasing <span class="math inline">\(K\)</span> mainly reduces the MC variability of the ensemble approximation</p>
+<p><span class="math display">\[
+\frac{1}{K} \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\} \to P_\Theta(h(x, \Theta) = j)
+\]</span></p>
+<p>So a larger forest means more averaging, whereas a deeper tree means a more complicated individual partition. In practice, <span class="math inline">\(K\)</span> is often chosen to be large enough that the OOB error stabilizes, which can be monitored during training.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-amitShapeQuantizationRecognition1997" class="csl-entry" role="listitem">
+Amit, Yali, and Donald Geman. 1997. <span>“Shape Quantization and Recognition with Randomized Trees.”</span> <em>Neural Computation</em> 9 (7): 1545–88. <a href="https://doi.org/10.1162/neco.1997.9.7.1545">https://doi.org/10.1162/neco.1997.9.7.1545</a>.
+</div>
+<div id="ref-breimanBaggingPredictors1996" class="csl-entry" role="listitem">
+Breiman, Leo. 1996. <span>“Bagging Predictors.”</span> <em>Machine Learning</em> 24 (2): 123–40. <a href="https://doi.org/10.1007/BF00058655">https://doi.org/10.1007/BF00058655</a>.
+</div>
+<div id="ref-breimanRandomForests2001" class="csl-entry" role="listitem">
+Breiman, Leo. 2001. <span>“Random Forests.”</span> <em>Machine Learning</em> 45 (1): 5–32. <a href="https://doi.org/10.1023/A:1010933404324">https://doi.org/10.1023/A:1010933404324</a>.
+</div>
+<div id="ref-breimanClassificationRegressionTrees2017" class="csl-entry" role="listitem">
+Breiman, Leo, Jerome H. Friedman, Richard A. Olshen, and Charles J. Stone. 2017. <em>Classification and Regression Trees</em>. 1st ed. Routledge. <a href="https://doi.org/10.1201/9781315139470">https://doi.org/10.1201/9781315139470</a>.
+</div>
+<div id="ref-dietterichExperimentalComparisonThree2000" class="csl-entry" role="listitem">
+Dietterich, Thomas G. 2000. <span>“An Experimental Comparison of Three Methods for Constructing Ensembles of Decision Trees: Bagging, Boosting, and Randomization.”</span> <em>Machine Learning</em> 40 (2): 139–57. <a href="https://doi.org/10.1023/A:1007607513941">https://doi.org/10.1023/A:1007607513941</a>.
+</div>
+<div id="ref-freundDecisiontheoreticGeneralizationOnline1997" class="csl-entry" role="listitem">
+Freund, Yoav, and Robert E Schapire. 1997. <span>“A Decision-Theoretic Generalization of on-Line Learning and an Application to Boosting.”</span> <em>Journal of Computer and System Sciences</em> 55 (1): 119–39. <a href="https://doi.org/10.1006/jcss.1997.1504">https://doi.org/10.1006/jcss.1997.1504</a>.
+</div>
+<div id="ref-hoRandomSubspaceMethod1998" class="csl-entry" role="listitem">
+Ho, Tin Kam. 1998. <span>“The Random Subspace Method for Constructing Decision Forests.”</span> <em>IEEE Transactions on Pattern Analysis and Machine Intelligence</em> 20 (8): 832–44. <a href="https://doi.org/10.1109/34.709601">https://doi.org/10.1109/34.709601</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../weeks/03.html" class="pagination-link" aria-label="Accumulated Local Effects Plots">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../references.html" class="pagination-link" aria-label="References">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

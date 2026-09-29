@@ -53,7 +53,7 @@ div.csl-indent {
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./appendices/ols-cv-independence.html" rel="next">
-<link href="./weeks/03.html" rel="prev">
+<link href="./weeks/04.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -116,7 +116,13 @@ window.MathJax = {
       var: "\\operatorname{var}",
       indep: "\\perp\\!\\!\\!\\perp",
       PD: "\\operatorname{PD}",
-      ALE: "\\operatorname{ALE}"
+      ALE: "\\operatorname{ALE}",
+      mg: "\\operatorname{mg}",
+      av: "\\operatorname{av}",
+      PE: "\\operatorname{PE}",
+      mr: "\\operatorname{mr}",
+      rmg: "\\operatorname{rmg}",
+      sd: "\\operatorname{sd}"
     }
   }
 };
@@ -193,6 +199,12 @@ window.MathJax = {
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./weeks/04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Are the Forests really Random?</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -249,6 +261,11 @@ window.MathJax = {
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-amitShapeQuantizationRecognition1997" class="csl-entry" role="listitem">
+Amit, Yali, and Donald Geman. 1997. <span>“Shape Quantization and
+Recognition with Randomized Trees.”</span> <em>Neural Computation</em> 9
+(7): 1545–88. <a href="https://doi.org/10.1162/neco.1997.9.7.1545">https://doi.org/10.1162/neco.1997.9.7.1545</a>.
+</div>
 <div id="ref-apleyVisualizingEffectsPredictor2020" class="csl-entry" role="listitem">
 Apley, Daniel W., and Jingyu Zhu. 2020. <span>“Visualizing the Effects
 of Predictor Variables in Black Box Supervised Learning Models.”</span>
@@ -276,6 +293,24 @@ of the Variance of <span class="nocase">K-fold</span>
 Cross-Validation.”</span> <em>Journal of Machine Learning Research</em>
 5 (Sep): 1089–105.
 </div>
+<div id="ref-breimanBaggingPredictors1996" class="csl-entry" role="listitem">
+Breiman, Leo. 1996. <span>“Bagging Predictors.”</span> <em>Machine
+Learning</em> 24 (2): 123–40. <a href="https://doi.org/10.1007/BF00058655">https://doi.org/10.1007/BF00058655</a>.
+</div>
+<div id="ref-breimanRandomForests2001" class="csl-entry" role="listitem">
+Breiman, Leo. 2001. <span>“Random Forests.”</span> <em>Machine
+Learning</em> 45 (1): 5–32. <a href="https://doi.org/10.1023/A:1010933404324">https://doi.org/10.1023/A:1010933404324</a>.
+</div>
+<div id="ref-breimanClassificationRegressionTrees2017" class="csl-entry" role="listitem">
+Breiman, Leo, Jerome H. Friedman, Richard A. Olshen, and Charles J.
+Stone. 2017. <em>Classification and Regression Trees</em>. 1st ed.
+Routledge. <a href="https://doi.org/10.1201/9781315139470">https://doi.org/10.1201/9781315139470</a>.
+</div>
+<div id="ref-dietterichExperimentalComparisonThree2000" class="csl-entry" role="listitem">
+Dietterich, Thomas G. 2000. <span>“An Experimental Comparison of Three
+Methods for Constructing Ensembles of Decision Trees: Bagging, Boosting,
+and Randomization.”</span> <em>Machine Learning</em> 40 (2): 139–57. <a href="https://doi.org/10.1023/A:1007607513941">https://doi.org/10.1023/A:1007607513941</a>.
+</div>
 <div id="ref-efronHowBiasedApparent1986" class="csl-entry" role="listitem">
 Efron, Bradley. 1986. <span>“How Biased Is the Apparent Error Rate of a
 Prediction Rule?”</span> <em>Journal of the American Statistical
@@ -285,6 +320,17 @@ Association</em> 81 (394): 461–70. <a href="https://doi.org/10.2307/2289236">h
 Efron, Bradley, and Gail Gong. 1983. <span>“A Leisurely Look at the
 Bootstrap, the Jackknife, and Cross-Validation.”</span> <em>American
 Statistician</em> 37 (1): 36–48. <a href="https://doi.org/10.1080/00031305.1983.10483087">https://doi.org/10.1080/00031305.1983.10483087</a>.
+</div>
+<div id="ref-freundDecisiontheoreticGeneralizationOnline1997" class="csl-entry" role="listitem">
+Freund, Yoav, and Robert E Schapire. 1997. <span>“A Decision-Theoretic
+Generalization of on-Line Learning and an Application to
+Boosting.”</span> <em>Journal of Computer and System Sciences</em> 55
+(1): 119–39. <a href="https://doi.org/10.1006/jcss.1997.1504">https://doi.org/10.1006/jcss.1997.1504</a>.
+</div>
+<div id="ref-hoRandomSubspaceMethod1998" class="csl-entry" role="listitem">
+Ho, Tin Kam. 1998. <span>“The Random Subspace Method for Constructing
+Decision Forests.”</span> <em>IEEE Transactions on Pattern Analysis and
+Machine Intelligence</em> 20 (8): 832–44. <a href="https://doi.org/10.1109/34.709601">https://doi.org/10.1109/34.709601</a>.
 </div>
 <div id="ref-molnarInterpretableMachineLearning" class="csl-entry" role="listitem">
 Molnar, Christoph. n.d. <em>Interpretable Machine Learning</em>.
@@ -700,8 +746,8 @@ of Machine Learning Algorithms</em>. arXiv:2411.12030. arXiv. <a href="https://d
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./weeks/03.html" class="pagination-link" aria-label="Accumulated Local Effects Plots">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></span>
+      <a href="./weeks/04.html" class="pagination-link" aria-label="Are the Forests really Random?">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Are the Forests really Random?</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
