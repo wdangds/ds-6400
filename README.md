@@ -104,6 +104,14 @@ tail -f simulation-progress.log
 
 The extended simulation cache filename includes the sample-size grid. If you change the second `SAMPLE_SIZES` list in `weeks/01.qmd`, Quarto will request a new combined CSV instead of silently reusing the old one. Existing per-setting cache files may still be reused for sample sizes already computed.
 
+Week 5's nested cross-validation, random-forest complexity study, tuning-budget search, and final fitted models save checkpoints under `simulation-cache/week05/`. Once each computation has completed, later renders load its CSV or compressed model checkpoint instead of fitting the models again. Final models are checkpointed separately, so an interrupted run can resume with the models that already finished. To deliberately recompute and replace all Week 5 study caches, run:
+
+```bash
+REFRESH_WEEK05_STUDIES=1 quarto render weeks/05.qmd
+```
+
+If the study logic or search spaces change, either use that refresh command or increment `WEEK05_CACHE_VERSION` near the beginning of `weeks/05.qmd`.
+
 ## Draft Pages
 
 Add this to a chapter's YAML front matter to publish it as a placeholder:

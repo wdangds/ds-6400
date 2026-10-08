@@ -11,3 +11,5 @@ dependencies:
   - matplotlib
   - scipy
   - scikit-learn
+  - statsmodels
+  - cloudpickle

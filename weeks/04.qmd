@@ -1286,3 +1286,5 @@ $$
 
 So a larger forest means more averaging, whereas a deeper tree means a more complicated individual partition. In practice, $K$ is often chosen to be large enough that the OOB error stabilizes, which can be monitored during training.
 
+
+

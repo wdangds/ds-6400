@@ -87,7 +87,7 @@ div.csl-indent {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../references.html" rel="next">
+<link href="../weeks/05.html" rel="next">
 <link href="../weeks/03.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -267,6 +267,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="../weeks/04.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Are the Forests really Random?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Comparison Under Complexity and Tuning Constraints</span></span></a>
   </div>
 </li>
       </ul>
@@ -822,7 +828,7 @@ VI_m = \Err_{\text{OOB}}^{\text{perm(m)}}- \Err_{\text{OOB}}
 Y = \mathbf I\{X_1^2 + X_2^2 &gt; 2\}
 \]</span></p>
 <p>Thus observations near the center belong to class 0, while observations farther from the center belong to class 1. A small amount of label noise is added.</p>
-<div id="510afccd" class="cell" data-execution_count="1">
+<div id="bd1f80f3" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -838,7 +844,7 @@ Y = \mathbf I\{X_1^2 + X_2^2 &gt; 2\}
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>noise <span class="op">=</span> rng.random(N) <span class="op">&lt;</span> <span class="fl">0.08</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>y[noise] <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> y[noise]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="3e51ce8d" class="cell" data-execution_count="2">
+<div id="1428fa86" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">6</span>,<span class="dv">5</span>))</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>plt.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, s<span class="op">=</span><span class="dv">25</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"$X_1$"</span>)</span>
@@ -883,7 +889,7 @@ G_\text{split} = \frac{N_L}{N_R} G(R_L(m, s)) + \frac{N_R'}{N_R} G(R_R(m, s))
     return
         1 - sum(probabilities^2)
 </code></pre>
-<div id="1acc466f" class="cell" data-execution_count="3">
+<div id="5f1b8564" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gini(y):</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Compute the Gini impurity of a set of labels y."""</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    classes, counts <span class="op">=</span> np.unique(y, return_counts<span class="op">=</span><span class="va">True</span>)</span>
@@ -918,7 +924,7 @@ P(Y = 0) = P(Y = 1) = 0.5 \implies G(R) = 1 - (0.5^2 + 0.5^2) = 0.5
                 save:
                     feature m, threshold s, left observations, right observations
     return best split</code></pre>
-<div id="4bbaabff" class="cell" data-execution_count="4">
+<div id="2b137ffc" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> best_split(X, y, candidate_features):</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Find the best split for a node given candidate features."""</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>     </span>
@@ -972,7 +978,7 @@ R_R &amp;\to R_{RL}, R_{RR}
 \end{aligned}
 \]</span></p>
 <p>and the procedure continues recursively. We first need an object that stores a node.</p>
-<div id="750d5cbf" class="cell" data-execution_count="5">
+<div id="1d6d179b" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Node:</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, feature<span class="op">=</span><span class="va">None</span>, threshold<span class="op">=</span><span class="va">None</span>, left<span class="op">=</span><span class="va">None</span>, right<span class="op">=</span><span class="va">None</span>, prediction<span class="op">=</span><span class="va">None</span>):</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.feature <span class="op">=</span> feature</span>
@@ -982,7 +988,7 @@ R_R &amp;\to R_{RL}, R_{RR}
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.prediction <span class="op">=</span> prediction</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>A terminal node needs only a prediction. For a classification, this is the majority class <span class="math inline">\(\hat c_R = \arg\max_k \hat p(k\mid R)\)</span>.</p>
-<div id="359f13db" class="cell" data-execution_count="6">
+<div id="3b76f95d" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> majority_class(y):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Return the majority class label from y."""</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    classes, counts <span class="op">=</span> np.unique(y, return_counts<span class="op">=</span><span class="va">True</span>)</span>
@@ -1003,7 +1009,7 @@ R_R &amp;\to R_{RL}, R_{RR}
     
     recursively grow left and right children
     return node</code></pre>
-<div id="72021774" class="cell" data-execution_count="7">
+<div id="32e736f5" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> grow_tree(X, y, F, rng, depth<span class="op">=</span><span class="dv">0</span>, max_depth<span class="op">=</span><span class="va">None</span>, min_samples_leaf<span class="op">=</span><span class="dv">1</span>):</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Recursively grow a decision tree."""</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> min_samples_leaf <span class="kw">is</span> <span class="va">None</span>:</span>
@@ -1048,7 +1054,7 @@ R_R &amp;\to R_{RL}, R_{RR}
         move to left child
     else:
         move to right child</code></pre>
-<div id="296e482c" class="cell" data-execution_count="8">
+<div id="21e78d2e" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_tree_one(x, node):</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Predict the class label for a single observation x using the tree rooted at node."""</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> node.prediction <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
@@ -1058,7 +1064,7 @@ R_R &amp;\to R_{RL}, R_{RR}
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> predict_tree_one(x, node.right)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>For multiple observations:</p>
-<div id="f17c80e4" class="cell" data-execution_count="9">
+<div id="6749b73e" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_tree(X, node):</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Predict class labels for multiple observations X using the tree rooted at node."""</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array([predict_tree_one(x, node) <span class="cf">for</span> x <span class="kw">in</span> X])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1075,7 +1081,7 @@ R_R &amp;\to R_{RL}, R_{RR}
     observations never selected:
         out-of-bag observations
     return both sets</code></pre>
-<div id="c547473d" class="cell" data-execution_count="10">
+<div id="0a316a7f" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bootstrap_indices(N, rng):</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Generate bootstrap indices and out-of-bag indices."""</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    bootstrap <span class="op">=</span> rng.integers(<span class="dv">0</span>, N, size<span class="op">=</span>N)</span>
@@ -1101,7 +1107,7 @@ R_R &amp;\to R_{RL}, R_{RR}
         among these F predictors, use CART to find the best split
     continue recursively
     return tree h(x, Theta_k)</code></pre>
-<div id="b88a5dd8" class="cell" data-execution_count="11">
+<div id="f42a5d0e" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>boostrap, oob <span class="op">=</span> bootstrap_indices(<span class="bu">len</span>(y), rng)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>tree <span class="op">=</span> grow_tree(X[boostrap], y[boostrap], F<span class="op">=</span><span class="dv">1</span>, rng<span class="op">=</span>rng)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1118,7 +1124,7 @@ h(\mathbf x, \Theta_1), \ldots, h(\mathbf x, \Theta_K)
             h(x, Theta_k)
         save tree
     return forest</code></pre>
-<div id="3ddf04be" class="cell" data-execution_count="12">
+<div id="10d45ed7" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> RandomForestScratch:</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, n_trees<span class="op">=</span><span class="dv">100</span>, F<span class="op">=</span><span class="dv">1</span>, max_depth<span class="op">=</span><span class="va">None</span>, min_samples_leaf<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span><span class="dv">6400</span>):</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.n_trees <span class="op">=</span> n_trees</span>
@@ -1155,7 +1161,7 @@ V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
     obtain prediction from every tree
     count votes for every class
     return class receiving the most votes</code></pre>
-<div id="df7aece1" class="cell" data-execution_count="13">
+<div id="8d43219f" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> RandomForestScratch:</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, n_trees<span class="op">=</span><span class="dv">100</span>, F<span class="op">=</span><span class="dv">1</span>, max_depth<span class="op">=</span><span class="va">None</span>, min_samples_leaf<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span><span class="dv">6400</span>):</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.n_trees <span class="op">=</span> n_trees</span>
@@ -1187,12 +1193,12 @@ V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
 <span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.array(predictions)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We can now train the model.</p>
-<div id="7ddb89a0" class="cell" data-execution_count="14">
+<div id="898ac21f" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>forest <span class="op">=</span> RandomForestScratch(n_trees<span class="op">=</span><span class="dv">200</span>, F<span class="op">=</span><span class="dv">1</span>, max_depth<span class="op">=</span><span class="va">None</span>, min_samples_leaf<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span><span class="dv">6400</span>)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>forest.fit(X, y)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="14">
-<pre><code>&lt;__main__.RandomForestScratch at 0x16c0f2a50&gt;</code></pre>
+<pre><code>&lt;__main__.RandomForestScratch at 0x144f52a50&gt;</code></pre>
 </div>
 </div>
 <p>Here <span class="math inline">\(M=2, F=1\)</span>, so each split allowed to examine only one randomly selected predictor. This is a very strong randomization, but it is sufficient to produce a good forest.</p>
@@ -1204,7 +1210,7 @@ V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
 <p><span class="math display">\[
 \hat y_i^\text{OOB} = \arg\max_j \sum_{k\in \mathcal K_i} \mathbf I\{h(x_i, \Theta_k) = j\}
 \]</span></p>
-<div id="67608fd1" class="cell" data-execution_count="15">
+<div id="c0fb1ecc" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> oob_predict(forest, X):</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Compute OOB predictions for each observation."""</span></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    N <span class="op">=</span><span class="bu">len</span>(X)</span>
@@ -1220,7 +1226,7 @@ V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
 <span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>            predictions[i] <span class="op">=</span> values[np.argmax(counts)]</span>
 <span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> predictions</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="f4e57e36" class="cell" data-execution_count="16">
+<div id="9c919298" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>oob_pred <span class="op">=</span> oob_predict(forest, X)</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>valid <span class="op">=</span> <span class="op">~</span>np.isnan(oob_pred)</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1234,7 +1240,7 @@ V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
 <section id="visualizing-the-prediction-relationship" class="level3" data-number="6.6">
 <h3 data-number="6.6" class="anchored" data-anchor-id="visualizing-the-prediction-relationship"><span class="header-section-number">6.6</span> Visualizing the prediction relationship</h3>
 <p>We want to see the learned function <span class="math inline">\(x\mapsto \hat y(x)\)</span>. Because our predictors are two-dimensional, we can visualize the decision boundary. We create a grid of points over the feature space and predict the class for each point.</p>
-<div id="5490c965" class="cell" data-execution_count="17">
+<div id="aad7065b" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_grid(X, points <span class="op">=</span> <span class="dv">250</span>):</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Create a grid of points over the feature space."""</span></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    x1 <span class="op">=</span> np.linspace(X[:, <span class="dv">0</span>].<span class="bu">min</span>() <span class="op">-</span> <span class="fl">0.2</span>, X[:, <span class="dv">0</span>].<span class="bu">max</span>() <span class="op">+</span> <span class="fl">0.2</span>, points)</span>
@@ -1248,13 +1254,13 @@ V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
 <p><strong>One CART tree</strong></p>
 </blockquote>
 <p>First fit one CART tree using both features.</p>
-<div id="7a93a701" class="cell" data-execution_count="18">
+<div id="fa5dc5fe" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>single_tree <span class="op">=</span> np.random.default_rng(<span class="dv">6400</span>)</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>single_tree <span class="op">=</span> grow_tree(X, y, F<span class="op">=</span><span class="dv">2</span>, rng<span class="op">=</span>single_tree, max_depth<span class="op">=</span><span class="va">None</span>, min_samples_leaf<span class="op">=</span><span class="va">None</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Here we use <span class="math inline">\(F=M=2\)</span>, so this is a standard CART tree.</p>
-<div id="0a076e72" class="cell" data-execution_count="19">
+<div id="90da2595" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>xx1, xx2, grid <span class="op">=</span> make_grid(X)</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>tree_prediction <span class="op">=</span> predict_tree(grid, single_tree).reshape(xx1.shape)</span>
@@ -1278,7 +1284,7 @@ V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
 <p><em>One randomized tree</em></p>
 </blockquote>
 <p>Now we look at just one tree from the forest.</p>
-<div id="8d2b730c" class="cell" data-execution_count="20">
+<div id="12afd75c" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>random_tree <span class="op">=</span> forest.trees[<span class="dv">0</span>]</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>random_prediction <span class="op">=</span> predict_tree(grid, random_tree).reshape(xx1.shape)</span>
@@ -1304,7 +1310,7 @@ V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
 <p><em>The complete random forest</em></p>
 </blockquote>
 <p>Now predict each grid point using all <span class="math inline">\(K\)</span> trees.</p>
-<div id="918198df" class="cell" data-execution_count="21">
+<div id="bd85da3c" class="cell" data-execution_count="21">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>forest_prediction <span class="op">=</span> forest.predict(grid).reshape(xx1.shape)</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>))</span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>plt.contourf(xx1, xx2, forest_prediction, alpha<span class="op">=</span><span class="fl">0.25</span>)</span>
@@ -1328,18 +1334,18 @@ V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
 <p><span class="math display">\[
 \hat p_{RF}(1\mid x) = \frac{1}{K} \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = 1\}
 \]</span></p>
-<div id="c7e518d9" class="cell" data-execution_count="22">
+<div id="aab3f8f0" class="cell" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_vote_probability(forest, X):</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Compute the proportion of trees voting for class 1."""</span></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    votes <span class="op">=</span> np.array([predict_tree(X, tree) <span class="cf">for</span> tree <span class="kw">in</span> forest.trees])</span>
 <span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.mean(votes <span class="op">==</span> <span class="dv">1</span>, axis<span class="op">=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Compute it over the grid:</p>
-<div id="aa940fbe" class="cell" data-execution_count="23">
+<div id="6b394e17" class="cell" data-execution_count="23">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>probability <span class="op">=</span> predict_vote_probability(forest, grid).reshape(xx1.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Plot:</p>
-<div id="1636daac" class="cell" data-execution_count="24">
+<div id="464f767e" class="cell" data-execution_count="24">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>))</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>contour <span class="op">=</span> plt.contourf(xx1, xx2, probability, levels<span class="op">=</span>np.linspace(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">21</span>))</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>plt.contour(xx1, xx2, probability, levels<span class="op">=</span>[<span class="fl">0.5</span>])</span>
@@ -1360,7 +1366,7 @@ V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
 <blockquote class="blockquote">
 <p><em>Visualizing the role of the number of trees</em></p>
 </blockquote>
-<div id="af5d218f" class="cell" data-execution_count="25">
+<div id="c57ad465" class="cell" data-execution_count="25">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>tree_counts <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">200</span>]</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>oob_errors <span class="op">=</span> []</span>
@@ -1375,7 +1381,7 @@ V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
 <span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>    oob_errors.append(error)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Plot:</p>
-<div id="b1113dda" class="cell" data-execution_count="26">
+<div id="d79fd3cd" class="cell" data-execution_count="26">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">5</span>))</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>plt.plot(tree_counts, oob_errors, <span class="st">'o-'</span>)</span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Number of trees"</span>)</span>
@@ -1391,7 +1397,7 @@ V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
 </div>
 </div>
 <p>The expected qualitative behavior is <span class="math inline">\(\PE_K\to \PE^*\)</span>. We can estimate the boudn directly in this case.</p>
-<div id="b4d14910" class="cell" data-execution_count="27">
+<div id="81a9bf91" class="cell" data-execution_count="27">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_rf_bound(forest, X, y):</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Estimate the strength-correlation bound for the random forest."""</span></span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    K <span class="op">=</span> <span class="bu">len</span>(forest.trees)</span>
@@ -1446,7 +1452,7 @@ V_j(x) = \sum_{k=1}^K \mathbf I\{h(x, \Theta_k) = j\}
 <span id="cb37-52"><a href="#cb37-52" aria-hidden="true" tabindex="-1"></a>        <span class="st">"theorem_bound"</span>: theorem_bound</span>
 <span id="cb37-53"><a href="#cb37-53" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="1b9c44c8" class="cell" data-execution_count="28">
+<div id="083ba1e0" class="cell" data-execution_count="28">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> estimate_rf_bound(forest, X, y)</span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, value <span class="kw">in</span> results.items():</span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>value<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1922,8 +1928,8 @@ Ho, Tin Kam. 1998. <span>“The Random Subspace Method for Constructing Decision
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../references.html" class="pagination-link" aria-label="References">
-        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../weeks/05.html" class="pagination-link" aria-label="Model Comparison Under Complexity and Tuning Constraints">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Comparison Under Complexity and Tuning Constraints</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -47,6 +47,24 @@
   keywords = {Mathematics - Statistics Theory}
 }
 
+@incollection{bartlettRademacherGaussianComplexities2001,
+  title = {Rademacher and Gaussian Complexities: Risk Bounds and Structural Results},
+  shorttitle = {Rademacher and Gaussian Complexities},
+  booktitle = {Computational Learning Theory},
+  author = {Bartlett, Peter L. and Mendelson, Shahar},
+  editor = {Goos, G. and Hartmanis, J. and Van Leeuwen, J. and Helmbold, David and Williamson, Bob},
+  year = 2001,
+  volume = {2111},
+  pages = {224--240},
+  publisher = {Springer Berlin Heidelberg},
+  address = {Berlin, Heidelberg},
+  doi = {10.1007/3-540-44581-1_15},
+  urldate = {2026-10-04},
+  abstract = {We investigate the use of certain data-dependent estimates of the complexity of a function class, called Rademacher and Gaussian complexities. In a decision theoretic setting, we prove general risk bounds in terms of these complexities. We consider function classes that can be expressed as combinations of functions from basis classes and show how the Rademacher and Gaussian complexities of such a function class can be bounded in terms of the complexity of the basis classes. We give examples of the application of these techniques in finding data-dependent risk bounds for decision trees, neural networks and support vector machines.},
+  isbn = {978-3-540-42343-0 978-3-540-44581-4},
+  langid = {english}
+}
+
 @article{batesCrossvalidationWhatDoes2024,
   title = {Cross-Validation: What Does It Estimate and How Well Does It Do It?},
   shorttitle = {Cross-Validation},
@@ -85,7 +103,7 @@
 }
 
 @article{bengioNoUnbiasedEstimator2004,
-  title = {No Unbiased Estimator of the Variance of {{K-fold}} Cross-Validation},
+  title = {No Unbiased Estimator of the Variance of {{K}}-Fold Cross-Validation},
   author = {Bengio, Yoshua and Grandvalet, Yves},
   year = 2004,
   journal = {Journal of Machine Learning Research},
@@ -96,6 +114,45 @@
   urldate = {2026-09-10},
   abstract = {Most machine learning researchers perform quantitative experiments to estimate generalization error and compare the performance of different algorithms (in particular, their proposed algorithm). In order to be able to draw statistically convincing conclusions, it is important to estimate the uncertainty of such estimates. This paper studies the very commonly used K-fold cross-validation estimator of generalization performance. The main theorem shows that there exists no universal (valid under all distributions) unbiased estimator of the variance of K-fold cross-validation. The analysis that accompanies this result is based on the eigen-decomposition of the covariance matrix of errors, which has only three different eigenvalues corresponding to three degrees of freedom of the matrix and three components of the total variance. This analysis helps to better understand the nature of the problem and how it can make naive estimators (that don't take into account the error correlations due to the overlap between training and test sets) grossly underestimate variance. This is confirmed by numerical experiments in which the three components of the variance are compared when the difficulty of the learning problem and the number of folds are varied.},
   langid = {english}
+}
+
+@article{bergstraRandomSearchHyperParameter,
+  title = {Random Search for Hyper-Parameter Optimization},
+  author = {Bergstra, James and Bergstra, James and Bengio, Yoshua and Bengio, Yoshua},
+  abstract = {Grid search and manual search are the most widely used strategies for hyper-parameter optimization. This paper shows empirically and theoretically that randomly chosen trials are more efficient for hyper-parameter optimization than trials on a grid. Empirical evidence comes from a comparison with a large previous study that used grid search and manual search to configure neural networks and deep belief networks. Compared with neural networks configured by a pure grid search, we find that random search over the same domain is able to find models that are as good or better within a small fraction of the computation time. Granting random search the same computational budget, random search finds better models by effectively searching a larger, less promising configuration space. Compared with deep belief networks configured by a thoughtful combination of manual search and grid search, purely random search over the same 32-dimensional configuration space found statistically equal performance on four of seven data sets, and superior performance on one of seven. A Gaussian process analysis of the function from hyper-parameters to validation set performance reveals that for most data sets only a few of the hyper-parameters really matter, but that different hyper-parameters are important on different data sets. This phenomenon makes grid search a poor choice for configuring algorithms for new data sets. Our analysis casts some light on why recent ``High Throughput'' methods achieve surprising success---they appear to search through a large number of hyper-parameters because most hyper-parameters do not matter much. We anticipate that growing interest in large hierarchical models will place an increasing burden on techniques for hyper-parameter optimization; this work shows that random search is a natural baseline against which to judge progress in the development of adaptive (sequential) hyper-parameter optimization algorithms.},
+  langid = {english}
+}
+
+@misc{bischlHyperparameterOptimizationFoundations2021,
+  title = {Hyperparameter Optimization: Foundations, Algorithms, Best Practices and Open Challenges},
+  shorttitle = {Hyperparameter Optimization},
+  author = {Bischl, Bernd and Binder, Martin and Lang, Michel and Pielok, Tobias and Richter, Jakob and Coors, Stefan and Thomas, Janek and Ullmann, Theresa and Becker, Marc and Boulesteix, Anne-Laure and Deng, Difan and Lindauer, Marius},
+  year = 2021,
+  publisher = {arXiv},
+  doi = {10.48550/ARXIV.2107.05847},
+  urldate = {2026-10-04},
+  abstract = {Most machine learning algorithms are configured by one or several hyperparameters that must be carefully chosen and often considerably impact performance. To avoid a time consuming and unreproducible manual trial-and-error process to find well-performing hyperparameter configurations, various automatic hyperparameter optimization (HPO) methods, e.g., based on resampling error estimation for supervised machine learning, can be employed. After introducing HPO from a general perspective, this paper reviews important HPO methods such as grid or random search, evolutionary algorithms, Bayesian optimization, Hyperband and racing. It gives practical recommendations regarding important choices to be made when conducting HPO, including the HPO algorithms themselves, performance evaluation, how to combine HPO with ML pipelines, runtime improvements, and parallelization. This work is accompanied by an appendix that contains information on specific software packages in R and Python, as well as information and recommended hyperparameter search spaces for specific learning algorithms. We also provide notebooks that demonstrate concepts from this work as supplementary files.},
+  copyright = {Creative Commons Attribution 4.0 International},
+  langid = {english},
+  keywords = {FOS: Computer and information sciences,Machine Learning (cs.LG),Machine Learning (stat.ML)}
+}
+
+@article{boulesteixPleaNeutralComparison2013,
+  title = {A Plea for Neutral Comparison Studies in Computational Sciences},
+  author = {Boulesteix, Anne-Laure and Lauer, Sabine and Eugster, Manuel J. A.},
+  year = 2013,
+  month = apr,
+  journal = {PLOS One},
+  volume = {8},
+  number = {4},
+  pages = {e61562},
+  publisher = {Public Library of Science},
+  issn = {1932-6203},
+  doi = {10.1371/journal.pone.0061562},
+  urldate = {2026-10-04},
+  abstract = {In computational science literature including, e.g., bioinformatics, computational statistics or machine learning, most published articles are devoted to the development of ``new methods'', while comparison studies are generally appreciated by readers but surprisingly given poor consideration by many journals. This paper stresses the importance of neutral comparison studies for the objective evaluation of existing methods and the establishment of standards by drawing parallels with clinical research. The goal of the paper is twofold. Firstly, we present a survey of recent computational papers on supervised classification published in seven high-ranking computational science journals. The aim is to provide an up-to-date picture of current scientific practice with respect to the comparison of methods in both articles presenting new methods and articles focusing on the comparison study itself. Secondly, based on the results of our survey we critically discuss the necessity, impact and limitations of neutral comparison studies in computational sciences. We define three reasonable criteria a comparison study has to fulfill in order to be considered as neutral, and explicate general considerations on the individual components of a ``tidy neutral comparison study''. R codes for completely replicating our statistical analyses and figures are available from the companion website http://www.ibe.med.uni-muenchen.de/organisation/mitarbeiter/020\_professuren/boulesteix/plea2013.},
+  langid = {english},
+  keywords = {Algorithms,Bioinformatics,Computer and information sciences,Drug research and development,Machine learning,Machine learning algorithms,Metaanalysis,Scientific publishing}
 }
 
 @article{breimanBaggingPredictors1996,
@@ -145,6 +202,13 @@
   keywords = {classification,ensemble,regression}
 }
 
+@article{cawleyOverfittingModelSelection,
+  title = {On Over-Fitting in Model Selection and Subsequent Selection Bias in Performance Evaluation},
+  author = {Cawley, Gavin C and Talbot, Nicola L C},
+  abstract = {Model selection strategies for machine learning algorithms typically involve the numerical optimisation of an appropriate model selection criterion, often based on an estimator of generalisation performance, such as k-fold cross-validation. The error of such an estimator can be broken down into bias and variance components. While unbiasedness is often cited as a beneficial quality of a model selection criterion, we demonstrate that a low variance is at least as important, as a nonnegligible variance introduces the potential for over-fitting in model selection as well as in training the model. While this observation is in hindsight perhaps rather obvious, the degradation in performance due to over-fitting the model selection criterion can be surprisingly large, an observation that appears to have received little attention in the machine learning literature to date. In this paper, we show that the effects of this form of over-fitting are often of comparable magnitude to differences in performance between learning algorithms, and thus cannot be ignored in empirical evaluation. Furthermore, we show that some common performance evaluation practices are susceptible to a form of selection bias as a result of this form of over-fitting and hence are unreliable. We discuss methods to avoid over-fitting in model selection and subsequent selection bias in performance evaluation, which we hope will be incorporated into best practice. While this study concentrates on cross-validation based model selection, the findings are quite general and apply to any model selection practice involving the optimisation of a model selection criterion evaluated over a finite sample of data, including maximisation of the Bayesian evidence and optimisation of performance bounds.},
+  langid = {english}
+}
+
 @book{christensenAdvancedLinearModeling2019,
   title = {Advanced Linear Modeling: Statistical Learning and Dependent Data},
   shorttitle = {Advanced Linear Modeling},
@@ -175,6 +239,29 @@
   isbn = {978-3-030-32096-6 978-3-030-32097-3},
   langid = {english},
   keywords = {ANOVA,Bayes,data analysis,estimation,fifth edition,Gauss-Markov,heteroscedasticity,linear model theory,linear models,regression analysis,textbook}
+}
+
+@article{demsVarStatisticalComparisonsClassifiers,
+  title = {Statistical Comparisons of Classifiers over Multiple Data Sets},
+  author = {Dems{\textasciicaron}ar, Janez and Demsar, Janez},
+  abstract = {While methods for comparing two learning algorithms on a single data set have been scrutinized for quite some time already, the issue of statistical tests for comparisons of more algorithms on multiple data sets, which is even more essential to typical machine learning studies, has been all but ignored. This article reviews the current practice and then theoretically and empirically examines several suitable tests. Based on that, we recommend a set of simple, yet safe and robust non-parametric tests for statistical comparisons of classifiers: the Wilcoxon signed ranks test for comparison of two classifiers and the Friedman test with the corresponding post-hoc tests for comparison of more classifiers over multiple data sets. Results of the latter can also be neatly presented with the newly introduced CD (critical difference) diagrams.},
+  langid = {english}
+}
+
+@article{dietterichApproximateStatisticalTests1998,
+  title = {Approximate Statistical Tests for Comparing Supervised Classification Learning Algorithms},
+  author = {Dietterich, T. G.},
+  year = 1998,
+  month = sep,
+  journal = {Neural Computation},
+  volume = {10},
+  number = {7},
+  pages = {1895--1923},
+  issn = {1530-888X},
+  doi = {10.1162/089976698300017197},
+  abstract = {This article reviews five approximate statistical tests for determining whether one learning algorithm outperforms another on a particular learning task. These tests are compared experimentally to determine their probability of incorrectly detecting a difference when no difference exists (type I error). Two widely used statistical tests are shown to have high probability of type I error in certain situations and should never be used: a test for difference of two proportions and a paired-differences t test based on taking several random train-test splits. A third test, a paired-differences t test based on 10-fold cross-validation, exhibits somewhat elevated probability of type I error. A fourth test, McNemar's test, is shown to have low type I error. The fifth test is a new test, 5 x 2 cv, based on five iterations of twofold cross-validation. Experiments show that this test also has acceptable type I error. The article also measures the power (ability to detect algorithm differences when they do exist) of these tests. The cross-validated t test is the most powerful. The 5 x 2 cv test is shown to be slightly more powerful than McNemar's test. The choice of the best test is determined by the computational cost of running the learning algorithm. For algorithms that can be executed only once, McNemar's test is the only test with acceptable type I error. For algorithms that can be executed 10 times, the 5 x 2 cv test is recommended, because it is slightly more powerful and because it directly measures variation due to the choice of training set.},
+  langid = {english},
+  pmid = {9744903}
 }
 
 @article{dietterichExperimentalComparisonThree2000,
@@ -374,6 +461,14 @@
   keywords = {Binary trees,Classification tree analysis,Clustering algorithms,Decision trees,Stochastic systems,Support vector machine classification,Support vector machines,Tin,Training data}
 }
 
+@article{liHyperbandNovelBanditBased,
+  title = {Hyperband: A Novel Bandit-Based Approach to Hyperparameter Optimization},
+  shorttitle = {Hyperband},
+  author = {Li, Lisha and Jamieson, Kevin and DeSalvo, Giulia and Rostamizadeh, Afshin and Talwalkar, Ameet},
+  abstract = {Performance of machine learning algorithms depends critically on identifying a good set of hyperparameters. While recent approaches use Bayesian optimization to adaptively select configurations, we focus on speeding up random search through adaptive resource allocation and early-stopping. We formulate hyperparameter optimization as a pure-exploration nonstochastic infinite-armed bandit problem where a predefined resource like iterations, data samples, or features is allocated to randomly sampled configurations. We introduce a novel algorithm, Hyperband, for this framework and analyze its theoretical properties, providing several desirable guarantees. Furthermore, we compare Hyperband with popular Bayesian optimization methods on a suite of hyperparameter optimization problems. We observe that Hyperband can provide over an order-of-magnitude speedup over our competitor set on a variety of deep-learning and kernel-based learning problems.},
+  langid = {english}
+}
+
 @article{liuModelingContinuousResponse2017,
   title = {Modeling Continuous Response Variables Using Ordinal Regression},
   author = {Liu, Qi and Shepherd, Bryan E. and Li, Chun and Harrell Jr., Frank E.},
@@ -416,6 +511,23 @@
   title = {Interpretable Machine Learning},
   author = {Molnar, Christoph},
   langid = {english}
+}
+
+@article{nadeauInferenceGeneralizationError2003,
+  title = {Inference for the Generalization Error},
+  author = {Nadeau, Claude and Bengio, Yoshua},
+  year = 2003,
+  month = sep,
+  journal = {Machine Learning},
+  volume = {52},
+  number = {3},
+  pages = {239--281},
+  issn = {1573-0565},
+  doi = {10.1023/A:1024068626366},
+  urldate = {2026-10-04},
+  abstract = {In order to compare learning algorithms, experimental results reported in the machine learning literature often use statistical tests of significance to support the claim that a new learning algorithm generalizes better. Such tests should take into account the variability due to the choice of training set and not only that due to the test examples, as is often the case. This could lead to gross underestimation of the variance of the cross-validation estimator, and to the wrong conclusion that the new algorithm is significantly better when it is not. We perform a theoretical investigation of the variance of a variant of the cross-validation estimator of the generalization error that takes into account the variability due to the randomness of the training set as well as test examples. Our analysis shows that all the variance estimators that are based only on the results of the cross-validation experiment must be biased. This analysis allows us to propose new estimators of this variance. We show, via simulations, that tests of hypothesis about the generalization error using those new variance estimators have better properties than tests involving variance estimators currently in use and listed in Dietterich (1998). In particular, the new tests have correct size and good power. That is, the new tests do not reject the null hypothesis too often when the hypothesis is true, but they tend to frequently reject the null hypothesis when the latter is false.},
+  langid = {english},
+  keywords = {cross-validation,generalization error,hypothesis tests,power,size,variance estimation}
 }
 
 @article{nelderGeneralizedLinearModels1972,
@@ -491,6 +603,19 @@
   keywords = {Humanities and Social Sciences,multidisciplinary,Science}
 }
 
+@misc{sivaprasadOptimizerBenchmarkingNeeds2019,
+  title = {Optimizer Benchmarking Needs to Account for Hyperparameter Tuning},
+  author = {Sivaprasad, Prabhu Teja and Mai, Florian and Vogels, Thijs and Jaggi, Martin and Fleuret, Fran{\c c}ois},
+  year = 2019,
+  publisher = {arXiv},
+  doi = {10.48550/ARXIV.1910.11758},
+  urldate = {2026-10-04},
+  abstract = {The performance of optimizers, particularly in deep learning, depends considerably on their chosen hyperparameter configuration. The efficacy of optimizers is often studied under near-optimal problem-specific hyperparameters, and finding these settings may be prohibitively costly for practitioners. In this work, we argue that a fair assessment of optimizers' performance must take the computational cost of hyperparameter tuning into account, i.e., how easy it is to find good hyperparameter configurations using an automatic hyperparameter search. Evaluating a variety of optimizers on an extensive set of standard datasets and architectures, our results indicate that Adam is the most practical solution, particularly in low-budget scenarios.},
+  copyright = {arXiv.org perpetual, non-exclusive license},
+  langid = {english},
+  keywords = {FOS: Computer and information sciences,Machine Learning (cs.LG),Machine Learning (stat.ML)}
+}
+
 @article{steyerbergInternalValidationPredictive2001,
   title = {Internal Validation of Predictive Models: Efficiency of Some Procedures for Logistic Regression Analysis},
   shorttitle = {Internal Validation of Predictive Models},
@@ -507,6 +632,35 @@
   abstract = {The performance of a predictive model is overestimated when simply determined on the sample of subjects that was used to construct the model. Several internal validation methods are available that aim to provide a more accurate estimate of model performance in new subjects. We evaluated several variants of split-sample, cross-validation and bootstrapping methods with a logistic regression model that included eight predictors for 30-day mortality after an acute myocardial infarction. Random samples with a size between n = 572 and n = 9165 were drawn from a large data set (GUSTO-I; n = 40,830; 2851 deaths) to reflect modeling in data sets with between 5 and 80 events per variable. Independent performance was determined on the remaining subjects. Performance measures included discriminative ability, calibration and overall accuracy. We found that split-sample analyses gave overly pessimistic estimates of performance, with large variability. Cross-validation on 10\% of the sample had low bias and low variability, but was not suitable for all performance measures. Internal validity could best be estimated with bootstrapping, which provided stable estimates with low bias. We conclude that split-sample validation is inefficient, and recommend bootstrapping for estimation of internal validity of a predictive logistic regression model.},
   langid = {english},
   keywords = {Bootstrapping,Internal validation,Logistic regression analysis,Predictive models}
+}
+
+@article{stoneCrossValidatoryChoiceAssessment1974,
+  title = {Cross-Validatory Choice and Assessment of Statistical Predictions},
+  author = {Stone, M.},
+  year = 1974,
+  month = jan,
+  journal = {Journal of the Royal Statistical Society Series B (Statistical Methodology)},
+  volume = {36},
+  number = {2},
+  pages = {111--133},
+  issn = {1369-7412, 1467-9868},
+  doi = {10.1111/j.2517-6161.1974.tb00994.x},
+  urldate = {2026-10-04},
+  abstract = {A generalized form of the cross-validation criterion is applied to the choice and assessment of prediction using the data-analytic concept of a prescription. The examples used to illustrate the application are drawn from the problem areas of univariate estimation, linear regression and analysis of variance.},
+  copyright = {https://academic.oup.com/journals/pages/open\_access/funder\_policies/chorus/standard\_publication\_model},
+  langid = {english}
+}
+
+@inproceedings{vapnikPrinciplesRiskMinimization1991,
+  title = {Principles of Risk Minimization for Learning Theory},
+  booktitle = {Advances in {{Neural Information Processing Systems}}},
+  author = {Vapnik, V.},
+  year = 1991,
+  volume = {4},
+  publisher = {Morgan-Kaufmann},
+  urldate = {2026-10-04},
+  abstract = {Learning is posed as a problem of function estimation, for which two princi(cid:173) ples of solution are considered: empirical risk minimization and structural  risk minimization. These two principles are applied to two different state(cid:173) ments of the function estimation problem: global and local. Systematic  improvements in prediction power are illustrated in application to zip-code  recognition.},
+  langid = {english}
 }
 
 @article{varmaBiasErrorEstimation2006,
