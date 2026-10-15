@@ -289,6 +289,7 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#eigenvalues-and-eigenvectors" id="toc-eigenvalues-and-eigenvectors" class="nav-link" data-scroll-target="#eigenvalues-and-eigenvectors"><span class="header-section-number">4.1</span> Eigenvalues and eigenvectors</a></li>
   <li><a href="#spectral-theorem" id="toc-spectral-theorem" class="nav-link" data-scroll-target="#spectral-theorem"><span class="header-section-number">4.2</span> Spectral Theorem</a></li>
+  <li><a href="#orthogonal-matrices-and-diagonalization" id="toc-orthogonal-matrices-and-diagonalization" class="nav-link" data-scroll-target="#orthogonal-matrices-and-diagonalization"><span class="header-section-number">4.3</span> Orthogonal matrices and diagonalization</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -729,7 +730,7 @@ U^\perp + W^\perp = (U\cap W)^\perp
 </tr>
 <tr class="odd">
 <td>Null space</td>
-<td>$N(A) = {x: Ax = 0}</td>
+<td><span class="math inline">\(\mathcal N(A) = \{x: Ax = 0\}\)</span></td>
 </tr>
 </tbody>
 </table>
@@ -874,6 +875,22 @@ Ax = \sum_{i=1}^n c_i \lambda_i q_i.
 \]</span></p>
 <p>Consequently, <span class="math inline">\(\mathcal C(A) = \mathrm{span}\{q_i: \lambda_i \neq 0.\}\)</span>.</p>
 <p>Thus the nonzero-eigenvalue eigenvectors form a basis for the column space.</p>
+</div>
+<div id="thm-orthonormal-eigenbasis" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 14</strong></span> Every real symmetric matrix <span class="math inline">\(A\)</span> has an orthonormal basis of eigenvectors for <span class="math inline">\(\R^n\)</span>.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>By <a href="#thm-eigenvector-baisis-for-the-column-space" class="quarto-xref">Theorem&nbsp;<span>13</span></a> and the orthogonal complement relation, <span class="math inline">\(\mathcal C(A)^\perp = \mathcal N(A)\)</span> for symmetric <span class="math inline">\(A\)</span>, the eigenspaces associated with nonzero eigenvalues, together with the zero eigenspace, span <span class="math inline">\(\R^n\)</span>.</p>
+<p>Apply Gram-Schmidt within each eigenspace to produce an orthonormal basis there. Every linear combination of eigenvectors with the same eigenvalue remains an eigenvector for that eigenvalue. Eigenvectors from distinct eigenspaces are automatically orthogonal, by the previous <a href="#lem-orthogonality-of-eigenvectors" class="quarto-xref">Lemma&nbsp;<span>1</span></a>. Combining these orthonormal bases therefore produces an orthonormal eigenbasis of <span class="math inline">\(\R^n\)</span>.</p>
+</div>
+</section>
+<section id="orthogonal-matrices-and-diagonalization" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="orthogonal-matrices-and-diagonalization"><span class="header-section-number">4.3</span> Orthogonal matrices and diagonalization</h3>
+<div id="def-orthogonal-matrix" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 12</strong></span> A square matrix <span class="math inline">\(Q\)</span> is <strong>orthogonal</strong> if <span class="math inline">\(Q^\top Q = QQ^\top = I\)</span>. Equivalently, <span class="math inline">\(Q^{-1} = Q^\top\)</span>.</p>
+</div>
+<div id="thm-characterization-by-columns" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 15</strong></span> <span class="math inline">\(Q\in \R^{n\times n}\)</span> is orthogonal if and only if its columns form an orthonormal basis for <span class="math inline">\(\R^n\)</span>.</p>
 </div>
 
 

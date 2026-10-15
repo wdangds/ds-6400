@@ -615,7 +615,7 @@ This also establishes the two important identities:
 | Diagonal matrix | $A_{ij} = 0$ for $i\neq j$ | 
 | Identity matrix | $I_n =\mathrm{diag}(1, \ldots, 1)$ | 
 | Nonsingular matrix | Square matrix possessing an inverse | 
-| Null space | $\mathcal N(A) = \{x: Ax = 0\} | 
+| Null space | $\mathcal N(A) = \{x: Ax = 0\}$ | 
 
 Matrix multiplication represents composition of linear transformations. If $A: \R^p \to \R^n$, then 
 
@@ -844,3 +844,34 @@ Consequently, $\mathcal C(A) = \mathrm{span}\{q_i: \lambda_i \neq 0.\}$.
 
 Thus the nonzero-eigenvalue eigenvectors form a basis for the column space.
 :::
+
+::: {#thm-orthonormal-eigenbasis}
+
+Every real symmetric matrix $A$ has an orthonormal basis of eigenvectors for $\R^n$.
+
+:::
+
+::: {.proof}
+
+By @thm-eigenvector-baisis-for-the-column-space and the orthogonal complement relation, $\mathcal C(A)^\perp = \mathcal N(A)$ for symmetric $A$, the eigenspaces associated with nonzero eigenvalues, together with the zero eigenspace, span $\R^n$. 
+
+Apply Gram-Schmidt within each eigenspace to produce an orthonormal basis there. Every linear combination of eigenvectors with the same eigenvalue remains an eigenvector for that eigenvalue. Eigenvectors from distinct eigenspaces are automatically orthogonal, by the previous @lem-orthogonality-of-eigenvectors. Combining these orthonormal bases therefore produces an orthonormal eigenbasis of $\R^n$.
+
+:::
+
+### Orthogonal matrices and diagonalization 
+
+::: {#def-orthogonal-matrix}
+
+A square matrix $Q$ is __orthogonal__ if $Q^\top Q = QQ^\top = I$. Equivalently, $Q^{-1} = Q^\top$.
+
+:::
+
+
+::: {#thm-characterization-by-columns}
+
+$Q\in \R^{n\times n}$ is orthogonal if and only if its columns form an orthonormal basis for $\R^n$. 
+
+:::
+
+
