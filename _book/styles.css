@@ -122,6 +122,59 @@
   content: ".";
 }
 
+.proof {
+  background: transparent;
+  border: 0;
+  margin: 1.25rem 0;
+  padding: 0;
+}
+
+.proof > p:first-child {
+  margin-top: 0;
+}
+
+.proof .proof-title,
+.proof .proof-title em {
+  font-style: normal;
+  font-weight: 700;
+}
+
+.proof > :last-child {
+  margin-bottom: 0;
+}
+
+.proof > :last-child::after {
+  content: "\25A1";
+  float: right;
+  font-size: 0.72em;
+  line-height: 1.7;
+  margin-left: 0.5rem;
+}
+
+.example {
+  background: #f7f7f5;
+  border-left: 4px solid #737373;
+  margin: 1.25rem 0;
+  padding: 0.85rem 1rem;
+}
+
+.example > p:first-child {
+  margin-top: 0;
+}
+
+.example > p:first-child::before {
+  content: "Example. ";
+  font-weight: 700;
+}
+
+.example[title] > p:first-child::before {
+  content: attr(title) ". ";
+}
+
+.example > :last-child {
+  margin-bottom: 0;
+}
+
 /* Keep generated figures inside the readable page column, even when code chunks use a large figsize. */
 .quarto-figure,
 .cell-output-display,

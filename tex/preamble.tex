@@ -1,5 +1,6 @@
 \usepackage{mathtools}
 \usepackage{amssymb}
+\usepackage{amsthm}
 
 \providecommand{\R}{\mathbb{R}}
 \providecommand{\N}{\mathbb{N}}
@@ -24,4 +25,24 @@
 \DeclareMathOperator{\mr}{\mathrm{mr}}
 \DeclareMathOperator{\rmg}{\mathrm{rmg}}
 \DeclareMathOperator{\sd}{\mathrm{sd}}
-\DeclareMathOperator{\P}{\mathbb{P}}
+\renewcommand{\P}{\mathbb{P}}
+\DeclareMathOperator{\rank}{\mathrm{rank}}
+\DeclareMathOperator{\dim}{\mathrm{dim}}
+\DeclareMathOperator{\V}{\mathcal{V}}
+\DeclareMathOperator{\W}{\mathcal{W}}
+\DeclareMathOperator{\U}{\mathcal{U}}
+
+\renewcommand{\qedsymbol}{{\scriptsize\ensuremath{\square}}}
+\theoremstyle{definition}
+\newtheorem*{example}{Example}
+
+\makeatletter
+\renewenvironment{proof}[1][\proofname]{%
+  \par\pushQED{\qed}%
+  \normalfont\topsep6\p@\@plus6\p@\relax
+  \trivlist
+  \item[\hskip\labelsep\bfseries #1\@addpunct{.}]\ignorespaces
+}{%
+  \popQED\endtrivlist\@endpefalse
+}
+\makeatother

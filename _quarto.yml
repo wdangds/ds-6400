@@ -29,11 +29,13 @@ book:
     - references.qmd
   appendices:
     - appendices/ols-cv-independence.qmd
+    - appendices/linear-algebra-revision.qmd
 
 bibliography: references.bib
 
 filters:
   - filters/draft.lua
+  - filters/proof.lua
 
 format:
   html:

@@ -158,7 +158,12 @@ window.MathJax = {
       mr: "\\operatorname{mr}",
       rmg: "\\operatorname{rmg}",
       sd: "\\operatorname{sd}",
-      P: "\\mathbb{P}"
+      P: "\\mathbb{P}", 
+      rank: "\\operatorname{rank}",
+      dim: "\\operatorname{dim}",
+      V: "\\mathcal{V}",
+      W: "\\mathcal{W}",
+      U: "\\mathcal{U}",
     }
   }
 };
@@ -303,6 +308,12 @@ window.Quarto = {
   <div class="sidebar-item-container"> 
   <a href="../appendices/ols-cv-independence.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">OLS, Linear Invariance, and Conditional Independence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/linear-algebra-revision.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
   </div>
 </li>
       </ul>
@@ -557,7 +568,9 @@ t = \frac{\overline{d}}{\sqrt{\left(\frac{1}{R}+ \frac{n_{\text{test}}}{n_{\text
 R(f) = \E[L(Y, f(X))].
 \]</span></p>
 <p>Since <span class="math inline">\(R(f)\)</span> is unknown, the central objective is to estimate it without allowing the observations used for model selection to also determine the reported performance. Our main experiment therefore uses nested cross-validation. All four procedures receive the same outer folds.</p>
-<div id="b990949c" class="cell" data-execution_count="1">
+<div id="5bd6df14" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -654,13 +667,14 @@ R(f) = \E[L(Y, f(X))].
 <span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>        cloudpickle.dump(checkpoint, handle)</span>
 <span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>    temporary_path.replace(path)</span>
 <span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> checkpoint</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 <p>We will use the UCI red wine quality data. Each wine has physicochemical measurements and an expert quality score. The response is ordered:</p>
 <p><span class="math display">\[
 3&lt;4&lt;5&lt;6&lt;7&lt;8
 \]</span></p>
 <p>This makes the dataset useful because the models can differ in whether they use that ordering.</p>
-<div id="9a07cc19" class="cell" data-execution_count="2">
+<div id="93899ebe" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> (<span class="st">"https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(url, sep<span class="op">=</span><span class="st">";"</span>)</span>
@@ -770,7 +784,7 @@ R(f) = \E[L(Y, f(X))].
 </div>
 </div>
 </div>
-<div id="1f4c4c9b" class="cell" data-execution_count="3">
+<div id="abf23bdc" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Shape:"</span>, df.shape)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Missing values:"</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.isna().<span class="bu">sum</span>())</span>
@@ -807,7 +821,7 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 <p>Although wine quality is stored numerically, it is an ordinal response. We will therefore treat it as a categorical variable with ordering. We encode the observed categories as consecutive ranks starting from zero. This makes ordinal distances easy to calculate.</p>
-<div id="558b1da3" class="cell" data-execution_count="4">
+<div id="c8b54551" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df.drop(columns<span class="op">=</span><span class="st">"quality"</span>).copy()</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>quality_levels <span class="op">=</span> <span class="bu">sorted</span>(df[<span class="st">"quality"</span>].unique())</span>
@@ -838,7 +852,7 @@ quality
 Name: count, dtype: int64</code></pre>
 </div>
 </div>
-<div id="9880bb56" class="cell" data-execution_count="5">
+<div id="5c60a3cf" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"quality"</span>].value_counts().sort_index().plot(kind<span class="op">=</span><span class="st">"bar"</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Wine quality"</span>)</span>
@@ -857,7 +871,7 @@ Name: count, dtype: int64</code></pre>
 <p><span class="math display">\[
 L(Y, \hat Y) = |Y - \hat Y|
 \]</span></p>
-<div id="6a5237db" class="cell" data-execution_count="6">
+<div id="63177df2" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ordinal_mae(y_true, y_pred):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Mean absolute distance between true and predicted ordinal ranks.</span></span>
@@ -896,7 +910,7 @@ L(Y, \hat Y) = |Y - \hat Y|
 \frac{\P(Y\leq k\mid X=x)}{\P(Y &gt; k\mid X=x)} = \theta_k - x^\top \beta, \quad k=1, \ldots, K-1
 \]</span></p>
 <p>The thresholds <span class="math inline">\(\theta_k\)</span> vary across categories, but the slope <span class="math inline">\(\beta\)</span> is shared. This is the proportional-odds assumption. The model can be fitted using maximum likelihood. <code>statsmodels</code> provides an implementation of the cumulative logit model. We wrap it in a scikit-learn compatible interface to allow it to be used in pipelines and cross-validation.</p>
-<div id="4b6f3642" class="cell" data-execution_count="7">
+<div id="7c96515e" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> OrdinalRegression(BaseEstimator, ClassifierMixin):</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, distr<span class="op">=</span><span class="st">"logit"</span>):</span>
@@ -925,7 +939,7 @@ L(Y, \hat Y) = |Y - \hat Y|
 \P(Y=k\mid X=x) = \frac{\exp(\theta_k + x^\top \beta_k)}{\sum_{j=1}^K \exp(\theta_j + x^\top \beta_j)}, \quad k=1, \ldots, K
 \]</span></p>
 <p>Unlike ordinal regression, it does not impose a common ordered structure across categories. Random forest constructs a nonlinear prediction rule through an ensemble of decision trees, and the neural network uses nonlinear hidden representations followed by softmax probabilities.</p>
-<div id="93d339c1" class="cell" data-execution_count="8">
+<div id="22f21a8d" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> build_model(model_name, config):</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> model_name <span class="op">==</span> <span class="st">"ordinal"</span>:</span>
@@ -968,7 +982,7 @@ L(Y, \hat Y) = |Y - \hat Y|
 <p><strong>Predeclare the complexity/search spaces</strong></p>
 </blockquote>
 <p>This is where the earlier discussion about <em>controlled complexity and tuning opportunity</em> enters the experiment. We should not fit one default model while giving another model hundreds of tuning attempts. At the same time, simple procedures should not be given artificial hyperparameter to make every search space identical. The goal is to give each procedure a reasonable opportunity to demonstrate its predictive ability while keeping the search spaces pre-specified and comparable.</p>
-<div id="9da52644" class="cell" data-execution_count="9">
+<div id="240d1be5" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>MODEL_CONFIGS <span class="op">=</span> {</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Very small structural choice</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ordinal"</span>: [{<span class="st">"distr"</span>: <span class="st">"logit"</span>},</span>
@@ -992,7 +1006,7 @@ L(Y, \hat Y) = |Y - \hat Y|
 <span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>         <span class="st">"learning_rate_init"</span>: lr,} <span class="cf">for</span> hidden, alpha, lr <span class="kw">in</span> itertools.product([(<span class="dv">32</span>,), (<span class="dv">64</span>,), (<span class="dv">64</span>, <span class="dv">32</span>)], [<span class="fl">1e-4</span>, <span class="fl">1e-3</span>], [<span class="fl">1e-3</span>, <span class="fl">1e-2</span>])],</span>
 <span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="eeaf0798" class="cell" data-execution_count="10">
+<div id="f2f41157" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, configs <span class="kw">in</span> MODEL_CONFIGS.items():</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">:15s}</span><span class="ss">: </span><span class="sc">{</span><span class="bu">len</span>(configs)<span class="sc">:2d}</span><span class="ss"> configurations"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1007,7 +1021,7 @@ neural_net     : 12 configurations</code></pre>
 <p><strong>Inner cross-validation for hyperparameter selection</strong></p>
 </blockquote>
 <p>For each candidate configuration <span class="math inline">\(\lambda\)</span>, we estimate its risk using inner cross-validation <span class="math inline">\(\widehat{R}_{\text{inner}}(\lambda)\)</span>. Then we select <span class="math inline">\(\hat{\lambda} = \arg\min_{\lambda\in S_j} \widehat{R}_{\text{inner}}(\lambda)\)</span>. This value is used for <em>selection</em>, not final assessment.</p>
-<div id="a17a3b89" class="cell" data-execution_count="11">
+<div id="c0b0750e" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> inner_cv_score(model_name, config, X_train, y_train, n_splits<span class="op">=</span><span class="dv">3</span>,random_state<span class="op">=</span><span class="dv">6400</span>):</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Estimate ordinal MAE for one configuration using inner cross-validation.</span></span>
@@ -1026,7 +1040,7 @@ neural_net     : 12 configurations</code></pre>
 <span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>        scores.append(score)</span>
 <span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.mean(scores)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="63f55bbf" class="cell" data-execution_count="12">
+<div id="ef18e52b" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> tune_model(model_name, X_train, y_train, configs, n_splits<span class="op">=</span><span class="dv">3</span>, random_state<span class="op">=</span><span class="dv">6400</span>):</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Search the predefined configuration space and select the configuration with lowest inner-CV MAE.</span></span>
@@ -1045,7 +1059,7 @@ neural_net     : 12 configurations</code></pre>
 <p><strong>Outer cross-validation for final assessment</strong></p>
 </blockquote>
 <p>For outer fold <span class="math inline">\(r\)</span>, <span class="math inline">\(D=D_r^{\text{train}} \cup D_r^{\text{test}}\)</span>. Only <span class="math inline">\(D_r^{\text{train}}\)</span> is used for hyperparameter selection and model fitting. After selecting <span class="math inline">\(\hat\lambda_r\)</span>, the model is refitted on <span class="math inline">\(D_r^{\text{train}}\)</span> and evaluated on <span class="math inline">\(D_r^{\text{test}}\)</span>. The outer test set is never used for any data-dependent decision.</p>
-<div id="fdb26d17" class="cell" data-execution_count="13">
+<div id="6f1f2439" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> evaluate_outer_fold(model_name, X_train, y_train, X_test, y_test,inner_splits<span class="op">=</span><span class="dv">3</span>, random_state<span class="op">=</span><span class="dv">6400</span>):</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    start_time <span class="op">=</span> time.perf_counter()</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    </span>
@@ -1072,7 +1086,7 @@ neural_net     : 12 configurations</code></pre>
 <span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now we combine everything. We use 5-fold outer CV x 3-fold inner CV.</p>
-<div id="dbbab15e" class="cell" data-execution_count="14">
+<div id="f2f2d19c" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_nested_cv(X, y, outer_splits<span class="op">=</span><span class="dv">5</span>, inner_splits<span class="op">=</span><span class="dv">3</span>, random_state<span class="op">=</span><span class="dv">6400</span>):</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    outer_cv <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span>outer_splits, shuffle<span class="op">=</span><span class="va">True</span>,</span>
@@ -1145,7 +1159,7 @@ neural_net     : 12 configurations</code></pre>
 <span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>    save_study_cache(oof, NESTED_OOF_CACHE)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Now we inspect the selected models.</p>
-<div id="494531ae" class="cell" data-execution_count="16">
+<div id="25191355" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>results[[<span class="st">"fold"</span>, <span class="st">"model"</span>, <span class="st">"best_config"</span>, <span class="st">"inner_best_mae"</span>, <span class="st">"ordinal_mae"</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="16">
 <div>
@@ -1329,7 +1343,7 @@ neural_net     : 12 configurations</code></pre>
 </div>
 </div>
 </div>
-<div id="6f67deba" class="cell" data-execution_count="17">
+<div id="4b29ad3f" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>summary <span class="op">=</span> (results.groupby(<span class="st">"model"</span>).agg(</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>        ordinal_mae_mean<span class="op">=</span>(<span class="st">"ordinal_mae"</span>, <span class="st">"mean"</span>),</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>        ordinal_mae_sd<span class="op">=</span>(<span class="st">"ordinal_mae"</span>, <span class="st">"std"</span>),</span>
@@ -1450,7 +1464,7 @@ neural_net     : 12 configurations</code></pre>
 <blockquote class="blockquote">
 <p><strong>Visualize outer-fold performance</strong></p>
 </blockquote>
-<div id="1abcf1d2" class="cell" data-execution_count="18">
+<div id="0cb9ff30" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>model_order <span class="op">=</span> [<span class="st">"ordinal"</span>, <span class="st">"glm"</span>, <span class="st">"random_forest"</span>, <span class="st">"neural_net"</span>]</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>data_to_plot <span class="op">=</span> [results.loc[results[<span class="st">"model"</span>] <span class="op">==</span> model, <span class="st">"ordinal_mae"</span>].values <span class="cf">for</span> model <span class="kw">in</span> model_order]</span>
@@ -1476,7 +1490,7 @@ neural_net     : 12 configurations</code></pre>
 <p><span class="math display">\[
 \Delta_{\text{selection}} = \hat{R}_{\text{inner, best}} - \hat{R}_{\text{outer}}
 \]</span></p>
-<div id="36cdeb45" class="cell" data-execution_count="19">
+<div id="986c9f96" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>results[<span class="st">"selection_gap"</span>] <span class="op">=</span> (results[<span class="st">"ordinal_mae"</span>]<span class="op">-</span> results[<span class="st">"inner_best_mae"</span>])</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>selection_summary <span class="op">=</span> (results.groupby(<span class="st">"model"</span>)[<span class="st">"selection_gap"</span>].agg([<span class="st">"mean"</span>, <span class="st">"std"</span>]))</span>
@@ -1526,7 +1540,7 @@ neural_net     : 12 configurations</code></pre>
 </div>
 </div>
 </div>
-<div id="9a7d8929" class="cell" data-execution_count="20">
+<div id="0313b727" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>selection_summary[<span class="st">"mean"</span>].plot(kind<span class="op">=</span><span class="st">"bar"</span>)</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>plt.axhline(<span class="dv">0</span>, linewidth<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Outer MAE - Best Inner MAE"</span>)</span>
@@ -1546,7 +1560,7 @@ neural_net     : 12 configurations</code></pre>
 <p><strong>Compare out-of-fold confusion matrices</strong></p>
 </blockquote>
 <p>Because every observation receives exactly one outer-fold prediction from every model, the oof table contains predictions that were not obtained from models trained on those observations.</p>
-<div id="8352a50f" class="cell" data-execution_count="21">
+<div id="cccd6e9b" class="cell" data-execution_count="21">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="dv">9</span>))</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, model_name <span class="kw">in</span> <span class="bu">zip</span>(axes.ravel(), model_order):</span>
@@ -1575,7 +1589,7 @@ neural_net     : 12 configurations</code></pre>
 \mathcal F_2 \subset \mathcal F_5 \subset \mathcal F_{10} \subset \mathcal F_{\infty}
 \]</span></p>
 <p>approximately representing increasing capacity. First we create one development split.</p>
-<div id="971d782d" class="cell" data-execution_count="22">
+<div id="8a07fe9b" class="cell" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>X_train, X_val, y_train, y_val <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.25</span>,stratify<span class="op">=</span>y, random_state<span class="op">=</span>RANDOM_STATE)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div id="cell-run-week05-complexity-study" class="cell" data-execution_count="23">
@@ -1665,7 +1679,7 @@ neural_net     : 12 configurations</code></pre>
 </div>
 </div>
 </div>
-<div id="b6e10c60" class="cell" data-execution_count="24">
+<div id="07e31e12" class="cell" data-execution_count="24">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>x_positions <span class="op">=</span> np.arange(<span class="bu">len</span>(complexity_results))</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>plt.plot(x_positions,complexity_results[<span class="st">"train_mae"</span>], marker<span class="op">=</span><span class="st">"o"</span>,label<span class="op">=</span><span class="st">"Training"</span>)</span>
@@ -1696,7 +1710,7 @@ neural_net     : 12 configurations</code></pre>
 <p><strong>Demonstrate the effect of tuning budget</strong></p>
 </blockquote>
 <p>The second notion of complexity in our literature review was <em>search complexity</em>. Suppose a model receives <span class="math inline">\(B\)</span> opportunities to search its hyperparameter space. We want to examine <span class="math inline">\(B\to \hat R(B)\)</span>, the expected performance of the complete learning procedure as a function of the tuning budget. To make this meaningful, randomly order the candidate configurations once and reveal progressively larger prefixes of that ordering.</p>
-<div id="65852e8c" class="cell" data-execution_count="25">
+<div id="f3293ebc" class="cell" data-execution_count="25">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(RANDOM_STATE)</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>rf_configs <span class="op">=</span> MODEL_CONFIGS[<span class="st">"random_forest"</span>].copy()</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>order <span class="op">=</span> rng.permutation(<span class="bu">len</span>(rf_configs))</span>
@@ -1784,7 +1798,7 @@ neural_net     : 12 configurations</code></pre>
 </div>
 </div>
 </div>
-<div id="842fd870" class="cell" data-execution_count="27">
+<div id="1375170f" class="cell" data-execution_count="27">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>plt.plot(budget_results[<span class="st">"budget"</span>], budget_results[<span class="st">"best_inner_mae"</span>], marker<span class="op">=</span><span class="st">"o"</span>,label<span class="op">=</span><span class="st">"Best inner-CV MAE"</span>)</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>plt.plot(budget_results[<span class="st">"budget"</span>], budget_results[<span class="st">"validation_mae"</span>], marker<span class="op">=</span><span class="st">"o"</span>,label<span class="op">=</span><span class="st">"Held-out MAE"</span>) </span>
@@ -1816,7 +1830,7 @@ neural_net     : 12 configurations</code></pre>
 R(f) \leq \hat R_m(f) + \sqrt{\frac{\log(M/\delta)}{2m}}
 \]</span></p>
 <p>simultaneously for all <span class="math inline">\(M\)</span> candidates. The second term therefore increases approximately as <span class="math inline">\(\sqrt{\log M}\)</span>, which is a very slow growth rate. This is the <em>finite-search complexity bound</em> and it makes the effect of tuning budget explicit. The more configurations we search, the more we must pay in terms of the second term.</p>
-<div id="3c663f08" class="cell" data-execution_count="28">
+<div id="62e966d5" class="cell" data-execution_count="28">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> finite_search_penalty(n_candidates, validation_size, delta<span class="op">=</span><span class="fl">0.05</span>):</span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.sqrt(np.log(n_candidates <span class="op">/</span> delta)<span class="op">/</span>(<span class="dv">2</span> <span class="op">*</span> validation_size))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -1824,7 +1838,7 @@ R(f) \leq \hat R_m(f) + \sqrt{\frac{\log(M/\delta)}{2m}}
 <p><span class="math display">\[
 L_\text{norm} = \frac{|Y-\hat Y|}{K-1} \in [0, 1]
 \]</span></p>
-<div id="e9d7ab47" class="cell" data-execution_count="29">
+<div id="dbe2de68" class="cell" data-execution_count="29">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>M_values <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">500</span>, <span class="dv">1000</span>])</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>m <span class="op">=</span> <span class="bu">len</span>(X_train) <span class="op">//</span> <span class="dv">3</span></span>
@@ -1896,7 +1910,7 @@ L_\text{norm} = \frac{|Y-\hat Y|}{K-1} \in [0, 1]
 </div>
 </div>
 </div>
-<div id="68222bcc" class="cell" data-execution_count="30">
+<div id="ab698358" class="cell" data-execution_count="30">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>plt.plot(M_values, penalties, marker<span class="op">=</span><span class="st">"o"</span>)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>plt.xscale(<span class="st">"log"</span>)</span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Number of searched configurations M"</span>)</span>
@@ -1915,7 +1929,7 @@ L_\text{norm} = \frac{|Y-\hat Y|}{K-1} \in [0, 1]
 <p><strong>Fit final models for prediction rule interpretation</strong></p>
 </blockquote>
 <p>Up to this point, performance claims come from outer-fold predictions. Now we want to understand <em>what prediction rule each model learned</em>. For interpretation, we may select hyperparameters using the complete dataset and fit a final model. These final fits are used for interpretaion.</p>
-<div id="b08db742" class="cell" data-execution_count="31">
+<div id="957f80f1" class="cell" data-execution_count="31">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>final_models <span class="op">=</span> {}</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>final_configs <span class="op">=</span> {}</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1945,7 +1959,7 @@ L_\text{norm} = \frac{|Y-\hat Y|}{K-1} \in [0, 1]
 <span id="cb34-27"><a href="#cb34-27" aria-hidden="true" tabindex="-1"></a>    final_models[model_name] <span class="op">=</span> checkpoint[<span class="st">"model"</span>]</span>
 <span id="cb34-28"><a href="#cb34-28" aria-hidden="true" tabindex="-1"></a>    final_configs[model_name] <span class="op">=</span> checkpoint[<span class="st">"config"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="81f0cdc4" class="cell" data-execution_count="32">
+<div id="c119bc11" class="cell" data-execution_count="32">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>final_configs</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="32">
 <pre><code>{'ordinal': {'distr': 'logit'},
@@ -1966,7 +1980,7 @@ L_\text{norm} = \frac{|Y-\hat Y|}{K-1} \in [0, 1]
 \hat s(x) = \sum_{k=0}^{K-1} k \hat p_k(x)
 \]</span></p>
 <p>This gives every model the same scalar prediction scale.</p>
-<div id="b804fe11" class="cell" data-execution_count="33">
+<div id="68d01256" class="cell" data-execution_count="33">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> expected_ordinal_score(model, X):</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    probabilities <span class="op">=</span> model.predict_proba(X)</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    ranks <span class="op">=</span> np.arange(probabilities.shape[<span class="dv">1</span>])</span>
@@ -1974,7 +1988,7 @@ L_\text{norm} = \frac{|Y-\hat Y|}{K-1} \in [0, 1]
 <span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> probabilities <span class="op">@</span> ranks</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>For example:</p>
-<div id="8bb75848" class="cell" data-execution_count="34">
+<div id="45e4b55d" class="cell" data-execution_count="34">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> model_name, model <span class="kw">in</span> final_models.items():</span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> expected_ordinal_score(model,X)</span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(model_name, np.mean(scores), np.std(scores))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1989,14 +2003,14 @@ neural_net 2.664224671749093 0.5478799822904484</code></pre>
 <p><strong>Compare prediction rules along one predictor</strong></p>
 </blockquote>
 <p>For a first visualization, choose one important predictor such as alcohol. We vary alcohol while holding all other predictors at their medians. This is not ALE; it is a simple controlled prediction profile whose purpose is to make the functional forms easy to see.</p>
-<div id="ed764f67" class="cell" data-execution_count="35">
+<div id="6105bbf6" class="cell" data-execution_count="35">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>feature <span class="op">=</span> <span class="st">"alcohol"</span></span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>grid <span class="op">=</span> np.linspace(X[feature].quantile(<span class="fl">0.02</span>), X[feature].quantile(<span class="fl">0.98</span>), <span class="dv">100</span>)</span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>reference <span class="op">=</span> X.median().to_frame().T</span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>X_grid <span class="op">=</span> pd.concat([reference] <span class="op">*</span> <span class="bu">len</span>(grid), ignore_index<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>X_grid[feature] <span class="op">=</span> grid</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="a1ba5ad2" class="cell" data-execution_count="36">
+<div id="aa0c4ccd" class="cell" data-execution_count="36">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">6</span>))</span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> model_name <span class="kw">in</span> model_order:</span>
@@ -2029,7 +2043,7 @@ neural_net 2.664224671749093 0.5478799822904484</code></pre>
 \P(Y=k\mid X=x)
 \]</span></p>
 <p>for every model.</p>
-<div id="86c35a58" class="cell" data-execution_count="37">
+<div id="7e9b372f" class="cell" data-execution_count="37">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>example_index <span class="op">=</span> <span class="dv">0</span></span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>example <span class="op">=</span> X.iloc[[example_index]]</span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>true_quality <span class="op">=</span> df.loc[example_index,<span class="st">"quality"</span>]</span>
@@ -2109,7 +2123,7 @@ neural_net 2.664224671749093 0.5478799822904484</code></pre>
 </div>
 </div>
 </div>
-<div id="0eb8f94f" class="cell" data-execution_count="38">
+<div id="78b5e5c7" class="cell" data-execution_count="38">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>probability_table.plot(kind<span class="op">=</span><span class="st">"bar"</span>,figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">5</span>))</span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Wine quality"</span>)</span>
