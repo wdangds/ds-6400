@@ -875,3 +875,16 @@ $Q\in \R^{n\times n}$ is orthogonal if and only if its columns form an orthonorm
 :::
 
 
+::: {.proof}
+
+Write $Q = [q_1, \ldots, q_n]$. The $(i, j)$-entry of $Q^\top Q$ is $q_i^\top q_j$. Therefore 
+$$
+Q^\top Q = I \Longleftrightarrow q_i^\top q_j = \delta_{ij}
+$$
+
+This means the columns are orthonormal. Since there are $n$ independent columns in $\R^n$, they form a basis.
+
+Conversely, an orthonormal basis gives $Q^\top Q = I$. Because $Q$ is square, this implies $Q^{-1} = Q^\top$.
+
+:::
+
