@@ -153,7 +153,10 @@
 
 .example {
   background: #f7f7f5;
+  border: 1px solid #d6d6d0;
   border-left: 4px solid #737373;
+  border-radius: 0.35rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
   margin: 1.25rem 0;
   padding: 0.85rem 1rem;
 }
@@ -162,13 +165,10 @@
   margin-top: 0;
 }
 
-.example > p:first-child::before {
-  content: "Example. ";
+.example .theorem-title,
+.example .theorem-title strong {
+  color: #444;
   font-weight: 700;
-}
-
-.example[title] > p:first-child::before {
-  content: attr(title) ". ";
 }
 
 .example > :last-child {

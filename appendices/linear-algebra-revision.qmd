@@ -51,7 +51,9 @@ Since $\mathcal W$ is nonempty, we can choose an arbitrary $\mathbf w \in \mathc
 
 :::
 
-::: {#example}
+::: {#exm-subspace-test}
+
+## Testing whether a set is a subspace
 
 Consider $W = \{(x, y, z)^\top \in \R^3: y = z\}$. If $\mathcal u = (a, b, b)^\top$ and $v=(c,d,d)^\top$, then 
 
@@ -888,3 +890,325 @@ Conversely, an orthonormal basis gives $Q^\top Q = I$. Because $Q$ is square, th
 
 :::
 
+::: {#cor-characterization-by-rows}
+
+## Characterization by rows
+
+$Q$ is orthogonal if and only if its rows form an orthonomal basis. 
+
+:::
+
+::: {.proof} 
+
+Q is orthogonal if and only if $Q^\top$ is orthogonal. Apply @thm-characterization-by-columns to $Q^\top$.
+
+:::
+
+::: {#thm-orthogonal-diagonalization}
+
+## For every real symmetric matrix $A$, there exists an orthogonal matrix $Q$ such that 
+
+$$
+Q^\top A Q = \Lambda, \quad \Lambda = \mathrm{diag}(\lambda_1, \ldots, \lambda_n).
+$$
+
+:::
+
+
+::: {.proof}
+
+By @thm-orthonormal-eigenbasis, we choose an orthonomal eigenbasis $q_1, \ldots, q_n$, satisfying $Aq_i = \lambda_i q_i$. Let $Q= [q_1,\ldots, q_n]$. Then 
+
+$$
+AQ = [\lambda_1q_1, \ldots, \lambda_nq_n]= Q\Lambda.
+$$
+
+Multiplying by $Q^\top$ yields 
+
+$$
+Q^\top AQ = Q^\top Q\Lambda = \Lambda
+$$
+
+:::
+
+::: {#cor-spectral-decompostion}
+
+Because $QQ^\top = I$, 
+
+$$
+A=Q\Lambda Q^\top = \sum_{i=1}^n \lambda_i q_i q_i^\top .
+$$
+
+:::
+
+
+::: {.proof}
+
+Multiply the identity $Q^\top A Q = \Lambda$ on the left by $Q$ and on the right by $Q^\top$. Expanding the product by columns gives the summation.
+
+:::
+
+![Orthogonal diagonalization](figs/orthogonal-diagonalization.png)
+
+Note that _eigenvalues determine the scaling_, whereas _eigenvectors determine the direction_.
+
+### Positive definite and positive semidefinite matrices
+
+::: {#def-positive-definite}
+
+## Postive definite 
+
+A real symmetric matrix $A$ is __positive definite__ if 
+
+$$
+x^\top Ax > 0 \quad \forall x\neq 0 
+$$
+
+It is __positive semidefinite__ (called _nonnegative_) if 
+
+$$
+x^\top A x \geq 0 \quad \forall x
+$$
+:::
+
+::: {#thm-eigenvalue-characterization}
+
+## Eigenvalue characterization
+
+For symmetric $A$, 
+
+$$
+A \succeq 0 \Longleftrightarrow \lambda_i \geq 0 \quad \forall i
+$$
+
+and 
+
+$$
+A \succ 0 \Longleftrightarrow \lambda_i > 0 \quad \forall i
+$$
+:::
+
+::: {.proof}
+
+Using the spectral decomposition, let $z = Q^\top x$. Then 
+
+$$
+x^\top Ax = z^\top \Lambda z = \sum_{i=1}^n \lambda_i z_i^2.
+$$
+
+If every eigenvalue is nonnegative, every summand is nonnegative. Conversely, if $\lambda_j < 0$, choosing $x = q_j$ gives $x^\top A x = \lambda_j < 0$, contradicting positive semidefiniteness. 
+
+Similarly, all eigenvalues being strictly positive makes the quadratic form strictly positive for every nonzero $x$, and a nonpositive eigenvalues contradicts positive definiteness.
+:::
+
+::: {#thm-factorization-of-positive-semidefinite-matrices}
+
+## Factorization of positive semidefinite matrices
+
+For symmetric $A$, 
+
+$$
+A\succeq 0 \Longleftrightarrow \exists B \in \R^{n\times n}: A = BB^\top
+$$
+
+:::
+
+::: {.proof}
+
+If $A \succeq 0$, every eigenvalue is nonnegative. We define $B = Q\,\mathrm{diag}(\sqrt{\lambda_1}, \ldots, \sqrt{\lambda_n})$. Then 
+
+$$
+BB^\top = Q\, \mathrm{diag}(\lambda_1, \ldots, \lambda_n) Q^\top = A.
+$$
+
+Conversely, if $A = BB^\top$, then for every $x$, 
+
+$$
+x^\top Ax = x^\top BB^\top x = ||B^\top x||^2 \geq 0
+$$
+
+Hence $A \succeq 0$.
+:::
+
+
+::: {#cor-positive-definiteness-and-nonsingularity}
+
+## Positive definiteness and nonsingularity
+
+If $A=BB^\top$, then 
+
+$$
+A\succ 0 \Longleftrightarrow B \text{ is nonsingular}.
+$$
+
+:::
+
+
+::: {.proof}
+
+For every nonzero $x$, $x^\top Ax = ||B^\top x||^2$. This is strictly positive for every $x\neq 0$ when $\mathcal N(B^\top)=\{0\}$. Since $B$ is square, this is equivalent to nonsigularity of $B$. 
+
+:::
+
+For any $X \in \R^{n\times p}$, $X^\top X \succeq 0$ since $\beta^\top X^\top X \beta=||X\beta||^2 \geq 0$. Moreover,
+
+$$
+X^\top X \succ 0 \Longleftrightarrow \mathrm{rank}(X) = p.
+$$
+
+## Orthogonal projections
+
+### Orthogonal projection operators
+
+::: {#def-perpendicular-projection-operator}
+
+Let $W = \mathcal C(X) \in \R^n$. A matrix $P\in \R^{n\times n}$ is the __orthogonal projection matrix__ onto $W$ if 
+
+$$
+\begin{aligned}
+Pv = v &\quad\forall v\in W\\
+Pw = 0 & \quad \forall w\in W^\perp
+\end{aligned}
+$$
+
+Thus, for the unique decomposition $y = y_W + y_\perp$, the projection satisfies
+
+$$
+Py = y_W, \quad (I-P)y = y_\perp
+$$
+
+:::
+
+
+::: {#prp-column-space-of-a-projection}
+
+## Column space of a projection
+
+If $P$ is the orthogonal projection onto $\mathcal C(X)$, then $\mathcal C(P) = \mathcal C(X)$. 
+:::
+
+::: {.proof}
+
+For any $y = y_W + y_\perp$, $Py = y_W \in \mathcal C(X)$. Therefore $\mathcal C(P) \subseteq \mathcal C(X)$. 
+
+Conversely, for every $v \in \mathcal C(X)$, $Pv = v$, so $v\in \mathcal C(P)$. Thus $\mathcal C(X) \subseteq \mathcal C(P)$. 
+
+:::
+
+### Characterization of orthogonal projections 
+
+::: {#thm-symmetry-and-idempotence}
+
+A square matrix $P$ is an orthogonal projection onto its column space if and only if 
+
+$$
+P^2 = P, \qquad P^\top = P.
+$$
+
+:::
+
+::: {.proof}
+
+Suppose $P$ is an orthogonal projection. For every $x$, we write $x= u+ v$ with $u\in \mathcal C(P)$ and $v \in \mathcal C(P)^\perp$. Then 
+
+$$
+P^2X = P(Px) = Pu = u = Px.
+$$
+
+Hence $P^2 = P$. For symmetry, let take arbitrary vectors $x = x_W + x_\perp$ and $y = y_W+ y_\perp$. We have 
+
+$$
+x^\top Py = (x_W + x_\perp)^\top y_W = x_W^\top y_W. 
+$$
+
+Similarly, 
+
+$$
+(Px)^\top y = x_W^\top (y_W + y_\perp) = x_W^\top y_W
+$$
+
+Therefore $x^\top P y = x^\top P^\top y$ for all $x, y$, which implies $P= P^\top$. 
+
+Now suppose $P^2 = P$ and $P= P^\top$. For $v\in \mathcal C(P)$, we write $v = Px$. Then 
+
+$$
+Pv = P^2x = Px = v. 
+$$
+
+For $w\perp \mathcal C(P)$, $P^\top w = 0$ because every column of $P$ is orthogonal to $w$. By symmetry, $Pw = 0$. Therefore $P$ satisfies the defining properties of an orthogonal projection.
+
+:::
+
+::: {#prp-uniqueness}
+
+### Uniqueness
+
+The orthogonal projection onto a specified subspace is unique.
+
+:::
+
+::: {.proof}
+
+Let $P$ and $Q$ be orthogonal projections onto $W$. For arbitrary $x$, we can write $x = x_W + x_\perp$. Then $Px = x_W = Qx$. Since this equality holds for every $x$, $P = Q$. 
+
+:::
+
+### Construction using an orthonormal basis
+
+:::{#thm-projection-formula}
+
+If the columns of $Q \in \R^{n\times r}$ form an orthonormal basis for $W$, then 
+
+$$
+P_W = QQ^\top = \sum_{i=1}^r q_i q_i^\top. 
+$$
+
+:::
+
+
+::: {.proof}
+
+Since $Q^\top Q = I_r$, 
+
+$$
+P_W^2 = QQ^\top QQ^\top = Q(Q^\top Q)Q^\top = QQ^\top = P_W
+$$
+Also, 
+
+$$
+P_W^\top = (QQ^\top)^\top = QQ^\top 
+$$
+
+Thus $P_W$ is symmetric and idempotent. 
+
+Moreover, $\mathcal C(P_W) = \mathcal C(Q) = W$, one inclusion follows because every column of $QQ^\top$ belongs to $\mathcal C(Q)$, and the reverse follows from $P_W Q = QQ^\top Q = Q$. By @thm-symmetry-and-idempotence, $QQ^\top$ is the orthogonal projection onto $W$. 
+
+:::
+
+::: {#exm-projection-onto-a-line}
+
+## Projection onto a line
+
+Consider the line $W = \mathrm{span}\{\begin{pmatrix}2\\1\end{pmatrix}\}$. An orthonormal basis is the single vector $q = \frac{1}{\sqrt{5}} \begin{pmatrix}2\\1\end{pmatrix}$. Hence 
+
+$$
+P_W = qq^\top =\frac{1}{5}\begin{pmatrix}4&2 \\ 2&1\end{pmatrix}
+$$
+
+For $y = (3,4)^\top$,
+
+$$
+P_W y = \frac{1}{5}\begin{pmatrix}4&2 \\ 2&1\end{pmatrix} \begin{pmatrix}3\\4\end{pmatrix} =\begin{pmatrix}4\\2 \end{pmatrix}.
+$$
+
+The residual is $y-P_W y = \begin{pmatrix}-1\\ 2\end{pmatrix}$ 
+
+We can check for it orthogonality: $\begin{pmatrix} 4& 2 \end{pmatrix}\begin{pmatrix}-1\\ 2\end{pmatrix}=0$
+
+:::
+
+![Orthogonal projection example](figs/orthogonal-projection-r2-example.png)
+
+### Least squares as orthogonal projection 
+
+Suppose we want to minimize $L(\beta) = ||y-X\beta||^2$. A minimizing fitted vector $\hat y = \mathbf X\hat \beta$ must be the projection of $y$ onto $\mathcal C(X)$. 

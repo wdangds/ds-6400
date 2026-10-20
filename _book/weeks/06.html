@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>6&nbsp; Regression Splines – DS 6400 Weekly Writing</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../references.html" rel="next">
+<link href="../weeks/05.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5ccb035bea26c1e21f80f44cf7c27909.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+window.MathJax = {
+  loader: {
+    load: ["[tex]/mathtools"]
+  },
+  tex: {
+    packages: {"[+]": ["mathtools"]},
+    macros: {
+      R: "\\mathbb{R}",
+      N: "\\mathbb{N}",
+      Z: "\\mathbb{Z}",
+      Q: "\\mathbb{Q}",
+      C: "\\mathbb{C}",
+      E: "\\mathbb{E}",
+      Var: "\\operatorname{Var}",
+      Cov: "\\operatorname{Cov}",
+      Corr: "\\operatorname{Corr}",
+      argmin: "\\operatorname*{arg\\,min}",
+      argmax: "\\operatorname*{arg\\,max}",
+      ind: "\\mathbb{1}",
+      Err: "\\operatorname{Err}",
+      err: "\\operatorname{err}",
+      var: "\\operatorname{var}",
+      indep: "\\perp\\!\\!\\!\\perp",
+      PD: "\\operatorname{PD}",
+      ALE: "\\operatorname{ALE}",
+      mg: "\\operatorname{mg}",
+      av: "\\operatorname{av}",
+      PE: "\\operatorname{PE}",
+      mr: "\\operatorname{mr}",
+      rmg: "\\operatorname{rmg}",
+      sd: "\\operatorname{sd}",
+      P: "\\mathbb{P}", 
+      rank: "\\operatorname{rank}",
+      dim: "\\operatorname{dim}",
+      V: "\\mathcal{V}",
+      W: "\\mathcal{W}",
+      U: "\\mathcal{U}",
+    }
+  }
+};
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/06.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Regression Splines</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">DS 6400 Weekly Writing</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Weekly Writing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Apparent Error to Modern Error: Efron’s Optimism and Evaluation of Predictive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">40 years of Predictive Performance Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Are the Forests really Random?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Comparison Under Complexity and Tuning Constraints</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/06.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Regression Splines</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/ols-cv-independence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">OLS, Linear Invariance, and Conditional Independence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/linear-algebra-revision.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#motivations" id="toc-motivations" class="nav-link active" data-scroll-target="#motivations"><span class="header-section-number">1</span> Motivations</a>
+  <ul class="collapse">
+  <li><a href="#the-problem-of-approximating-an-unknown-function" id="toc-the-problem-of-approximating-an-unknown-function" class="nav-link" data-scroll-target="#the-problem-of-approximating-an-unknown-function"><span class="header-section-number">1.1</span> The problem of approximating an unknown function</a></li>
+  <li><a href="#the-historical-origins-of-spline-functions" id="toc-the-historical-origins-of-spline-functions" class="nav-link" data-scroll-target="#the-historical-origins-of-spline-functions"><span class="header-section-number">1.2</span> The historical origins of spline functions</a></li>
+  <li><a href="#from-interpolation-to-statisitical-regression" id="toc-from-interpolation-to-statisitical-regression" class="nav-link" data-scroll-target="#from-interpolation-to-statisitical-regression"><span class="header-section-number">1.3</span> From interpolation to statisitical regression</a></li>
+  </ul></li>
+  <li><a href="#mathematical-construction-of-regression-splines" id="toc-mathematical-construction-of-regression-splines" class="nav-link" data-scroll-target="#mathematical-construction-of-regression-splines"><span class="header-section-number">2</span> Mathematical Construction of Regression Splines</a>
+  <ul class="collapse">
+  <li><a href="#spline-function" id="toc-spline-function" class="nav-link" data-scroll-target="#spline-function"><span class="header-section-number">2.1</span> Spline function</a></li>
+  <li><a href="#regression-as-a-basis-expansion" id="toc-regression-as-a-basis-expansion" class="nav-link" data-scroll-target="#regression-as-a-basis-expansion"><span class="header-section-number">2.2</span> Regression as a basis expansion</a></li>
+  <li><a href="#the-truncated-power-function" id="toc-the-truncated-power-function" class="nav-link" data-scroll-target="#the-truncated-power-function"><span class="header-section-number">2.3</span> The truncated-power function</a></li>
+  </ul></li>
+  <li><a href="#linear-regression-splines" id="toc-linear-regression-splines" class="nav-link" data-scroll-target="#linear-regression-splines"><span class="header-section-number">3</span> Linear Regression Splines</a>
+  <ul class="collapse">
+  <li><a href="#construction-from-piecewise-linear-functions" id="toc-construction-from-piecewise-linear-functions" class="nav-link" data-scroll-target="#construction-from-piecewise-linear-functions"><span class="header-section-number">3.1</span> Construction from piecewise linear functions</a></li>
+  <li><a href="#extension-to-multiple-knots" id="toc-extension-to-multiple-knots" class="nav-link" data-scroll-target="#extension-to-multiple-knots"><span class="header-section-number">3.2</span> Extension to multiple knots</a></li>
+  <li><a href="#dimension-of-the-linear-spline-space" id="toc-dimension-of-the-linear-spline-space" class="nav-link" data-scroll-target="#dimension-of-the-linear-spline-space"><span class="header-section-number">3.3</span> Dimension of the linear spline space</a></li>
+  <li><a href="#interpretation-and-limitations" id="toc-interpretation-and-limitations" class="nav-link" data-scroll-target="#interpretation-and-limitations"><span class="header-section-number">3.4</span> Interpretation and limitations</a></li>
+  </ul></li>
+  <li><a href="#cubic-regression-splines" id="toc-cubic-regression-splines" class="nav-link" data-scroll-target="#cubic-regression-splines"><span class="header-section-number">4</span> Cubic Regression Splines</a>
+  <ul class="collapse">
+  <li><a href="#why-cubic-polynomial" id="toc-why-cubic-polynomial" class="nav-link" data-scroll-target="#why-cubic-polynomial"><span class="header-section-number">4.1</span> Why cubic polynomial?</a></li>
+  <li><a href="#derivation-of-the-cubic-spline-basis" id="toc-derivation-of-the-cubic-spline-basis" class="nav-link" data-scroll-target="#derivation-of-the-cubic-spline-basis"><span class="header-section-number">4.2</span> Derivation of the cubic spline basis</a></li>
+  <li><a href="#smoothness-properties" id="toc-smoothness-properties" class="nav-link" data-scroll-target="#smoothness-properties"><span class="header-section-number">4.3</span> Smoothness properties</a></li>
+  <li><a href="#dimension-of-the-cubic-spline-space" id="toc-dimension-of-the-cubic-spline-space" class="nav-link" data-scroll-target="#dimension-of-the-cubic-spline-space"><span class="header-section-number">4.4</span> Dimension of the cubic spline space</a></li>
+  <li><a href="#the-problem-of-boundary-behavior" id="toc-the-problem-of-boundary-behavior" class="nav-link" data-scroll-target="#the-problem-of-boundary-behavior"><span class="header-section-number">4.5</span> The problem of boundary behavior</a></li>
+  </ul></li>
+  <li><a href="#restricted-cubic-splines-and-natural-cubic-splines" id="toc-restricted-cubic-splines-and-natural-cubic-splines" class="nav-link" data-scroll-target="#restricted-cubic-splines-and-natural-cubic-splines"><span class="header-section-number">5</span> Restricted Cubic Splines and Natural Cubic Splines</a>
+  <ul class="collapse">
+  <li><a href="#motivation-for-the-restriction" id="toc-motivation-for-the-restriction" class="nav-link" data-scroll-target="#motivation-for-the-restriction"><span class="header-section-number">5.1</span> Motivation for the restriction</a></li>
+  <li><a href="#mathematical-definition" id="toc-mathematical-definition" class="nav-link" data-scroll-target="#mathematical-definition"><span class="header-section-number">5.2</span> Mathematical definition</a></li>
+  <li><a href="#constructing-a-restricted-cubic-spline-basis" id="toc-constructing-a-restricted-cubic-spline-basis" class="nav-link" data-scroll-target="#constructing-a-restricted-cubic-spline-basis"><span class="header-section-number">5.3</span> Constructing a restricted cubic spline basis</a></li>
+  <li><a href="#dimension-of-the-restricted-cubic-spline-space" id="toc-dimension-of-the-restricted-cubic-spline-space" class="nav-link" data-scroll-target="#dimension-of-the-restricted-cubic-spline-space"><span class="header-section-number">5.4</span> Dimension of the restricted cubic spline space</a></li>
+  <li><a href="#sec-the-minimum-curvature-property-of-natural-cubic-splines" id="toc-sec-the-minimum-curvature-property-of-natural-cubic-splines" class="nav-link" data-scroll-target="#sec-the-minimum-curvature-property-of-natural-cubic-splines"><span class="header-section-number">5.5</span> The minimum-curvature property of natural cubic splines</a></li>
+  </ul></li>
+  <li><a href="#statistical-estimation-model-complexity-and-interpretation" id="toc-statistical-estimation-model-complexity-and-interpretation" class="nav-link" data-scroll-target="#statistical-estimation-model-complexity-and-interpretation"><span class="header-section-number">6</span> Statistical Estimation, Model Complexity, and Interpretation</a>
+  <ul class="collapse">
+  <li><a href="#a-unified-regression-formulation" id="toc-a-unified-regression-formulation" class="nav-link" data-scroll-target="#a-unified-regression-formulation"><span class="header-section-number">6.1</span> A unified regression formulation</a></li>
+  <li><a href="#knot-selection-and-model-complexity" id="toc-knot-selection-and-model-complexity" class="nav-link" data-scroll-target="#knot-selection-and-model-complexity"><span class="header-section-number">6.2</span> Knot selection and model complexity</a></li>
+  <li><a href="#statistical-inference" id="toc-statistical-inference" class="nav-link" data-scroll-target="#statistical-inference"><span class="header-section-number">6.3</span> Statistical inference</a></li>
+  <li><a href="#interpreting-the-fitted-relationship" id="toc-interpreting-the-fitted-relationship" class="nav-link" data-scroll-target="#interpreting-the-fitted-relationship"><span class="header-section-number">6.4</span> Interpreting the fitted relationship</a></li>
+  <li><a href="#why-b-splines-are-important-computationally" id="toc-why-b-splines-are-important-computationally" class="nav-link" data-scroll-target="#why-b-splines-are-important-computationally"><span class="header-section-number">6.5</span> Why B-splines are important computationally</a></li>
+  </ul></li>
+  <li><a href="#from-regression-splines-to-smoothing-splines" id="toc-from-regression-splines-to-smoothing-splines" class="nav-link" data-scroll-target="#from-regression-splines-to-smoothing-splines"><span class="header-section-number">7</span> From Regression Splines to Smoothing Splines</a>
+  <ul class="collapse">
+  <li><a href="#penalizing-excessive-curvature" id="toc-penalizing-excessive-curvature" class="nav-link" data-scroll-target="#penalizing-excessive-curvature"><span class="header-section-number">7.1</span> Penalizing excessive curvature</a></li>
+  <li><a href="#matrix-representation-of-a-penalized-regression-spline" id="toc-matrix-representation-of-a-penalized-regression-spline" class="nav-link" data-scroll-target="#matrix-representation-of-a-penalized-regression-spline"><span class="header-section-number">7.2</span> Matrix representation of a penalized regression spline</a></li>
+  </ul></li>
+  <li><a href="#subsequent-developments-and-modern-extensions" id="toc-subsequent-developments-and-modern-extensions" class="nav-link" data-scroll-target="#subsequent-developments-and-modern-extensions"><span class="header-section-number">8</span> Subsequent Developments and Modern Extensions</a>
+  <ul class="collapse">
+  <li><a href="#generalized-additive-models" id="toc-generalized-additive-models" class="nav-link" data-scroll-target="#generalized-additive-models"><span class="header-section-number">8.1</span> Generalized additive models</a></li>
+  <li><a href="#penalized-b-splines" id="toc-penalized-b-splines" class="nav-link" data-scroll-target="#penalized-b-splines"><span class="header-section-number">8.2</span> Penalized B-splines</a></li>
+  <li><a href="#adapative-regression-splines" id="toc-adapative-regression-splines" class="nav-link" data-scroll-target="#adapative-regression-splines"><span class="header-section-number">8.3</span> Adapative regression splines</a></li>
+  <li><a href="#shape-constrained-splines" id="toc-shape-constrained-splines" class="nav-link" data-scroll-target="#shape-constrained-splines"><span class="header-section-number">8.4</span> Shape-constrained splines</a></li>
+  <li><a href="#multivariate-splines-and-interactions" id="toc-multivariate-splines-and-interactions" class="nav-link" data-scroll-target="#multivariate-splines-and-interactions"><span class="header-section-number">8.5</span> Multivariate splines and interactions</a></li>
+  <li><a href="#connections-to-machine-learning" id="toc-connections-to-machine-learning" class="nav-link" data-scroll-target="#connections-to-machine-learning"><span class="header-section-number">8.6</span> Connections to machine learning</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/06.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Regression Splines</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Regression Splines</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="motivations" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="motivations"><span class="header-section-number">1</span> Motivations</h2>
+<section id="the-problem-of-approximating-an-unknown-function" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="the-problem-of-approximating-an-unknown-function"><span class="header-section-number">1.1</span> The problem of approximating an unknown function</h3>
+<p>Suppose that we observe a random sample <span class="math inline">\(\mathcal D_n = \{(x_i, y_i)\}_{i=1}^n\)</span> generated according to the regression model <span class="math inline">\(Y_i = f(X_i) + \epsilon_i\)</span> where <span class="math inline">\(f:\R \to \R\)</span> is an unknown regression function and the random errors satisfy <span class="math inline">\(\E[\epsilon_i\mid X_i]=0\)</span>. Consequently,</p>
+<p><span class="math display">\[
+f(x) = \E[Y\mid X= x],
+\]</span></p>
+<p>and the statistical problem is to construct an estimator <span class="math inline">\(\hat f\)</span> that approximates <span class="math inline">\(f\)</span> from the available observations.</p>
+<p>The simplest approach assumes that <span class="math inline">\(f\)</span> is linear:</p>
+<p><span class="math display">\[
+f(x) = \beta_0 + \beta_1 x
+\]</span></p>
+<p>This assumption has several advatanges. The parameters admit a straigtforward interpretation, estimation can be carried out ordinary least squares, and the resulting model is computationally inexpensive. In many scientific applications, the effect of a predictor changes with its value. For instance, the relationship between age and mortality, temperature and electricity demand, or the concentration of a pollutant and its health consequences may result in some form of closure.</p>
+<p>Some may consider using polynomial regression:</p>
+<p><span class="math display">\[
+f(x) = \beta_0 + \beta_1 x + \ldots + \beta_p x^p.
+\]</span></p>
+<p>As the degree <span class="math inline">\(p\)</span> increases, the class of possible functions becomes richer. However, a polynomial is a <em>global approximation</em>: changing one coefficient generally changes the fitted function throughout the entire domain. High-degree polynomials can also exhibit oscillations, especially near the boundaries of the observed data. Furthermore, increasing the polynomial degree does not allow us to allocate additional flexibility to regions where the underlying relationship is more complicated. These motivate a different question:</p>
+<blockquote class="blockquote">
+<p>Rather than fitting one complicated polynomial over the entire domain, can we construct a function from several simpler polynomials while ensuring that the pieces join together?</p>
+</blockquote>
+<div id="exm-piecewise-linear-spline" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1 (A piecewise linear model for electricity demand)</strong></span> Consider a regression model describing how electricity usage depends on temperature. Between moderate temperatures, electricity demand may change slowly. Beyond a sufficiently high temperature, air-conditioning demand may increase much more rapidly. We could represent such a relationship using two linear functions joined at a temperature threshold <span class="math inline">\(\kappa\)</span>. Mathematically,</p>
+<p><span class="math display">\[
+s(x) = \begin{cases}a_0 + b_0 x, &amp; x \leq \kappa, \\ a_1 + b_1 x,&amp; x &gt; \kappa. \end{cases}
+\]</span></p>
+<p>The point <span class="math inline">\(\kappa\)</span> is a knot. It indicates where a different local polynomial becomes active.</p>
+</div>
+<div id="exm-a-linear-spline-with-two-knots" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2 (A linear splie with two knots)</strong></span> Consider the function</p>
+<p><span class="math display">\[
+s(x) = 1 + 2x - 3(x-2)_{+} + (x-5)_{+},
+\]</span></p>
+<p>where <span class="math inline">\((z)_{+} = \max(z, 0)\)</span>. The two knots are <span class="math inline">\(\kappa_1 = 2\)</span> and <span class="math inline">\(\kappa_2 = 5\)</span>.</p>
+<div id="5be71745" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># define the positive-part function</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> positive_part(z):</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.maximum(z, <span class="dv">0</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> s(x):</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">+</span> <span class="dv">2</span><span class="op">*</span>x <span class="op">-</span> <span class="dv">3</span><span class="op">*</span>positive_part(x<span class="op">-</span><span class="dv">2</span>) <span class="op">+</span> positive_part(x<span class="op">-</span><span class="dv">5</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">8</span>, <span class="dv">500</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> s(x) </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">5</span>))</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>ax.plot(x, y, label<span class="op">=</span><span class="st">"$s(x)$"</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> knot <span class="kw">in</span> [<span class="dv">2</span>,<span class="dv">5</span>]:</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    ax.axvline(knot, color<span class="op">=</span><span class="st">"gray"</span>, linestyle<span class="op">=</span><span class="st">"--"</span>, alpha <span class="op">=</span> <span class="fl">0.6</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    ax.scatter(knot, s(knot), color <span class="op">=</span> <span class="st">"red"</span>, zorder<span class="op">=</span> <span class="dv">5</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    ax.annotate(<span class="ss">f"Knot=</span><span class="sc">{</span>knot<span class="sc">}</span><span class="ss">"</span>, (knot, s(knot)), xytext<span class="op">=</span>(<span class="dv">3</span>,<span class="dv">3</span>), textcoords<span class="op">=</span><span class="st">"offset points"</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"$x$"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"$s(x)$"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Linear spline"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="06_files/figure-html/cell-2-output-1.png" width="739" height="450" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>For <span class="math inline">\(x\leq 2\)</span>, both truncated terms vanish: <span class="math inline">\(s(x) = 1+ 2x\)</span>.</p>
+<p>For <span class="math inline">\(2&lt; x\leq 5\)</span>, only the first truncated term is active: <span class="math inline">\(s(x)= 1+ 2x -3(x-2) = -x + 7\)</span></p>
+<p>For <span class="math inline">\(x&gt; 5\)</span>, both terms are active: <span class="math inline">\(s(x) = 1 + 2x -3(x-2) +(x-5) = 2\)</span>.</p>
+<p>Therefore,</p>
+<p><span class="math display">\[
+s(x) = \begin{cases}1+2x, &amp;x\leq 2, \\ -x+7, &amp; 2&lt; x\leq 5, \\ 2, &amp; x&gt;5.\end{cases}
+\]</span></p>
+</div>
+</section>
+<section id="the-historical-origins-of-spline-functions" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="the-historical-origins-of-spline-functions"><span class="header-section-number">1.2</span> The historical origins of spline functions</h3>
+<p>The mathematical theory of spline functions was developed by Issac Jabob Schoenberg. <span class="citation" data-cites="schoenbergContributionsProblemApproximation1988">Schoenberg (<a href="../references.html#ref-schoenbergContributionsProblemApproximation1988" role="doc-biblioref">1988</a>)</span> investigated how to construct smooth approximations and interpolants from discrete observations. He addressed limitations of classical interpolation, particularly the discontinuities that could arise when successive local polynomial approximations were joined. It helped establish piecewise-polynomial functions with prescribed smoothness as a subject in approximation theory.</p>
+<p>A further connection between splines and optimization was developed by John C. Holladay in his 1957 paper <span class="citation" data-cites="holladaySmoothestCurveApproximation1957">Holladay (<a href="../references.html#ref-holladaySmoothestCurveApproximation1957" role="doc-biblioref">1957</a>)</span>. Holladay examined how to construct a curve passing through specified points while minimizing the measure of its bending.</p>
+<p>The central idea can be expressed as the optimized problem</p>
+<p><span class="math display">\[
+\underbrace{\min_g \int_a^b [g''(x)]^2 dx}_{\substack{J(g):\text{ roughness functional / }\\ \text{bending-energy functional}}}  \quad \text{subject to } g(x_i) = y_i, i= 1, \ldots, n.
+\]</span></p>
+<p>Its interpretation follows from the derivatives of <span class="math inline">\(g\)</span>. The first derivative <span class="math inline">\(g'(x)\)</span> measures the local slope of the curve, whereas the second derivative <span class="math inline">\(g''(x)\)</span> measures its departure from a locally linear relationship. Therefore, minimizing <span class="math inline">\(J(g)\)</span> discourages excessive curvature. Under the usual interpolation and regularity conditions, the unique minimizer is a natural cubic spline. We will derive this result in <a href="#sec-the-minimum-curvature-property-of-natural-cubic-splines" class="quarto-xref"><span>Section 6.5.5</span></a>.</p>
+</section>
+<section id="from-interpolation-to-statisitical-regression" class="level3" data-number="1.3">
+<h3 data-number="1.3" class="anchored" data-anchor-id="from-interpolation-to-statisitical-regression"><span class="header-section-number">1.3</span> From interpolation to statisitical regression</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/interpolation-vs-regression.png" class="img-fluid figure-img"></p>
+<figcaption>Interpolation vs regression</figcaption>
+</figure>
+</div>
+<p>In interpolation, the function is required to reproduce every observed response exactly, e.g., <span class="math inline">\(\hat f(x_i) = y_i\)</span>. In regression, however, the observations contain noise, so passing through every data point is neither necessary nor desirable. Instead, the objective is to estimate the underlying conditional expectation. This distinction can be formalized by replacing exact interpolation constaints with a loss function, such as</p>
+<p><span class="math display">\[
+\min_{f\in \mathcal S} \sum_{i=1}^n (y_i -f(x_i))^2,
+\]</span></p>
+<p>where <span class="math inline">\(\mathcal S\)</span> is an appropriate chosen space of spline functions.</p>
+<p>A major development occured in 1967, when Christian H. Reinsch published <span class="citation" data-cites="reinschSmoothingSplineFunctions1967">Reinsch (<a href="../references.html#ref-reinschSmoothingSplineFunctions1967" role="doc-biblioref">1967</a>)</span>. Rather than requiring exact interpolation, Reinsch considered minimizing roughness subject to a bound on the weighted squared discrepancies between the fitted curve and the observations.</p>
+<p>The subsequent development of spline methods can be understood through related directions:</p>
+<ol type="1">
+<li>First, <strong>regression splines</strong> represent <span class="math inline">\(f\)</span> in a finite-dimensional space generated by predetermined basis functions. The coefficients are estimated using ordinary regression methods.</li>
+<li>Second, <strong>smoothing splines</strong> balance goodness of fit against smoothness by adding a roughness penalty or an equivalent constraint.</li>
+</ol>
+</section>
+</section>
+<section id="mathematical-construction-of-regression-splines" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="mathematical-construction-of-regression-splines"><span class="header-section-number">2</span> Mathematical Construction of Regression Splines</h2>
+<section id="spline-function" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="spline-function"><span class="header-section-number">2.1</span> Spline function</h3>
+<p>Let <span class="math inline">\(a = \kappa_0 &lt;\kappa_1 &lt; \ldots &lt; \kappa_K &lt;\kappa_{K+1} = b\)</span> define a partition of an interval <span class="math inline">\([a,b]\)</span>. The points <span class="math inline">\(\kappa_1, \ldots, \kappa_k\)</span> are called <strong>interior knots</strong>, and the intervals <span class="math inline">\([\kappa_j, \kappa_{j+1}]\)</span> are called <em>polynomial segments</em>.</p>
+<div id="def-polynomial-spline" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Polynomial spline)</strong></span> A function <span class="math inline">\(s:[a,b]\to \R\)</span> is a <em>spline</em> of degree <span class="math inline">\(p\)</span>, with simple interior knots <span class="math inline">\(\kappa_1, \ldots, \kappa_K\)</span> and maximal smoothness, if:</p>
+<ol type="1">
+<li>On every segment, <span class="math inline">\(s\)</span> agrees with a polynomial of degree at most <span class="math inline">\(p\)</span>.</li>
+<li>At each interior knot, <span class="math inline">\(s\)</span> and its derivatives through order <span class="math inline">\(p-1\)</span> are continuous.</li>
+</ol>
+</div>
+<p>Thus, for an interior knot <span class="math inline">\(\kappa_j\)</span>,</p>
+<p><span class="math display">\[
+s^{(r)} (\kappa_j^{-}) = s^{(r)} (\kappa_j^{+}), \quad r = 0,\ldots, p-1.
+\]</span></p>
+<p>Here <span class="math inline">\(\kappa_j^{-}\)</span> and <span class="math inline">\(\kappa_j^{+}\)</span> denote the limits approaching the knot from the left and right. The first condition provides flexibility by allowing different polynomial expressions in different regions. The second condition prevents the fitted function from becoming arbitrarily disconnected or irregular.</p>
+<p>In particular, the smoothness requirements differ by spline degree:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Spline</th>
+<th>Polynomial degree</th>
+<th>Continuity at inferior knots</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Linear</td>
+<td>1</td>
+<td>Function continuous, <span class="math inline">\(C^0\)</span></td>
+</tr>
+<tr class="even">
+<td>Quadratic</td>
+<td>2</td>
+<td>Function and first derivative continuous, <span class="math inline">\(C^{1}\)</span></td>
+</tr>
+<tr class="odd">
+<td>Cubic</td>
+<td>3</td>
+<td>Function, first and second derivatives continuous, <span class="math inline">\(C^{2}\)</span></td>
+</tr>
+</tbody>
+</table>
+<div id="def-cr-function" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2</strong></span> A function belongs to <span class="math inline">\(C^r [a,b]\)</span> if it possesses continuous derivatives through order <span class="math inline">\(r\)</span> on the interval <span class="math inline">\([a,b]\)</span>.</p>
+</div>
+<p>The distinction is geometric:</p>
+<ul>
+<li>Continuity of <span class="math inline">\(s\)</span> means there are no jumps in the curve.</li>
+<li>Continuity of <span class="math inline">\(s'\)</span> means there are no abrupt changes in slope.</li>
+<li>Continuity of <span class="math inline">\(s''\)</span> means curvature, as measured by the second derivative, changes continuously.</li>
+</ul>
+<div id="1d4177c8" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">1000</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>functions <span class="op">=</span> [<span class="kw">lambda</span> x: np.<span class="bu">abs</span>(x),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>             <span class="kw">lambda</span> x: x<span class="op">*</span>np.<span class="bu">abs</span>(x),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>             <span class="kw">lambda</span> x: np.<span class="bu">abs</span>(x)<span class="op">**</span><span class="dv">3</span>]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>first_derivatives <span class="op">=</span> [<span class="kw">lambda</span> x: np.sign(x),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                     <span class="kw">lambda</span> x: <span class="dv">2</span><span class="op">*</span>np.<span class="bu">abs</span>(x),</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                     <span class="kw">lambda</span> x: <span class="dv">3</span><span class="op">*</span>x<span class="op">*</span>np.<span class="bu">abs</span>(x)]</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>second_derivatives <span class="op">=</span> [<span class="kw">lambda</span> x: np.zeros_like(x),</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                      <span class="kw">lambda</span> x: <span class="dv">2</span><span class="op">*</span>np.sign(x),</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>                      <span class="kw">lambda</span> x: <span class="dv">6</span><span class="op">*</span>np.<span class="bu">abs</span>(x)]</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>names <span class="op">=</span> [<span class="vs">r"</span><span class="dv">$</span><span class="vs">C</span><span class="dv">^</span><span class="vs">0:</span><span class="ch">\ </span><span class="vs">f</span><span class="kw">(</span><span class="vs">x</span><span class="kw">)</span><span class="vs"> = </span><span class="cf">|</span><span class="vs">x</span><span class="cf">|</span><span class="dv">$</span><span class="vs">"</span>, </span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>         <span class="vs">r"</span><span class="dv">$</span><span class="vs">C</span><span class="dv">^</span><span class="vs">1:</span><span class="ch">\ </span><span class="vs">f</span><span class="kw">(</span><span class="vs">x</span><span class="kw">)</span><span class="vs"> = x</span><span class="cf">|</span><span class="vs">x</span><span class="cf">|</span><span class="dv">$</span><span class="vs">"</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>         <span class="vs">r"</span><span class="dv">$</span><span class="vs">C</span><span class="dv">^</span><span class="vs">2:</span><span class="ch">\ </span><span class="vs">f</span><span class="kw">(</span><span class="vs">x</span><span class="kw">)</span><span class="vs"> = </span><span class="cf">|</span><span class="vs">x</span><span class="cf">|</span><span class="dv">^</span><span class="vs">3"</span>]</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">3</span>,<span class="dv">3</span>, figsize <span class="op">=</span> (<span class="dv">13</span>, <span class="dv">10</span>))</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>):</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    curves <span class="op">=</span> [functions[i](x), first_derivatives[i](x), second_derivatives[i](x)]</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>):</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        ax <span class="op">=</span> axes[i, j]</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>        left <span class="op">=</span> x<span class="op">&lt;</span> <span class="dv">0</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        right <span class="op">=</span> x<span class="op">&gt;</span><span class="dv">0</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>        ax.plot(x[left], curves[j][left])</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        ax.plot(x[right], curves[j][right])</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>        ax.axvline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"gray"</span>, linestyle<span class="op">=</span><span class="st">"--"</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>        ax.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"black"</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>        ax.set_xlim(<span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> i <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>            ax.set_title([<span class="st">"Function $f(x)$"</span>, <span class="st">"First derivative $f'(x)$"</span>, <span class="st">"Second derivative $f''(x)$"</span>][j])</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span>  j <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>            ax.set_ylabel(names[i])</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">"Smoothness Classes at a Knot ($x=0$)"</span>)</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="06_files/figure-html/cell-3-output-1.png" width="1254" height="946" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="regression-as-a-basis-expansion" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="regression-as-a-basis-expansion"><span class="header-section-number">2.2</span> Regression as a basis expansion</h3>
+<p>The key statistical advantages of splines is that they can be expressed as linear combinations of known basis functions. Suppose that <span class="math inline">\(\mathcal S\)</span> is a spline space with basis</p>
+<p><span class="math display">\[
+\mathcal B = \{B_1, \ldots, B_d\}.
+\]</span></p>
+<p>Every function <span class="math inline">\(s\in\mathcal S\)</span> can then be represented as</p>
+<p><span class="math display">\[
+s(x) = \sum_{j=1}^d \beta_j B_j(x)
+\]</span></p>
+<p>for some coefficient vector <span class="math inline">\(\beta = (\beta_1, \ldots, \beta_d)^\top\)</span>. Although <span class="math inline">\(s(x)\)</span> may be nonlinear in <span class="math inline">\(x\)</span>, it remains <em>linear in its coefficients</em>. Consequently, the corresponding regression model is</p>
+<p><span class="math display">\[
+Y_i = \sum_{j=1}^d \beta_j B_j(X_i) + \epsilon_i
+\]</span></p>
+<p>We define the design matrix</p>
+<p><span class="math display">\[
+\mathbf B = \begin{pmatrix}B_1(x_1) &amp; \ldots &amp; B_d(x_1) \\
+                            \vdots &amp; &amp; \vdots \\
+                            B_1(x_n) &amp; \ldots &amp; B_d(x_n)  \end{pmatrix}
+\]</span></p>
+<p>Then <span class="math inline">\(\mathbf y = \mathbf{B\beta} + \mathbf\epsilon\)</span>. For ordinary least squares,</p>
+<p><span class="math display">\[
+\hat{\mathbf \beta} = \arg\min_{\mathbf \beta} ||\mathbf y - \mathbf{B\beta} ||^2_2.
+\]</span></p>
+<p>When <span class="math inline">\(\mathbf B\)</span> has full column rank,</p>
+<p><span class="math display">\[
+\hat{\mathbf \beta} =(\mathbf B^\top \mathbf B)^{-1}\mathbf B^{\top} \mathbf y
+\]</span></p>
+<p>Thus, spline regression does not require an entirely new estimation principle. Its essential innovation is the construction of the basis functions used to represent the unknown relationship.</p>
+</section>
+<section id="the-truncated-power-function" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="the-truncated-power-function"><span class="header-section-number">2.3</span> The truncated-power function</h3>
+<p>A convenient construction uses the positive-part function <span class="math inline">\((x-\kappa)_{+}=\max\{x-\kappa, 0\}\)</span>. Equivalently,</p>
+<p><span class="math display">\[
+(x-\kappa)_{+} = \begin{cases}0, &amp; x\leq \kappa, \\
+                              x- \kappa, &amp; x&gt; \kappa \end{cases}
+\]</span></p>
+<p>For an integer <span class="math inline">\(p\geq 1\)</span>, we can define</p>
+<p><span class="math display">\[
+(x-\kappa)^{p}_{+} = \begin{cases}0, &amp; x\leq \kappa, \\
+                             (x- \kappa)^{p}, &amp; x&gt; \kappa \end{cases}
+\]</span></p>
+<p>The term is zero before the knot and becomes a polynomial after the knot. This gives us a mechanism for changing the behavior of a fitted function at a particular location without changing its polynomial expression to the left of that location.</p>
+<p>For simple interior knots, the general truncated-power representation of a degree-<span class="math inline">\(p\)</span> spline is</p>
+<p><span class="math display">\[
+s(x) = \underbrace{\sum_{r=0}^p \beta_r x^r}_{\text{Global polynomial of degree at most }p} + \underbrace{\sum_{j=1}^K \gamma_j(x-\kappa_j)^p_{+}}_{\text{additional changes after the specified knots}}.
+\]</span></p>
+</section>
+</section>
+<section id="linear-regression-splines" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="linear-regression-splines"><span class="header-section-number">3</span> Linear Regression Splines</h2>
+<section id="construction-from-piecewise-linear-functions" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="construction-from-piecewise-linear-functions"><span class="header-section-number">3.1</span> Construction from piecewise linear functions</h3>
+<p>We begin with the simplest spline that allows the slope of the regression function to change. Suppose a relationship is approximately linear for small values of <span class="math inline">\(x\)</span>, but after a threshold <span class="math inline">\(\kappa\)</span>, the rate of change becomes different.</p>
+<p><span class="math display">\[
+s(x) = \begin{cases}a_0 + b_0 x , &amp; x\leq \kappa \\ a_1 + b_1 x, &amp; x&gt; \kappa \end{cases}
+\]</span></p>
+<p>Without any additional conditions, the two linear expressions need not meet at the knot. Such a function can have discontinuity, which may be unreasonable when the underlying phenomenon is expected to vary continuously.</p>
+<p>We therefore impose <span class="math inline">\(a_0 + b_0 \kappa = a_1 + b_1 \kappa\)</span>. Rearranging gives</p>
+<p><span class="math display">\[
+a_1 = a_0 + (b_0 - b*_1) \kappa
+\]</span></p>
+<p>Substituting into the second segment,</p>
+<p><span class="math display">\[
+s(x) = \begin{cases}a_0 + b_0 x, &amp; x\leq \kappa\\ a_0 + b_0 x + (b_1-b_0) (x-\kappa), &amp; x&gt;\kappa\end{cases}
+\]</span></p>
+<p>Define <span class="math inline">\(\beta_0 = a_0, \beta_1 = b_0, \gamma_1 = b_1- b_0\)</span>; the piecewise representation becomes</p>
+<p><span class="math display">\[
+s(x) = \beta_0 + \beta_1 x + \gamma_1 (x-\kappa)_{+}.
+\]</span></p>
+<p>This is a linear regression spline with one interior knot.</p>
+<p>We can immediately see the interpretations of the coefficients. The parameter <span class="math inline">\(\beta_1\)</span> is the slope before the knot, while <span class="math inline">\(\gamma_1\)</span> represents the change in slope after the knot. Indeed, differentiating yields</p>
+<p><span class="math display">\[
+s'(x) = \begin{cases}\beta_1, &amp; x&lt; \kappa \\
+                    \beta_1 + \gamma_1, x&gt; \kappa \end{cases}
+\]</span></p>
+<p>The derivative need not exist at the knot when <span class="math inline">\(\gamma_1\neq 0\)</span>, even though the function itself remains continuous.</p>
+</section>
+<section id="extension-to-multiple-knots" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="extension-to-multiple-knots"><span class="header-section-number">3.2</span> Extension to multiple knots</h3>
+<p>Let the interior knots be <span class="math inline">\(\kappa_1 &lt;\ldots &lt; \kappa_K\)</span>. The general linear spline is</p>
+<p><span class="math display">\[
+s(x) = \beta_0 + \beta_1 x + \sum_{j=1}^K \gamma_j (x- \kappa_j)_{+}.
+\]</span></p>
+<p>For <span class="math inline">\(x\)</span> that does not coincide with a knot,</p>
+<p><span class="math display">\[
+s'(x) = \beta_1 + \sum_{j=1}^{K} \gamma_j \mathbf 1\{x&gt; \kappa_j\}
+\]</span></p>
+<p>The slope on the segment <span class="math inline">\(\kappa_m &lt; x &lt; \kappa_{m+1}\)</span> is therefore</p>
+<p><span class="math display">\[
+\beta_1 + \sum_{j=1}^m \gamma_j.
+\]</span></p>
+<div id="exm-slope" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3</strong></span> Recall <a href="#exm-a-linear-spline-with-two-knots" class="quarto-xref">Example&nbsp;<span>2</span></a>,</p>
+<p><span class="math display">\[
+s(x) = \begin{cases}1+2x, &amp;x\leq 2 \\ 7-x, &amp; 2&lt; x\leq 5 \\ 2, &amp; x&gt; 5. \end{cases}
+\]</span></p>
+<p>The slope is initially 2, falls into -1 after the first knot, and becomes 0 after the second knot.</p>
+</div>
+</section>
+<section id="dimension-of-the-linear-spline-space" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="dimension-of-the-linear-spline-space"><span class="header-section-number">3.3</span> Dimension of the linear spline space</h3>
+<p>In <a href="../appendices/linear-algebra-revision.html">linear algebra</a>, the dimension of a vector space is the number of linearly independent basis vectors needed to represent every element of that space.</p>
+<div id="exm-dimension" class="theorem example">
+<p><span class="theorem-title"><strong>Example 4</strong></span> Every vector in <span class="math inline">\(\R^3\)</span> can be expressed as <span class="math inline">\(\mathbf v= a\mathbf e_1  + b\mathbf e_2 + c\mathbf e_3\)</span>. The space has dimension three because three independent coordinates are needed to specify an arbitrary vector.</p>
+<p>Consider <span class="math inline">\(\mathcal P_2 = \{a+ bx + cx^2: a, b, c \in \R\}\)</span>, a vector space of polynomials of degree at most two. Its basis is <span class="math inline">\(\{1, x, x^2\}\)</span> so <span class="math inline">\(\dim(\mathcal P_2) = 3\)</span>. Similarly, <span class="math inline">\(\mathcal P_3 = \{a+ bx+ cx^2 + dx^3\}\)</span> has basis <span class="math inline">\(\{1, x, x^2, x^3\}\)</span> giving <span class="math inline">\(\dim(\mathcal P_3 )= 4\)</span>.</p>
+</div>
+<p>For spline spaces, dimension tells us how many independent coefficients are needed to specify an arbitrary spline ith the selected knots and constraints.</p>
+<p>The basis of a linear spline with <span class="math inline">\(K\)</span> distinct interior knots is</p>
+<p><span class="math display">\[
+\mathcal B_{\text{linear}} = \{1, x, (x-\kappa_1)_{+}, \ldots, (x-\kappa_K)_{+}\}
+\]</span></p>
+<p>There are <span class="math inline">\(K+2\)</span> basis functions.</p>
+<div id="prp-dimension-of-linear-spline" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 1 (Dimension of linear spline space)</strong></span> The space of continuous piecewise-linear functions with <span class="math inline">\(K\)</span> prescribed distinct interior knots has dimension <span class="math inline">\(K+2\)</span>.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>There are <span class="math inline">\(K+1\)</span> segments. Each segment has a linear polynomial with two coeffcients, giving <span class="math inline">\(2(K+1)\)</span> coefficients before restrictions. Continuity at the <span class="math inline">\(K\)</span> interior knots imposes <span class="math inline">\(K\)</span> indepedent linear constraints. Hence <span class="math inline">\(\dim(\mathcal S_{\text{linear}}) = 2(K+1) - K = K+2\)</span>. The truncated-power representation contains precisely <span class="math inline">\(K+2\)</span> linearly independent basis functions and therefore spans the space.</p>
+</div>
+</section>
+<section id="interpretation-and-limitations" class="level3" data-number="3.4">
+<h3 data-number="3.4" class="anchored" data-anchor-id="interpretation-and-limitations"><span class="header-section-number">3.4</span> Interpretation and limitations</h3>
+<p>Linear splines provide a simple mechanism for relaxing the assumption of a constant regression slope. They are useful when the underlying phenomenon plausibly changes its rate at identifiable thresholds. Example include changes in marginal costs, piecewise trends, and dose-response relationships.</p>
+<p>Their main limitation is geometric. Although the fitted function is continuous, its first derivative can jump abruptly at knot. Such discontinues in slope may be appropriate if a genuine change point exists. However, if the underlying relationship is expected to vary smoothly, a linear spline may introduce artificial corners. This motivates the use of higher-degree splines, particularly cubic splines, which permit greater flexibility while enforcing smoothness of both the first and second derivatives.</p>
+<div id="d6f86680" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.interpolate <span class="im">import</span> LSQUnivariateSpline </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate temperature observations over 24 hours</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">6400</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>hours <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dv">97</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># smooth daily temperature cycle (min at 3am, max at 3pm)</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> true_temp(t):</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">20</span> <span class="op">+</span> <span class="dv">6</span><span class="op">*</span>np.cos(<span class="dv">2</span><span class="op">*</span>np.pi<span class="op">*</span>(t<span class="op">-</span><span class="dv">15</span>)<span class="op">/</span><span class="dv">24</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> true_rate(t):</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span><span class="dv">6</span><span class="op">*</span>(<span class="dv">2</span><span class="op">*</span>np.pi<span class="op">/</span><span class="dv">24</span>) <span class="op">*</span> np.sin(<span class="dv">2</span><span class="op">*</span>np.pi<span class="op">*</span>(t<span class="op">-</span><span class="dv">15</span>)<span class="op">/</span><span class="dv">24</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>temperature <span class="op">=</span> true_temp(hours) <span class="op">+</span> rng.normal(<span class="dv">0</span>, <span class="fl">0.35</span>, <span class="bu">len</span>(hours))</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># fit a linear regression spline </span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>knots <span class="op">=</span> np.array([<span class="dv">3</span>, <span class="dv">9</span>, <span class="dv">15</span>, <span class="dv">21</span>])</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> linear_basis(x):</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.column_stack([np.ones_like(x), x, <span class="op">*</span>[np.maximum(x<span class="op">-</span>k, <span class="dv">0</span>) <span class="cf">for</span> k <span class="kw">in</span> knots]])</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> linear_basis(hours)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>beta <span class="op">=</span> np.linalg.lstsq(B, temperature, rcond<span class="op">=</span><span class="va">None</span>)[<span class="dv">0</span>]</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co"># fit a cubic regression spline using the same knots </span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>cubic <span class="op">=</span> LSQUnivariateSpline(hours, temperature, t<span class="op">=</span>knots, k<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co"># predict temperatures and derivatives</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>grid <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dv">1000</span>)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>y_linear <span class="op">=</span> linear_basis(grid) <span class="op">@</span> beta</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>y_cubic <span class="op">=</span> cubic(grid)</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co"># the linear spline has constant slopes between knots </span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>slopes <span class="op">=</span> np.r_[beta[<span class="dv">1</span>], beta[<span class="dv">1</span>] <span class="op">+</span> np.cumsum(beta[<span class="dv">2</span>:])]</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co"># cubic spline has a continuous first derivative </span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>cubic_rate <span class="op">=</span> cubic.derivative()(grid)</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="dv">8</span>), sharex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="co"># true temperature fit</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].scatter(hours, temperature, color<span class="op">=</span><span class="st">"gray"</span>, alpha<span class="op">=</span><span class="fl">0.4</span>, label<span class="op">=</span><span class="st">"Observed temperature"</span>)</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].plot(grid, true_temp(grid), <span class="st">"k--"</span>, label <span class="op">=</span> <span class="st">"True temperature"</span>)</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].plot(grid, y_linear, label<span class="op">=</span><span class="st">"Linear spline"</span>)</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].plot(grid, y_cubic, label<span class="op">=</span><span class="st">"Cubic spline"</span>)</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">"Temperature (^C)"</span>)</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="st">"Temperature Fit"</span>)</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].legend()</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="co"># rate of temp change</span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].plot(grid, true_rate(grid), <span class="st">"k--"</span>, label<span class="op">=</span><span class="st">"True rate"</span>)</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].plot(grid, cubic_rate, label<span class="op">=</span><span class="st">"Cubic spline derivative"</span>)</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="co"># plot piecewise constant derivative of linear spline</span></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>edges <span class="op">=</span> np.r_[<span class="dv">0</span>, knots, <span class="dv">24</span>]</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, slope <span class="kw">in</span> <span class="bu">enumerate</span>(slopes):</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">1</span>].hlines(slope, edges[i], edges[i<span class="op">+</span><span class="dv">1</span>], label<span class="op">=</span><span class="st">"Linear spline derivative"</span> <span class="cf">if</span> i<span class="op">==</span><span class="dv">0</span> <span class="cf">else</span> <span class="va">None</span>)</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="co"># show undefined derivatives at interior knots</span></span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, knot <span class="kw">in</span> <span class="bu">enumerate</span>(knots):</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> slope <span class="kw">in</span> [slopes[i], slopes[i<span class="op">+</span><span class="dv">1</span>]]:</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>        axes[<span class="dv">1</span>].plot(knot, slope, <span class="st">"o"</span>)</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes:</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> knot <span class="kw">in</span> knots:</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>        ax.axvline(knot, color<span class="op">=</span><span class="st">"gray"</span>, linestyle<span class="op">=</span><span class="st">":"</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>    ax.grid(alpha<span class="op">=</span><span class="fl">0.25</span>)</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].axhline(<span class="dv">0</span>)</span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">"Hour of day"</span>)</span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_ylabel(<span class="st">"Temperature change (^C/hour)"</span>)</span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="st">"First derivative: estimating warming/cooling rate"</span>)</span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].legend()</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a><span class="co"># quantify fit against the known simulated truth </span></span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>rmse_linear <span class="op">=</span> np.sqrt(np.mean((linear_basis(hours) <span class="op">@</span> beta <span class="op">-</span> true_temp(hours))<span class="op">**</span><span class="dv">2</span>))</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>rmse_cubic <span class="op">=</span> np.sqrt(np.mean((cubic(hours) <span class="op">-</span> true_temp(hours))<span class="op">**</span><span class="dv">2</span>))</span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Linear spline RMSE: </span><span class="sc">{</span>rmse_linear<span class="sc">:.3f}</span><span class="ss"> ^C"</span>)</span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Cubic spline RMSE: </span><span class="sc">{</span>rmse_cubic<span class="sc">:.3f}</span><span class="ss"> ^C"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="06_files/figure-html/cell-4-output-1.png" width="1047" height="758" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear spline RMSE: 0.463 ^C
+Cubic spline RMSE: 0.110 ^C</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="cubic-regression-splines" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="cubic-regression-splines"><span class="header-section-number">4</span> Cubic Regression Splines</h2>
+<section id="why-cubic-polynomial" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="why-cubic-polynomial"><span class="header-section-number">4.1</span> Why cubic polynomial?</h3>
+<p>The principal difficulty with linear splines is that changes in slope occur abruptly. To represent a relationship that changes gradually, we require a function whose derivatives also behave continuosly at the knots.</p>
+<p>A cubic polynomial has the form</p>
+<p><span class="math display">\[
+P(x) = a + bx + cx^2  + dx^3.
+\]</span></p>
+<p>Its first two derivatives are</p>
+<p><span class="math display">\[
+P'(x) = b + 2cx + 3dx^2  \quad \text{and} \quad P''(x) = 2c + 6dx
+\]</span></p>
+<p>Thus, cubic polynomials provide sufficient flexibility to control the function value, its slope, and its curvature, as <span class="math inline">\(s\in C^2[a, b]\)</span>. In contrast with a linear spline, its slope and curvature cannot jump at an interior knot.</p>
+</section>
+<section id="derivation-of-the-cubic-spline-basis" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="derivation-of-the-cubic-spline-basis"><span class="header-section-number">4.2</span> Derivation of the cubic spline basis</h3>
+<p>Consider two adjacent cubic polynomials, <span class="math inline">\(P_1\)</span> and <span class="math inline">\(P_2\)</span>, separated by a knot <span class="math inline">\(\kappa\)</span>:</p>
+<p><span class="math display">\[
+s(x) = \begin{cases}P_1(x), &amp; x\leq \kappa, \\ P_2(x), &amp; x&gt; \kappa.\end{cases}
+\]</span></p>
+<p>To ensure that <span class="math inline">\(s\in C^2\)</span>, we impose</p>
+<p><span class="math display">\[
+\begin{aligned}
+P_1(\kappa) &amp;= P_2(\kappa)\\
+P_1'(\kappa) &amp;= P_2'(\kappa) \\
+P_1''(\kappa) &amp;=P_2''(\kappa)
+\end{aligned}
+\]</span></p>
+<p>Then define the difference between the two polynomials:</p>
+<p><span class="math display">\[
+D(x) = P_2(x) - P_1(x).
+\]</span></p>
+<p>Since <span class="math inline">\(D\)</span> is a polynomial of degree at most three, its Taylor expansion around <span class="math inline">\(\kappa\)</span> is exact:</p>
+<p><span class="math display">\[
+D(x) = D(\kappa) + D'(\kappa)(x-\kappa) + \frac{D''(\kappa)}{2}(x-\kappa)^2 + \frac{D'''(\kappa)}{6}(x-\kappa)^3.
+\]</span></p>
+<p>The continuity conditions imply <span class="math inline">\(D(\kappa) = D'(\kappa) = D''(\kappa) = 0\)</span>. Therefore, <span class="math inline">\(D(x) = \gamma(x-\kappa)^3\)</span> for some constant <span class="math inline">\(\gamma\)</span>.</p>
+<p>We conclude that <span class="math inline">\(P_2(x) = P_1(x) + \gamma(x-\kappa)^3\)</span>. Hence, the piecewise representation may be written as</p>
+<p><span class="math display">\[
+s(x) = P_1(x) + \gamma(x-\kappa)^3_{+}
+\]</span></p>
+<p>This construction proves that the truncated cubic term allows the polynomial to change at the knot without violating the required continuity conditions. Extending the argument to <span class="math inline">\(K\)</span> interior knots yields</p>
+<p><span id="eq-cubic-k-knots"><span class="math display">\[
+s(x) = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \sum_{j=1}^{K} \gamma_j (x- \kappa_j)_{+}^3.
+\tag{1}\]</span></span></p>
+</section>
+<section id="smoothness-properties" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="smoothness-properties"><span class="header-section-number">4.3</span> Smoothness properties</h3>
+<p>The derivatives of <a href="#eq-cubic-k-knots" class="quarto-xref">Equation&nbsp;<span>1</span></a> are</p>
+<p><span class="math display">\[
+\begin{aligned}
+s'(x) &amp;= \beta_1 + 2\beta_2 x + 3\beta_3 x^2 + 3\sum_{j=1}^K \gamma_j (x-\kappa_j)^{2}_{+}. \\
+s''(x) &amp;= 2\beta_2 + 6\beta_3 x + 6\sum_{j=1}^K \gamma_j(x-\kappa_j)_{+}.  
+\end{aligned}
+\]</span></p>
+<p>and, away from the knots,</p>
+<p><span class="math display">\[
+s'''(x) = 6\beta_3 + 6\sum_{j=1}^{K} \gamma_j \mathbf 1\{x&gt; \kappa_j\}.
+\]</span></p>
+<p>Observe that,</p>
+<p><span class="math display">\[
+\lim_{x\to \kappa_j^{-}}(x- \kappa_j)^3_{+} = \lim_{x\to \kappa_j^{+}}(x-\kappa_j)^{3}_{+} = 0.
+\]</span></p>
+<p>The same equality holds for its first and second derivatives. Therefore, the spline and its first two derivatives remain continuous at each knot. The third derivatives, however, is generally discontinuous. At knot <span class="math inline">\(\kappa_j\)</span>, its jump is</p>
+<p><span class="math display">\[
+s'''(\kappa_j^{+}) - s'''(\kappa_j^{-}) = 6\gamma_j .
+\]</span></p>
+<p>This gives a more precise interpretation of the cubic spline coefficients. Whereas a coefficient in a linear spline controls a change in slope, a truncated cubic coefficient controls a change in the third derivatives.</p>
+<div id="exm-cubic-spline" class="theorem example">
+<p><span class="theorem-title"><strong>Example 5</strong></span> Consider the function <span class="math inline">\(s(x) = 1+2x+ 0.4(x-2)^3_{+}\)</span>. Its piecewise form is</p>
+<p><span class="math display">\[
+s(x) = \begin{cases}1+2x, &amp; x\leq 2\\ 1+ 2x + 0.4(x-2)^3, &amp; x&gt; 2.\end{cases}
+\]</span></p>
+<p>The first derivative is</p>
+<p><span class="math display">\[
+s(x) = \begin{cases}2, &amp; x\leq 2 \\ 2+ 1.2(x-2)^2, &amp; x&gt;2.\end{cases}
+\]</span></p>
+<p>and the second derivative is</p>
+<p><span class="math display">\[
+s(x) = \begin{cases}0, &amp; x\leq 2 \\ 2.4(x-2), &amp; x&gt;2. \end{cases}
+\]</span></p>
+<p>At the knot <span class="math inline">\(x=2\)</span>, <span class="math display">\[
+\begin{aligned}
+s(2^{-}) &amp;= s(2^{+}) = 5,\\
+s'(2^{-}) &amp;= s'(2^{+}) = 2,\\
+s''(2^{-}) &amp;= s''(2^{+}) = 0,
+\end{aligned}
+\]</span></p>
+<p>Thus, unlike a linear spline, the cubic spline changes its shape gradually after knot.</p>
+<div id="7efbbfed" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> positive_part(z):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.maximum(z, <span class="dv">0</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> s(x):</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">1</span><span class="op">+</span><span class="dv">2</span><span class="op">*</span>x <span class="op">+</span> <span class="fl">0.4</span><span class="op">*</span>positive_part(x<span class="op">-</span><span class="dv">2</span>)<span class="op">**</span><span class="dv">3</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ds(x):</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">2</span><span class="op">+</span><span class="fl">1.2</span><span class="op">*</span>positive_part(x<span class="op">-</span><span class="dv">2</span>)<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> d2s(x):</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fl">2.4</span><span class="op">*</span>positive_part(x<span class="op">-</span><span class="dv">2</span>) </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> d3s(x):</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.where(x<span class="op">&lt;</span><span class="dv">2</span>, <span class="fl">0.0</span>, np.where(x<span class="op">&gt;</span><span class="dv">2</span>, <span class="fl">2.4</span>, np.nan))</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">1000</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>functions <span class="op">=</span> [s, ds, d2s, d3s]</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>titles <span class="op">=</span> [</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="vs">r"</span><span class="dv">$</span><span class="vs">s</span><span class="kw">(</span><span class="vs">x</span><span class="kw">)</span><span class="vs">=1</span><span class="op">+</span><span class="vs">2x</span><span class="op">+</span><span class="vs">0</span><span class="dv">.</span><span class="vs">4</span><span class="kw">(</span><span class="vs">x-2</span><span class="kw">)</span><span class="vs">_</span><span class="op">+</span><span class="dv">^</span><span class="vs">3</span><span class="dv">$</span><span class="vs">"</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="vs">r"</span><span class="dv">$</span><span class="vs">s'</span><span class="kw">(</span><span class="vs">x</span><span class="kw">)</span><span class="vs">=2</span><span class="op">+</span><span class="vs">1</span><span class="dv">.</span><span class="vs">2</span><span class="kw">(</span><span class="vs">x-2</span><span class="kw">)</span><span class="vs">_</span><span class="op">+</span><span class="dv">^</span><span class="vs">2</span><span class="dv">$</span><span class="vs">"</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="vs">r"</span><span class="dv">$</span><span class="vs">s''</span><span class="kw">(</span><span class="vs">x</span><span class="kw">)</span><span class="vs">=2</span><span class="dv">.</span><span class="vs">4</span><span class="kw">(</span><span class="vs">x-2</span><span class="kw">)</span><span class="vs">_</span><span class="op">+</span><span class="dv">$</span><span class="vs">"</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="vs">r"</span><span class="dv">$</span><span class="vs">s'''</span><span class="kw">(</span><span class="vs">x</span><span class="kw">)</span><span class="dv">$</span><span class="vs">"</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">8</span>))</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, f, title <span class="kw">in</span> <span class="bu">zip</span>(axes.flat, functions, titles):</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, f(x))</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    ax.axvline(<span class="dv">2</span>, color <span class="op">=</span> <span class="st">"gray"</span>, linestyle<span class="op">=</span><span class="st">"--"</span>, alpha <span class="op">=</span> <span class="fl">0.6</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    ax.set_title(title)</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="st">"$x$"</span>)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">1</span>,<span class="dv">1</span>]</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>ax.scatter([<span class="dv">2</span>,<span class="dv">2</span>], [<span class="dv">0</span>,<span class="fl">2.4</span>])</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>plt.suptitle(<span class="st">"Cubic Spline and its Derivates"</span>)</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="06_files/figure-html/cell-5-output-1.png" width="1143" height="757" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>The example also illustrates an important limitation. The cubic term grows increasingly rapidly as <span class="math inline">\(x\)</span> moves far to the right of the knot. Smoothness does not ensure reasonable behavior outside the region supported by the data.</p>
+</section>
+<section id="dimension-of-the-cubic-spline-space" class="level3" data-number="4.4">
+<h3 data-number="4.4" class="anchored" data-anchor-id="dimension-of-the-cubic-spline-space"><span class="header-section-number">4.4</span> Dimension of the cubic spline space</h3>
+<p>Suppose we divide an interval three segments using two interior knots:</p>
+<p><span class="math display">\[
+a&lt;\kappa_1 &lt; \kappa_2 &lt; b.
+\]</span></p>
+<p>Consider fitting a separate cubic polynomial on each segment:</p>
+<p><span class="math display">\[
+s(x) = \begin{cases}P_1(x),&amp; a\leq x \leq \kappa_1, \\P_2(x), &amp; \kappa_1 &lt; x \leq \kappa_2, \\ P_3(x), &amp; \kappa_2 &lt; x \leq b.\end{cases}
+\]</span></p>
+<p>Each cubic polynomial requires four coefficients <span class="math inline">\(P_j(x) = a_j + b_j(x) + c_j x^2 + d_j x^3\)</span>. Therefore, if the polynomials are completely independent, the function requries <span class="math inline">\(3\times 4=12\)</span> coefficients.</p>
+<p>To obtain a conventional cubic spline, we impose continuity of the function and its first two derivatives at both knots. At <span class="math inline">\(\kappa_1\)</span>, we require</p>
+<p><span class="math display">\[
+\begin{aligned}
+P_1(\kappa_1) &amp;= P_2(\kappa_1)\\
+P_1'(\kappa_1) &amp;= P_2'(\kappa_1)\\
+P_1 '' (\kappa_1) &amp; = P_2''(\kappa_1)  
+\end{aligned}
+\]</span></p>
+<p>These are three independent linear constraints on the coefficients. The same three constraints must hold at <span class="math inline">\(\kappa_2\)</span>. Thus we have six constraints in total. So</p>
+<p><span class="math display">\[
+\dim(\mathcal S_{\text{cubic}}) = 12 - 6 = 6
+\]</span></p>
+<div id="prp-dimension-cubic-spline-space" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 2 (Dimension of the cubic spline space)</strong></span> The space of cubic splines with <span class="math inline">\(K\)</span> distinct, simple interior knots has dimension <span class="math inline">\(K+4\)</span>.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>There are <span class="math inline">\(K+1\)</span> polynomial segments. Each segment has four polynomial coefficients, so there aer initially <span class="math inline">\(4(K+1)\)</span> unknown coefficients. At each of the <span class="math inline">\(K\)</span> interior knots, continuity of the function and its first two derivatives imposes three independent constraints. Consequently,</p>
+<p><span class="math display">\[
+\dim(\mathcal S_{\text{cubic}}) = 4(K+1) - 3K = K+4.
+\]</span></p>
+<p>The basis <span class="math inline">\(\{1, x, x^2, x^3, (x-\kappa_1)^3_{+}, \ldots, (x-\kappa_K)^3_{+}\}\)</span> contains exactly <span class="math inline">\(K+4\)</span> linearly independent functions. Hence, it forms a basis for the cubic spline space.</p>
+</div>
+<blockquote class="blockquote">
+<p><strong>A GENERAL DIMENSION FORMULA</strong></p>
+</blockquote>
+<p>Let <span class="math inline">\(\mathcal S_{p,m}\)</span> be the space of degree-<span class="math inline">\(p\)</span> splines with <span class="math inline">\(m\)</span> distinct interior knots and maximal smoothness. There are <span class="math inline">\(m+1\)</span> polynomial segments. Each polynomial segment requires <span class="math inline">\(p+1\)</span> coefficient. Thus, before restrictions, there are</p>
+<p><span class="math display">\[
+(m+1)(p+1)
+\]</span></p>
+<p>coefficients. At each interior knot, continuity is imposed for derivative orders <span class="math inline">\(0, 1, \ldots, p-1\)</span>. Therefore, there are <span class="math inline">\(p\)</span> continuity constraints at each knot, giving <span class="math inline">\(mp\)</span> constraints. The dimension then is:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\dim(\mathcal S_{p, m}) &amp;= (m+1)(p+1) - mp \\
+&amp; = mp + m + p + 1 - mp \\
+&amp; = \boxed{m + p + 1}
+\end{aligned}
+\]</span></p>
+</section>
+<section id="the-problem-of-boundary-behavior" class="level3" data-number="4.5">
+<h3 data-number="4.5" class="anchored" data-anchor-id="the-problem-of-boundary-behavior"><span class="header-section-number">4.5</span> The problem of boundary behavior</h3>
+<p>Although cubic splines are flexible in the interior, their behavior near and beyond the boundaries can be problematic. To see why, suppose the final knot is <span class="math inline">\(\kappa_K\)</span>. For <span class="math inline">\(x&gt; \kappa_K\)</span>, every truncated-power term is active, and <a href="#eq-cubic-k-knots" class="quarto-xref">Equation&nbsp;<span>1</span></a> becomes a single cubic polynomial</p>
+<p><span class="math display">\[
+s(x) = A+ Bx + Cx^2 + Dx^3
+\]</span></p>
+<p>for constants <span class="math inline">\(A, B, C, D\)</span> determined by the fitted coefficients. If <span class="math inline">\(D\neq 0\)</span>, then the dominant term for large <span class="math inline">\(|x|\)</span> is <span class="math inline">\(Dx^3\)</span>. Therefore, small changes in estimated coefficients can produce large changes in predictions outside the observed range. This is especially concerning when there are few observations near the domain boundaries. In such regions, the data may not contain enough information to determine the curvature reliably. Thus,</p>
+<blockquote class="blockquote">
+<p><em>The relationship should be allowed to exhibit nonlinear behavior where sufficient information is available, but unnecessary curvature should be restricted at the boundaries.</em></p>
+</blockquote>
+<div id="85e37195" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.interpolate <span class="im">import</span> BSpline </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">6400</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dv">60</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> true_mean(x):</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (<span class="fl">0.6</span><span class="op">+</span> <span class="fl">0.42</span><span class="op">*</span>x <span class="op">+</span> <span class="fl">2.0</span><span class="op">*</span> np.exp(<span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>((x<span class="op">-</span><span class="dv">5</span>)<span class="op">/</span><span class="fl">1.4</span>)<span class="op">**</span><span class="dv">2</span>)<span class="op">-</span><span class="fl">0.35</span><span class="op">*</span>np.exp(<span class="op">-</span><span class="fl">0.5</span><span class="op">*</span>((x<span class="op">-</span><span class="dv">8</span>)<span class="op">/</span><span class="fl">1.2</span>)<span class="op">**</span><span class="dv">2</span>))</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>y_true <span class="op">=</span> true_mean(x)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> y_true <span class="op">+</span> rng.normal(<span class="dv">0</span>, <span class="fl">0.18</span>, size <span class="op">=</span> <span class="bu">len</span>(x))</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>x_grid <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">2</span>, <span class="dv">12</span>, <span class="dv">600</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>interior_knots <span class="op">=</span> [<span class="dv">4</span>, <span class="dv">7</span>]</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>boundary_knots <span class="op">=</span> [<span class="dv">0</span>,<span class="dv">10</span>]</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>degree <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co"># cubic b-splie knot vector </span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.r_[[boundary_knots[<span class="dv">0</span>]]<span class="op">*</span><span class="dv">4</span>, interior_knots, [boundary_knots[<span class="dv">1</span>]]<span class="op">*</span><span class="dv">4</span>]</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cubic_basis(x):</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.asarray(x) </span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    n_basis <span class="op">=</span> <span class="bu">len</span>(t) <span class="op">-</span> degree <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    B <span class="op">=</span> np.zeros((<span class="bu">len</span>(x), n_basis))</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(n_basis):</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>        coef <span class="op">=</span> np.zeros(n_basis)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>        coef[j] <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>        spline <span class="op">=</span> BSpline(t, coef, degree, extrapolate <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>        B[:, j] <span class="op">=</span> spline(x) </span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> B</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="co"># fit unrestrcited cubic spline by least square</span></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> cubic_basis(x) </span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>beta <span class="op">=</span> np.linalg.lstsq(B, y, rcond<span class="op">=</span><span class="va">None</span>)[<span class="dv">0</span>]</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>y_unrestricted <span class="op">=</span> cubic_basis(x_grid) <span class="op">@</span> beta</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> natural_cubic_basis(x, knots<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">10</span>)):</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> np.asarray(x, dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>    knots <span class="op">=</span> np.asarray(knots, dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(knots) <span class="op">&lt;</span> <span class="dv">3</span> <span class="kw">or</span> np.<span class="bu">any</span>(np.diff(knots) <span class="op">&lt;=</span> <span class="dv">0</span>):</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"knots must contain at least three strictly increasing values"</span>)</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> d(z, k):</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> (np.maximum(z<span class="op">-</span>knots[k], <span class="dv">0</span>)<span class="op">**</span><span class="dv">3</span> <span class="op">-</span> np.maximum(z<span class="op">-</span>knots[<span class="op">-</span><span class="dv">1</span>], <span class="dv">0</span>)<span class="op">**</span><span class="dv">3</span>)<span class="op">/</span> (knots[<span class="op">-</span><span class="dv">1</span>]<span class="op">-</span> knots[k])</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.column_stack([np.ones_like(x), x, d(x, <span class="dv">0</span>) <span class="op">-</span> d(x, <span class="dv">2</span>), d(x,<span class="dv">1</span>) <span class="op">-</span> d(x, <span class="dv">2</span>)])</span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="co"># fit natural cubic spline by least square</span></span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> natural_cubic_basis(x) </span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> np.linalg.lstsq(N, y, rcond<span class="op">=</span><span class="va">None</span>)[<span class="dv">0</span>]</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>y_natural <span class="op">=</span> natural_cubic_basis(x_grid) <span class="op">@</span> theta </span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a><span class="co"># plot </span></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize <span class="op">=</span> (<span class="dv">13</span>, <span class="dv">7</span>))</span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a><span class="co"># observations </span></span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>ax.scatter(x, y, alpha<span class="op">=</span><span class="fl">0.4</span>, label<span class="op">=</span><span class="st">"Observed sample in [0,10]"</span>)</span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a><span class="co"># unrestricted cubic spline </span></span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>ax.plot(x_grid, y_unrestricted, label <span class="op">=</span> <span class="st">"Unrestricted cubic (6 coefficients)"</span>)</span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a><span class="co"># natural cubic spline </span></span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>ax.plot(x_grid, y_natural, label <span class="op">=</span> <span class="st">"Natural cubic (4 coefficients)"</span>)</span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a><span class="co"># true mean</span></span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>ax.plot(x_grid, true_mean(x_grid), label <span class="op">=</span> <span class="st">"True mean"</span>)</span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a><span class="co"># boundary knots</span></span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> knot <span class="kw">in</span> boundary_knots:</span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>    ax.axvline(knot, linestyle<span class="op">=</span><span class="st">"--"</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="dv">0</span>, alpha <span class="op">=</span> <span class="fl">0.3</span>)</span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(title<span class="op">=</span><span class="st">"Same two interior knots, different boundary constraints"</span>,</span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>        xlabel <span class="op">=</span> <span class="st">"Predictor x"</span>,</span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>        ylabel <span class="op">=</span> <span class="st">"Response"</span>,</span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>        xlim <span class="op">=</span> (<span class="op">-</span><span class="fl">2.7</span>, <span class="fl">12.7</span>),</span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>        ylim <span class="op">=</span> (<span class="op">-</span><span class="dv">3</span>, <span class="fl">11.5</span>))</span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="06_files/figure-html/cell-6-output-1.png" width="1239" height="662" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="restricted-cubic-splines-and-natural-cubic-splines" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="restricted-cubic-splines-and-natural-cubic-splines"><span class="header-section-number">5</span> Restricted Cubic Splines and Natural Cubic Splines</h2>
+<section id="motivation-for-the-restriction" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="motivation-for-the-restriction"><span class="header-section-number">5.1</span> Motivation for the restriction</h3>
+<p>A <strong>restricted cubic spline (RSC)</strong>, also called a <em>natural cubic spline</em>, is a cubic spline whose behavior is constrained to be linear outside two designated boundary knots. The model retains cubic polynomial segments in the interior but does not permit unrestricted cubic growth in the tails.</p>
+<p>Restricted cubic splines became influential in applied statistical regression through the work of <span class="citation" data-cites="durrlemanFlexibleRegressionModels1989">Durrleman and Simon (<a href="../references.html#ref-durrlemanFlexibleRegressionModels1989" role="doc-biblioref">1989</a>)</span>. Their paper developed the practical use of cubic spline regression for flexible relationships involving continuous covariates and illustrated restricted cubic splines in survival analysis and cancer research.</p>
+</section>
+<section id="mathematical-definition" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="mathematical-definition"><span class="header-section-number">5.2</span> Mathematical definition</h3>
+<p>Let <span class="math inline">\(a = \kappa_1 &lt; \kappa_2 &lt;\ldots&lt;\kappa_{K-1} &lt; \kappa_{K} = b\)</span> denote <span class="math inline">\(K\)</span> distinct knots, now <em>including the two boundary knots</em>.</p>
+<div id="def-restricted-cubic-spline" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3 (Restricted cubic spline)</strong></span> A function <span class="math inline">\(s:\R\to \R\)</span> is a <strong>restricted cubic spline</strong> with boundary knots <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> if it is a cubic spline on <span class="math inline">\([a,b]\)</span> and is linear on both exterior intervals <span class="math inline">\((-\infty, a]\)</span> and <span class="math inline">\([b, \infty)\)</span>. Its function value, first derivative, and second derivative are continuous at every knot, including the boundary knots.</p>
+</div>
+<p>Because a linear function has zero second derivative, the natural boundary conditions are <span class="math inline">\(s''(a) = 0\)</span> and <span class="math inline">\(s''(b)=0\)</span>. The spline is extended lineraly beyond the boundary knots using its endpoint values and slopes:</p>
+<p><span class="math display">\[
+s(x) = \begin{cases}
+s(a) + s'(a)(x-a),&amp; x&lt; a\\
+s_{interior}(x), &amp; a\leq x \leq b  \\
+s(b) + s'(b)(x-b), &amp; x&gt; b.
+\end{cases}
+\]</span></p>
+<p>Notice that these restrictions don’t require the fitted curve to have zero slope at either boundary. They restrict <em>curvature</em>, not slope. Consequently, the function can increase or decrease linearly outside the boundary knots, while remaining nonlinear inside them.</p>
+</section>
+<section id="constructing-a-restricted-cubic-spline-basis" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="constructing-a-restricted-cubic-spline-basis"><span class="header-section-number">5.3</span> Constructing a restricted cubic spline basis</h3>
+<p>The goal is to construct basis functions that automatically satisfy the natural boundary conditions, so that the estimation procedure does not need to enfore then separately. Begin with the truncated cubic functions</p>
+<p><span class="math display">\[
+u_j (x) = (x-\kappa_j)^{3}_{+}
+\]</span></p>
+<p>For <span class="math inline">\(j=1, \ldots, K-1\)</span>, define</p>
+<p><span id="eq-distance"><span class="math display">\[
+d_j(x) = \frac{(x-\kappa_j)^3_{+}- (x-\kappa_K)^3_{+}}{\kappa_K-\kappa_j}.
+\tag{2}\]</span></span></p>
+<p>We next construct the nonlinear basis functions</p>
+<p><span class="math display">\[
+h_j (x) = d_j(x) - d_{K-1}(x), \qquad j=1, \ldots, K-2
+\]</span></p>
+<p>The restricted cubic spline is then represented as</p>
+<p><span id="eq-restricted-cubic-spline"><span class="math display">\[
+s(x) = \beta_0 +\beta_1 x + \sum_{j=1}^{K-2}\gamma_j h_j (x).
+\tag{3}\]</span></span></p>
+<p>This expression contains <span class="math inline">\(K\)</span> coefficients, including the intercept. <span class="math inline">\(h_j\)</span> eliminates quadratic and cubic behavior beyond the boundary knots.</p>
+<div id="prp-linear-tails" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 3</strong></span> Every function of the form <a href="#eq-restricted-cubic-spline" class="quarto-xref">Equation&nbsp;<span>3</span></a> is linear for <span class="math inline">\(x\leq \kappa_1\)</span> and and <span class="math inline">\(x\geq \kappa_K\)</span>.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>First consider <span class="math inline">\(x\leq \kappa_1\)</span>. Since all knots satisfy <span class="math inline">\(\kappa_j \geq \kappa_1\)</span>, <span class="math inline">\((x-\kappa_j)^3_{+} = 0\)</span> for every <span class="math inline">\(j\)</span>. Consequently, <span class="math inline">\(d_{j}(x) = 0\)</span> and <span class="math inline">\(h_j(x) = 0\)</span>, and therefore</p>
+<p><span class="math display">\[
+s(x) = \beta_0 + \beta_1 x
+\]</span></p>
+<p>Thus, the function is linear to the left of the first boundary knot.</p>
+<p>Now consider <span class="math inline">\(x\geq \kappa_K\)</span>. Every truncated cubic term becomes an ordinary cubic polynomial. Differentiating <a href="#eq-distance" class="quarto-xref">Equation&nbsp;<span>2</span></a> twice gives</p>
+<p><span class="math display">\[
+d_j''(x) = 6\frac{(x-\kappa_j)-(x-\kappa_K)}{\kappa_K - \kappa_j}= 6.
+\]</span></p>
+<p>Similarly, <span class="math inline">\(d''_{K-1}(x) = 6\)</span>. Hence <span class="math inline">\(h''_{j}(x) = d''_{j}(x) - d''_{K-1}(x) = 0\)</span>. It follows that</p>
+<p><span class="math display">\[
+s''(x) = \sum_{j=1}^{K-2}\gamma_j h_j''(x) = 0
+\]</span></p>
+<p>for all <span class="math inline">\(x\geq \kappa_K\)</span>. A twice differentiable function whose second derivative is identically zero on an interval must be affine on that interval. Therefore, <span class="math inline">\(s\)</span> is linear to the right of the final boundary knot.</p>
+<p>The basis functions are also twice continuously differentiable because they are linear combinations of truncated cubic functions. Thus, the resulting spline satisfies the required smoothness and tail restrictions.</p>
+</div>
+</section>
+<section id="dimension-of-the-restricted-cubic-spline-space" class="level3" data-number="5.4">
+<h3 data-number="5.4" class="anchored" data-anchor-id="dimension-of-the-restricted-cubic-spline-space"><span class="header-section-number">5.4</span> Dimension of the restricted cubic spline space</h3>
+<p>A restricted cubic spline with <span class="math inline">\(K\)</span> total knots has <span class="math inline">\(K-2\)</span> interior knots. From <a href="#prp-dimension-cubic-spline-space" class="quarto-xref">Proposition&nbsp;<span>2</span></a>, the unrestricted cubic spline space on <span class="math inline">\([a, b]\)</span> has dimension <span class="math inline">\((K-2) + 4 = K+2\)</span>. Imposing the two independent natural boundary conditions</p>
+<p><span class="math display">\[
+s''(a) = s''(b) = 0
+\]</span></p>
+<p>reduces the dimension by two</p>
+<p><span class="math display">\[
+\dim(\mathcal S_{\text{natural}})=K.
+\]</span></p>
+<p>This agrees with the representation in <a href="#eq-restricted-cubic-spline" class="quarto-xref">Equation&nbsp;<span>3</span></a>, which contains an intercept, one linear term, and <span class="math inline">\(K-2\)</span> nonlinear basis functions. Thus, a restricted cubic spline with 5 total knots contains 5 coefficients, or 4 regression degrees of freedom excluidng the intercept. 3 of these are associated with nonlinear basis terms. So the model can represent nonlinear relationships without estimating an excessive number of parameters.</p>
+<div id="exm-restricted-cubic-spline" class="theorem example">
+<p><span class="theorem-title"><strong>Example 6</strong></span> Consider three knots <span class="math inline">\(\kappa_1 =0\)</span>, <span class="math inline">\(\kappa_2 =1\)</span>, and <span class="math inline">\(\kappa_3 = 2\)</span>. With three total knots, the restricted cubic spline space has dimension three. Its basis consists of an intercept, a linear term, and one nonlinear term. Up to a constant scaling of the coefficient, the nonlinear basis function is</p>
+<p><span class="math display">\[
+H(x) = (x)^3_{+} - 2(x-1)^{3}_{+} + (x-2)^{3}_{+}.
+\]</span></p>
+<p>Expanding the positive-part terms gives</p>
+<p><span class="math display">\[
+H(x) = \begin{cases}
+0, &amp; x\leq 0, \\
+x^3, &amp; 0&lt; x\leq 1 \\
+x^3 - 2(x-1)^3, &amp; 1&lt; x\leq 2 \\
+6x - 6, &amp; x&gt; 2.
+\end{cases}
+\]</span></p>
+<p>Consider the regression function <span class="math inline">\(s(x) = 1+ x + 0.1H(x)\)</span>. For <span class="math inline">\(x\leq 0\)</span>, <span class="math inline">\(s(x) = 1+ x\)</span>. For <span class="math inline">\(x&gt;2\)</span>, <span class="math inline">\(s(x) = 1+ x + 0.1(6x-6) = 0.4 + 1.6x\)</span>. Therefore, the left and right tail slopes are 1 and 1.6, respectively. Between the boundary knots, the cubic segments provide a gradual transition between these slopes.</p>
+</div>
+<p>Note that, for the same number <span class="math inline">\(m\)</span> of interior knots,</p>
+<p><span class="math display">\[
+\dim(\mathcal S_{\text{linear}})= \dim(\mathcal S_{\text{natural}}) = m + 2
+\]</span></p>
+<p>Thus, both spaces have the same dimension.</p>
+</section>
+<section id="sec-the-minimum-curvature-property-of-natural-cubic-splines" class="level3" data-number="5.5">
+<h3 data-number="5.5" class="anchored" data-anchor-id="sec-the-minimum-curvature-property-of-natural-cubic-splines"><span class="header-section-number">5.5</span> The minimum-curvature property of natural cubic splines</h3>
+<div id="thm-minimum-curvature-property-of-the-natural-cubic-interpolant" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1</strong></span> Let <span class="math inline">\(a=x_1&lt; x_2 &lt; \cdots &lt; x_n = b\)</span> with <span class="math inline">\(n\geq 2\)</span>, and suppose interpolation values <span class="math inline">\(y_1, \ldots, y_n\)</span> are given. Let <span class="math inline">\(s\)</span> be the natural cubic spline interpolant satisfying <span class="math inline">\(s(x_i) = y_i\)</span>, with <span class="math inline">\(s\in C^2[a, b]\)</span>, cubic polynomial pieces between successive observations, and boundary conditions <span class="math inline">\(s''(a) = s''(b) = 0\)</span>. Then <span class="math inline">\(s\)</span> uniquely minimizes</p>
+<p><span class="math display">\[
+J(g) = \int_{a}^{b}[g''(x)]^2 dx
+\]</span></p>
+<p>over all sufficiently regular functions <span class="math inline">\(g\)</span> satisfying the same interpolation constraints.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Let <span class="math inline">\(g\)</span> be any competing interpolating function and define <span class="math inline">\(h(x) = g(x) - s(x)\)</span>. Since <span class="math inline">\(g\)</span> and <span class="math inline">\(s\)</span> agree at the interpolation points,</p>
+<p><span class="math display">\[
+h(x_i) = 0, \quad i = 1, \ldots, n.
+\]</span></p>
+<p>Expanding the bending energy of <span class="math inline">\(g = s+ h\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+J(g) &amp;= \int_{a}^{b} [s''(x) + h''(x)]^2 dx \\
+&amp; = \int_{a}^{b}[s''(x)]^2 dx + 2\int_{a}^{b} s''(x)h''(x)dx + \int_{a}^{b}[h''(x)]^2 dx
+\end{aligned}
+\]</span></p>
+<p>We will show that the cross term vanishes. On each segment <span class="math inline">\([x_i, x_{i+1}]\)</span>, integration by parts twice gives</p>
+<p><span class="math display">\[
+\int_{x_i}^{x_{i+1}} s''h'' dx  = [s''h'- s'''h]_{x_i}^{x_{i+1}} + \int_{x_i}^{x_{i+1}}s''''h dx
+\]</span></p>
+<p>Because <span class="math inline">\(s\)</span> is cubic on each segment, <span class="math inline">\(s^{(4)} =0\)</span> within that segment. Moreover, <span class="math inline">\(h(x_i)=0\)</span> at each interpolation point, so the term involving <span class="math inline">\(s'''h\)</span> vanish. When the remaining boundary terms are summed over all segments, the contribution involving s’‘h’ cancel at interior knots because s’’ and h’ are continuous. Finally, the endpoint contributions vanish because <span class="math inline">\(s''(a) = s''(b) = 0\)</span>. It follows that</p>
+<p><span class="math display">\[
+\int_{a}^{b}s''(x)h''(x) dx = 0.
+\]</span></p>
+<p>Hence</p>
+<p><span class="math display">\[
+J(g) = J(s) + \int_{a}^{b}[h''(x)]^2 dx
+\]</span></p>
+<p>Since the final integral is nonnegative, <span class="math inline">\(J(g) \geq J(s)\)</span>. Equality holds only when <span class="math inline">\(h''=0\)</span> almost everywhere. This implies that <span class="math inline">\(h\)</span> is affine, and because it vanishes at at least two distinct interpolation point, <span class="math inline">\(h\equiv 0\)</span>. Therefore, <span class="math inline">\(g=s\)</span> is the unique minimizer.</p>
+</div>
+<p>This theorem gives natural cubic splines an interpretaion that goes beyond an arbitrary choice of polynomial basis. Among all interpolating functions with finite squared curvature, the natural cubic spline is the smoothest according to the specified bending-energy criterion.</p>
+<p>One must distinguish this result from ordinary restricted cubic spline <em>regression</em>. A fixed-knot least-squares regression spline does not interpolate the observations and does not neccesarily minimize bending energy among all possible functions. The variation theorem concerns the natural cubic interpolant; it also helps explain the theoretical foundation of cubic smoothing splines.</p>
+</section>
+</section>
+<section id="statistical-estimation-model-complexity-and-interpretation" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="statistical-estimation-model-complexity-and-interpretation"><span class="header-section-number">6</span> Statistical Estimation, Model Complexity, and Interpretation</h2>
+<p>Having established the mathematical structure of the three spline families, we now consider how they are estimated and how their flexibility should be controlled in statistical applications.</p>
+<section id="a-unified-regression-formulation" class="level3" data-number="6.1">
+<h3 data-number="6.1" class="anchored" data-anchor-id="a-unified-regression-formulation"><span class="header-section-number">6.1</span> A unified regression formulation</h3>
+<p>Linear, cubic, and restricted cubic regression splines share the general representation</p>
+<p><span class="math display">\[
+Y_i = s(X_i) + \epsilon_i
+\]</span></p>
+<p>where <span class="math inline">\(s(x) = \sum_{j=1}^{d} \beta_j B_j(x).\)</span> The distinction among the models lies in their basis functions and constraints but not in the estimation method. For a fixed collection of knots and basis functions, ordinary least sqaures minimizes</p>
+<p><span class="math display">\[
+L(\beta) = \sum_{i=1}^n \left[y_i - \sum_{j=1}^d \beta_j B_j(x_i)\right]^2.
+\]</span></p>
+<p>The resulting estimates of the response function are</p>
+<p><span class="math display">\[
+\hat s(x) = b(x)^\top \hat \beta,
+\]</span></p>
+<p>where <span class="math inline">\(b(x) = (B_1(x), \ldots, B_d(x))^\top\)</span>. Importantly, the fitted curve depends on the spline space rather than on the particular basis used to represent that space. Two different bases spanning the same spline space produce identical ordinary least-squares fitted values, provided they are both of full rank and the optimization is solved accurately. This distinction becomes important when considering alternative numerical representations, such as B-splines.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/unified-regression.png" class="img-fluid figure-img"></p>
+<figcaption>A unified regression formulation</figcaption>
+</figure>
+</div>
+</section>
+<section id="knot-selection-and-model-complexity" class="level3" data-number="6.2">
+<h3 data-number="6.2" class="anchored" data-anchor-id="knot-selection-and-model-complexity"><span class="header-section-number">6.2</span> Knot selection and model complexity</h3>
+<p>The number and placement of knots determine the flexibility of a regression spline. A model with relatively few knots has limited ability to reproduce rapid changes in the regression function. Such a model may exhibit substantial approximation bias. Conversely, introducing too many knots increases the dimension of the model and may lead to high estimation variance or overfitting. This can be understood through the familiar bias-variance decomposition. Under squared-error loss, at a given point <span class="math inline">\(x\)</span>,</p>
+<p><span class="math display">\[
+\E[(\hat s(x) - f(x))^2] = \mathrm{Bias}[\hat s(x)]^2 + \mathrm{Var}[\hat s(x)].
+\]</span></p>
+<p>Increasing the number of knots generally enlarges the space of functions available to the model, reducing approximation bias in favorable cases. However, the resulting increase in the number of coefficients may also increase estimation variance. Thus, spline flexibility must be chosen according to the amount of information available.</p>
+<p>Knot placement can be determined using domain knowledge, equally spaced positions, or empirical quantiles of the predictor distribution. Quantile-based placement is especially common for restricted cubic splines. For example, the conventional knot configurations associated with <span class="citation" data-cites="harrellRegressionModelingStrategies2015">Harrell (<a href="../references.html#ref-harrellRegressionModelingStrategies2015" role="doc-biblioref">2015</a>)</span> include the following:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Total knots</th>
+<th>Suggested predictor quantiles</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>3</td>
+<td>10%, 50%, 90%</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>5%, 35%, 65%, 95%</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>5%, 27.5%, 50%, 72.5%, 95%</td>
+</tr>
+</tbody>
+</table>
+<p>The number of knots may instead be selected through cross-validation:</p>
+<p><span class="math display">\[
+\hat K = \arg\min_{K \in \mathcal K} CV(K),
+\]</span></p>
+<p>where <span class="math inline">\(CV(K)\)</span> measures the out-of-sample prediction error for a spline model with <span class="math inline">\(K\)</span> knots.</p>
+</section>
+<section id="statistical-inference" class="level3" data-number="6.3">
+<h3 data-number="6.3" class="anchored" data-anchor-id="statistical-inference"><span class="header-section-number">6.3</span> Statistical inference</h3>
+<p>For a fixed spline basis, suppose <span class="math inline">\(\epsilon\sim \mathcal N(0, \sigma^2 I)\)</span>. Then</p>
+<p><span class="math display">\[
+\hat \beta\sim \mathcal N(\beta, \sigma^2(B^\top B)^{-1}).
+\]</span></p>
+<p>For a given predictor value <span class="math inline">\(x\)</span>,</p>
+<p><span class="math display">\[
+\mathrm{Var}[\hat s(x)] = \sigma^2 b(x)^\top (B^\top B)^{-1}b(x).
+\]</span></p>
+<p>Substituting an estimator <span class="math inline">\(\hat{\sigma}^2\)</span> gives a standard error for the fitted regression function. Under the usual assumptions, this can be used to construct a pointwise confidence interval for the conditional mean. A useful question is whether the spline provides a pointwise confidence interval for the conditional mean.</p>
+<p>For the restricted cubic spline representation,</p>
+<p><span class="math display">\[
+s(x) = \beta_0 + \beta_1 x + \sum_{j=1}^{K-2} \gamma_j h_j(x),
+\]</span></p>
+<p>the hypothesis of a linear relationship is</p>
+<p><span class="math display">\[
+H_0: \gamma_1 = \cdots = \gamma_{K-2} = 0
+\]</span></p>
+<p>Under <span class="math inline">\(H_0\)</span>, the spline reduces to</p>
+<p><span class="math display">\[
+s(x) = \beta_0 + \beta_1 x  
+\]</span></p>
+<p>With fixed knots and the usual Gaussian linear-model assumptions, this hypothesis can be evaluated using a partial <span class="math inline">\(F\)</span>-test. For generalized regression models, likelihood-ratio or Wald tests may be appropriate. A caveat is necessary: when knots or model complexity are selected using the same data, ordinary fixed-model inference does not automatically account for that selection uncertainty.</p>
+</section>
+<section id="interpreting-the-fitted-relationship" class="level3" data-number="6.4">
+<h3 data-number="6.4" class="anchored" data-anchor-id="interpreting-the-fitted-relationship"><span class="header-section-number">6.4</span> Interpreting the fitted relationship</h3>
+<p>Individual spline coefficients generally do not have simple interpretations comparable to the slope coefficient of an ordinary linear regression. This is particularly true for restricted cubic splines, where a single basis coefficient changes the fitted curve over a substantial portion of the predictor domain. Instead, interpretation should focus on the estimated regression function and its derivatives.</p>
+<p>The conditional marginal effect is</p>
+<p><span class="math display">\[
+\frac{d}{dx} \E[Y\mid X = x] = s'(x)
+\]</span></p>
+<p>A finite change in the expected response between <span class="math inline">\(x_a\)</span> and <span class="math inline">\(x_b\)</span> is</p>
+<p><span class="math display">\[
+\Delta(x_a, x_b) = s(x_b) - s(x_a).
+\]</span></p>
+<p>The second derivative <span class="math inline">\(s''(x)\)</span> describe how the slope changes with <span class="math inline">\(x\)</span>. For example, if <span class="math inline">\(s'(x)&gt;0\)</span> and <span class="math inline">\(s''(x)&lt;0\)</span>, the expected response is increasing, but its rate of increase is decreasing. These quantitites provide a meaningful scientific summaries than just interpreting an isolated cubic-basis coefficient.</p>
+</section>
+<section id="why-b-splines-are-important-computationally" class="level3" data-number="6.5">
+<h3 data-number="6.5" class="anchored" data-anchor-id="why-b-splines-are-important-computationally"><span class="header-section-number">6.5</span> Why B-splines are important computationally</h3>
+<p>The truncated-power representation, however, is not the best numerical representation. Terms such as <span class="math inline">\(x^3\)</span> and <span class="math inline">\((x-\kappa_j)^3_{+}\)</span> can be highly correlated, particularly when the predictor has a large numerical range or knots are closely spaced. This may lead to an ill-conditioned design matrix. An alternative is to use <strong>B-splines</strong>, which form a basis of functions with local support.</p>
+<p>A <em>B-spline basis function</em> is nonzero only over a limited range of knots. As a result, the associated design matrix is typically sparse or banded, and the numerical calculations can be more stable.</p>
+<p>Let <span class="math inline">\(t_1\leq \cdots \leq t_M\)</span> be a knot sequence, including repeated boundary knots when needed. For degree zero, we define</p>
+<p><span class="math display">\[
+B_{i, 0} = \mathbf 1\{t_i \leq x \leq t_{i+1}\}
+\]</span></p>
+<p>For degree <span class="math inline">\(p\geq 1\)</span>,</p>
+<p><span class="math display">\[
+B_{i, p} = \frac{x-t_i}{t_{i+p}-t_i} B_{i, p-1}(x) + \frac{t_{i+p+i}- x }{t_{i+p+1}- t_{i+1}}B_{i+1, p-1}(x),
+\]</span></p>
+<p>where a term with a zero denominator is defined to be zero. For the same knot sequence and boundary conditions, an appropriate B-spline basis and a truncated-power basis span the same function space. Their fitted curves are therefore mathematically equivalent under unpenalized least squares.</p>
+</section>
+</section>
+<section id="from-regression-splines-to-smoothing-splines" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="from-regression-splines-to-smoothing-splines"><span class="header-section-number">7</span> From Regression Splines to Smoothing Splines</h2>
+<p>Although the main focus is regression splines, it is important to understand the related smoothing-spline framework because many modern spline methods combine these two ideas.</p>
+<section id="penalizing-excessive-curvature" class="level3" data-number="7.1">
+<h3 data-number="7.1" class="anchored" data-anchor-id="penalizing-excessive-curvature"><span class="header-section-number">7.1</span> Penalizing excessive curvature</h3>
+<p>Instead of choosing a small number of knots and estimating an unrestricted coefficient vector, we may introduce a penalty that discourages roughness.</p>
+<p>For cubic smoothing, the objective takes the form</p>
+<p><span id="eq-cubic-smoothing-objective"><span class="math display">\[
+\hat f_\lambda = \arg \min_{f\in H^2[a, b]}\left\{\underbrace{\sum_{i=1}^n (y_i - f(x_i))^2}_{\text{goodness of fit}}+ \lambda \underbrace{\int_a^b [f''(x)]^2}_{\text{roughness}} dx\right\}
+\tag{4}\]</span></span></p>
+<p>Here, <span class="math inline">\(H^2[a, b]\)</span> denotes a function space whose members have square-integrable second weak derivative. The tuning parameter <span class="math inline">\(\lambda\geq0\)</span> controls the relative importance of these objectives. As <span class="math inline">\(\lambda\)</span> becomes small, the estimator emphasizes agreement with the observed responses. As <span class="math inline">\(\lambda\)</span> increases, it places greater emphasis on smoothness. When <span class="math inline">\(\lambda\to\infty\)</span>, and under the usual nondegeneracy conditions, the fitted curve approaches a linear least-squares regression function, because linear functions have zero second derivative.</p>
+<div id="thm-finite-dimensional-characterization" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 2</strong></span> For distinct observed predictor values, the minimizer of <a href="#eq-cubic-smoothing-objective" class="quarto-xref">Equation&nbsp;<span>4</span></a> is a natural cubic spline with knots at the distinct observed predictor values.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Consider any candidate function <span class="math inline">\(f\)</span>, and let <span class="math inline">\(s_f\)</span> be the natural cubic spline interpolating the values <span class="math inline">\(f(x_i)\)</span>. The function <span class="math inline">\(f\)</span> and <span class="math inline">\(s_f\)</span> agree at the observations, so they have identical squared-error terms. By <a href="#thm-minimum-curvature-property-of-the-natural-cubic-interpolant" class="quarto-xref">Theorem&nbsp;<span>1</span></a>,</p>
+<p><span class="math display">\[
+\int_{a}^{b}[s''_f(x)]^2 dx \leq \int_{a}^b [f''(x)]^2 dx.
+\]</span></p>
+<p>Therefore, replacing <span class="math inline">\(f\)</span> by its natural cubic interpolant cannot increase the objective in <a href="#eq-cubic-smoothing-objective" class="quarto-xref">Equation&nbsp;<span>4</span></a>. It follows that minimization over the infinite-dimensional function space can be reduced to minimization over the finite-dimensional space of natural cubic splines with knots at the observed predictor values.</p>
+</div>
+</section>
+<section id="matrix-representation-of-a-penalized-regression-spline" class="level3" data-number="7.2">
+<h3 data-number="7.2" class="anchored" data-anchor-id="matrix-representation-of-a-penalized-regression-spline"><span class="header-section-number">7.2</span> Matrix representation of a penalized regression spline</h3>
+<p>For a finite spline basis</p>
+<p><span class="math display">\[
+s(x) = \sum_{j=1}^d \beta_j B_j(x),
+\]</span></p>
+<p>the penalized least-squares criterion becomes</p>
+<p><span class="math display">\[
+L_\lambda (\beta) = ||\mathbf y - \mathbf B \beta||_2^2 + \lambda \beta^\top \omega \beta,
+\]</span></p>
+<p>where</p>
+<p><span class="math display">\[
+\omega_{jk} = \int_{a}^{b} B''_{j}(x) B''_k(x) dx .
+\]</span></p>
+<p>Differentiating with respec to <span class="math inline">\(\beta\)</span> gives</p>
+<p><span class="math display">\[
+-2\mathbf B^\top (\mathbf y - \mathbf B \beta) + 2\lambda \omega \beta = 0.
+\]</span></p>
+<p>Consequently,</p>
+<p><span class="math display">\[
+(\mathbf B^\top \mathbf B + \lambda \omega)\hat \beta_\lambda = \mathbf B^\top \mathbf y .
+\]</span></p>
+<p>This demonstrates that smoothing can be incorporated into spline regression through regularization. The fitted values may be written as</p>
+<p><span class="math display">\[
+\hat{\mathbf{y}} = \mathbf S_{\lambda} \mathbf y,
+\]</span></p>
+<p>where</p>
+<p><span class="math display">\[
+\mathbf S_\lambda = \mathbf B(\mathbf B^\top \mathbf B + \lambda \omega)^{-1}\mathbf B^\top.
+\]</span></p>
+<p>The quantity</p>
+<p><span class="math display">\[
+\mathrm{df}_{\mathrm{eff}}(\lambda) = \mathrm{tr}(\mathbf S_{\lambda})
+\]</span></p>
+<p>is called the <strong>effective degrees of freedom</strong>. Unlike the dimension of an unpenalized spline space, this quantity can vary continuously with <span class="math inline">\(\lambda\)</span>, reflecting how strongly the fitted curve has been regularized.</p>
+<blockquote class="blockquote">
+<p><em>Regression splines primarily control complexity through the dimension of the chosen spline space. Smoothing and penalized regression splines additionally control complexity through a roughness penalty.</em></p>
+</blockquote>
+</section>
+</section>
+<section id="subsequent-developments-and-modern-extensions" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="subsequent-developments-and-modern-extensions"><span class="header-section-number">8</span> Subsequent Developments and Modern Extensions</h2>
+<section id="generalized-additive-models" class="level3" data-number="8.1">
+<h3 data-number="8.1" class="anchored" data-anchor-id="generalized-additive-models"><span class="header-section-number">8.1</span> Generalized additive models</h3>
+<p>One of the most influential extensions was the development of generalized additive models by <span class="citation" data-cites="hastieGeneralizedAdditiveModels">Hastie and Tibshirani (<a href="../references.html#ref-hastieGeneralizedAdditiveModels" role="doc-biblioref">n.d.</a>)</span>. Instead of assuming the the response depends linearly on several predictors, they proposed an additive combination of smooth functions. For predictors <span class="math inline">\(X_1, \ldots, X_p\)</span>, the generalized additive model has the form</p>
+<p><span class="math display">\[
+g(\E[Y | X_1, \ldots, X_p]) = \beta_0 + \sum_{j=1}^p f_j(X_j),
+\]</span></p>
+<p>where <span class="math inline">\(g\)</span> is the link function and each <span class="math inline">\(f_j\)</span> is an unknown smoothing function. The component functions can be represented using spline bases:</p>
+<p><span class="math display">\[
+f_j(x) = \sum_{k=1}^{d_j} \beta_{jk}B_{jk}(x).
+\]</span></p>
+<p>Appropriate identifiability constraints, such as centering the smooth terms, are imposed to distinguish the intercept from the additive components. The generalized additive framework provides interpretable nonlinear effects while retaining much of the structure of familiar regression models. A comprehensive modern treatment appears in <span class="citation" data-cites="woodGeneralizedAdditiveModels2017">Wood (<a href="../references.html#ref-woodGeneralizedAdditiveModels2017" role="doc-biblioref">2017</a>)</span>, which emphasizes penalized regression splines and their connection to generalized linear and mixed models.</p>
+</section>
+<section id="penalized-b-splines" class="level3" data-number="8.2">
+<h3 data-number="8.2" class="anchored" data-anchor-id="penalized-b-splines"><span class="header-section-number">8.2</span> Penalized B-splines</h3>
+<p><span class="citation" data-cites="eilersFlexibleSmoothingBsplines1996">Eilers and Marx (<a href="../references.html#ref-eilersFlexibleSmoothingBsplines1996" role="doc-biblioref">1996</a>)</span> introduced an especially influential approach known as <strong>P-splines</strong>, combining B-spline bases with penalties on successive coefficient differences. Instead of penalizing the integrated second derivative directly, a typical P-spline estimator solves</p>
+<p><span class="math display">\[
+\min_\beta \{||\mathbf y - \mathbf B \boldsymbol \beta||_2^2 + \lambda ||\mathbf D_r \boldsymbol \beta||_2^2\},
+\]</span></p>
+<p>where <span class="math inline">\(\mathbf D_r\)</span> is a matrix representing differences of order <span class="math inline">\(r\)</span>. For example, the second-order coefficient difference is</p>
+<p><span class="math display">\[
+\Delta^2 \beta_j = \beta_j - 2 \beta_{j-1} + \beta_{j-2}
+\]</span></p>
+<p>Penalizing these differences discourages rapid change between neighboring coefficients. This construction offers a computationally convenient way to obtain smooth functions, even with a relatively large number of basis functions.</p>
+</section>
+<section id="adapative-regression-splines" class="level3" data-number="8.3">
+<h3 data-number="8.3" class="anchored" data-anchor-id="adapative-regression-splines"><span class="header-section-number">8.3</span> Adapative regression splines</h3>
+<p>A different development is the automatic selection of knots and interaction terms. <span class="citation" data-cites="friedmanMultipleAdditiveRegression2003">Friedman and Meulman (<a href="../references.html#ref-friedmanMultipleAdditiveRegression2003" role="doc-biblioref">2003</a>)</span> introduced <em>Multivariate Adaptive Regression Splines (MARS)</em>, a procedure that constructs a model using adaptively selected spline-like basis functions. Its basis building blocks include higne functions,</p>
+<p><span class="math display">\[
+(x-\kappa)_{+} \quad \text{and} \quad (\kappa-x)_{+},
+\]</span></p>
+<p>and products of these functions. This allows the model to identify useful changes behavior and interactions without requiring the analyst to prespecify every knot. MARS therefore shares a conceptual foundation with linear splines, while extending them through automated basis selection.</p>
+</section>
+<section id="shape-constrained-splines" class="level3" data-number="8.4">
+<h3 data-number="8.4" class="anchored" data-anchor-id="shape-constrained-splines"><span class="header-section-number">8.4</span> Shape-constrained splines</h3>
+<p>In some scientific applications, substantive knowledge suggests that the fitted function must satisfy additional structural properties. For example, a dose-response relationship may be expected to be monotone, or a cost function may be assumed to be convex. Such requirements can be expressed mathematically through derivative constraints:</p>
+<p><span class="math display">\[
+s'(x) \geq 0
+\]</span></p>
+<p>for nondecreasing function, or <span class="math inline">\(s''(x) \geq 0\)</span> for a convex function. <span class="citation" data-cites="ramsayMonotoneRegressionSplines1988">Ramsay (<a href="../references.html#ref-ramsayMonotoneRegressionSplines1988" role="doc-biblioref">1988</a>)</span> is an imporant contribution to the usse of monotonicity constraints in spline-based statisitcal modeling. This line of research demonstrates that splines can incorporate structural prior knowledge.</p>
+</section>
+<section id="multivariate-splines-and-interactions" class="level3" data-number="8.5">
+<h3 data-number="8.5" class="anchored" data-anchor-id="multivariate-splines-and-interactions"><span class="header-section-number">8.5</span> Multivariate splines and interactions</h3>
+<p>A further extension converns smooth relationships involving more than one predictor. Suppose <span class="math inline">\(f:\R^2 \to \R\)</span>. A tensor-product spline represents the function as</p>
+<p><span class="math display">\[
+f(x_1, x_2) = \sum_{j=1}^{d_1} \sum_{k=1}^{d_2} \beta_{jk} B_j(x_1)C_k(x_2).
+\]</span></p>
+<p>This construction permits plexible interactions between continuous predictors. Thin-plate regression splines provide another important approach, particularly in spatial modeling and GAM. <span class="citation" data-cites="woodThinPlateRegression2003">Wood (<a href="../references.html#ref-woodThinPlateRegression2003" role="doc-biblioref">2003</a>)</span> developed low-rank thin-plate regression splines, while <span class="citation" data-cites="woodLowrankScaleinvariantTensor2006">Wood (<a href="../references.html#ref-woodLowrankScaleinvariantTensor2006" role="doc-biblioref">2006</a>)</span> developed tensor-product smoothing constructions.</p>
+</section>
+<section id="connections-to-machine-learning" class="level3" data-number="8.6">
+<h3 data-number="8.6" class="anchored" data-anchor-id="connections-to-machine-learning"><span class="header-section-number">8.6</span> Connections to machine learning</h3>
+<p>Spline representations have also appeared in more recent ML architectures. One example is <span class="citation" data-cites="liuKANKolmogorovArnoldNetworks2025">Liu et al. (<a href="../references.html#ref-liuKANKolmogorovArnoldNetworks2025" role="doc-biblioref">2025</a>)</span>: <em>KAN: Kolmogorov-Arnold Networks</em>. In this architecture, learnable univariate functions, parameterized using splines, replace conventional scalar connection weights in a proposed alternative to multilayer perceptrons.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-durrlemanFlexibleRegressionModels1989" class="csl-entry" role="listitem">
+Durrleman, Sylvain, and Richard Simon. 1989. <span>“Flexible Regression Models with Cubic Splines.”</span> <em>Statistics in Medicine</em> 8 (5): 551–61. <a href="https://doi.org/10.1002/sim.4780080504">https://doi.org/10.1002/sim.4780080504</a>.
+</div>
+<div id="ref-eilersFlexibleSmoothingBsplines1996" class="csl-entry" role="listitem">
+Eilers, Paul H. C., and Brian D. Marx. 1996. <span>“Flexible Smoothing with <span>B</span>-Splines and Penalties.”</span> <em>Statistical Science</em> 11 (2): 89–121. <a href="https://doi.org/10.1214/ss/1038425655">https://doi.org/10.1214/ss/1038425655</a>.
+</div>
+<div id="ref-friedmanMultipleAdditiveRegression2003" class="csl-entry" role="listitem">
+Friedman, Jerome H., and Jacqueline J. Meulman. 2003. <span>“Multiple Additive Regression Trees with Application in Epidemiology.”</span> <em>Statistics in Medicine</em> 22 (9): 1365–81. <a href="https://doi.org/10.1002/sim.1501">https://doi.org/10.1002/sim.1501</a>.
+</div>
+<div id="ref-harrellRegressionModelingStrategies2015" class="csl-entry" role="listitem">
+Harrell, Frank E. 2015. <em>Regression Modeling Strategies: With Applications to Linear Models, Logistic and Ordinal Regression, and Survival Analysis</em>. Springer <span>Series</span> in <span>Statistics</span>. Springer International Publishing. <a href="https://doi.org/10.1007/978-3-319-19425-7">https://doi.org/10.1007/978-3-319-19425-7</a>.
+</div>
+<div id="ref-hastieGeneralizedAdditiveModels" class="csl-entry" role="listitem">
+Hastie, Trevor, and Robert Tibshirani. n.d. <em>Generalized Additive Models</em>.
+</div>
+<div id="ref-holladaySmoothestCurveApproximation1957" class="csl-entry" role="listitem">
+Holladay, John C. 1957. <span>“A Smoothest Curve Approximation.”</span> <em>Mathematical Tables and Other Aids to Computation</em> 11 (60): 233–43. <a href="https://doi.org/10.2307/2001941">https://doi.org/10.2307/2001941</a>.
+</div>
+<div id="ref-liuKANKolmogorovArnoldNetworks2025" class="csl-entry" role="listitem">
+Liu, Ziming, Yixuan Wang, Sachin Vaidya, et al. 2025. <em><span>KAN</span>: Kolmogorov-Arnold Networks</em>. arXiv:2404.19756. arXiv. <a href="https://doi.org/10.48550/arXiv.2404.19756">https://doi.org/10.48550/arXiv.2404.19756</a>.
+</div>
+<div id="ref-ramsayMonotoneRegressionSplines1988" class="csl-entry" role="listitem">
+Ramsay, J. O. 1988. <span>“Monotone Regression Splines in Action.”</span> <em>Statistical Science</em> 3 (4): 425–41. <a href="https://doi.org/10.1214/ss/1177012761">https://doi.org/10.1214/ss/1177012761</a>.
+</div>
+<div id="ref-reinschSmoothingSplineFunctions1967" class="csl-entry" role="listitem">
+Reinsch, Christian H. 1967. <span>“Smoothing by Spline Functions.”</span> <em>Numerische Mathematik</em> 10 (3): 177–83. <a href="https://doi.org/10.1007/BF02162161">https://doi.org/10.1007/BF02162161</a>.
+</div>
+<div id="ref-schoenbergContributionsProblemApproximation1988" class="csl-entry" role="listitem">
+Schoenberg, I. J. 1988. <span>“Contributions to the Problem of Approximation of Equidistant Data by Analytic Functions.”</span> In <em>I. <span>J</span>. <span>Schoenberg</span> Selected Papers</em>, <span class="nocase">edited by Carl de Boor</span>. Birkhäuser. <a href="https://doi.org/10.1007/978-1-4899-0433-1_1">https://doi.org/10.1007/978-1-4899-0433-1_1</a>.
+</div>
+<div id="ref-woodThinPlateRegression2003" class="csl-entry" role="listitem">
+Wood, Simon N. 2003. <span>“Thin Plate Regression Splines.”</span> <em>Journal of the Royal Statistical Society Series B (Statistical Methodology)</em> 65 (1): 95–114. <a href="https://doi.org/10.1111/1467-9868.00374">https://doi.org/10.1111/1467-9868.00374</a>.
+</div>
+<div id="ref-woodLowrankScaleinvariantTensor2006" class="csl-entry" role="listitem">
+Wood, Simon N. 2006. <span>“Low-Rank Scale-Invariant Tensor Product Smooths for Generalized Additive Mixed Models.”</span> <em>Biometrics</em> 62 (4): 1025–36. <a href="https://doi.org/10.1111/j.1541-0420.2006.00574.x">https://doi.org/10.1111/j.1541-0420.2006.00574.x</a>.
+</div>
+<div id="ref-woodGeneralizedAdditiveModels2017" class="csl-entry" role="listitem">
+Wood, Simon N. 2017. <em>Generalized Additive Models: An Introduction with <span>R</span>, Second Edition</em>. 2nd ed. <span>Chapman and Hall/CRC</span>. <a href="https://doi.org/10.1201/9781315370279">https://doi.org/10.1201/9781315370279</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../weeks/05.html" class="pagination-link" aria-label="Model Comparison Under Complexity and Tuning Constraints">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Comparison Under Complexity and Tuning Constraints</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../references.html" class="pagination-link" aria-label="References">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
