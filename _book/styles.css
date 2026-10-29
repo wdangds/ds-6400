@@ -175,6 +175,23 @@
   margin-bottom: 0;
 }
 
+/*
+ * Display equations inside narrow boxes are fitted by tex/fit-box-math.html.
+ * Overflow remains scrollable as a fallback if browser zoom or an unusually
+ * large expression prevents a useful fit.
+ */
+:where(.theorem, .example, .callout) .math.display {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+:where(.theorem, .example, .callout) mjx-container[display="true"] {
+  max-width: 100%;
+}
+
 /* Keep generated figures inside the readable page column, even when code chunks use a large figsize. */
 .quarto-figure,
 .cell-output-display,

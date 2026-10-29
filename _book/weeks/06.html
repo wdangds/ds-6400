@@ -87,7 +87,7 @@ div.csl-indent {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../references.html" rel="next">
+<link href="../weeks/07.html" rel="next">
 <link href="../weeks/05.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -287,6 +287,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Regression Splines</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Comparing Nonlinear Regression Models</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -445,7 +451,7 @@ s(x) = \begin{cases}a_0 + b_0 x, &amp; x \leq \kappa, \\ a_1 + b_1 x,&amp; x &gt
 s(x) = 1 + 2x - 3(x-2)_{+} + (x-5)_{+},
 \]</span></p>
 <p>where <span class="math inline">\((z)_{+} = \max(z, 0)\)</span>. The two knots are <span class="math inline">\(\kappa_1 = 2\)</span> and <span class="math inline">\(\kappa_2 = 5\)</span>.</p>
-<div id="5be71745" class="cell" data-execution_count="1">
+<div id="425ffcda" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
@@ -580,7 +586,7 @@ s^{(r)} (\kappa_j^{-}) = s^{(r)} (\kappa_j^{+}), \quad r = 0,\ldots, p-1.
 <li>Continuity of <span class="math inline">\(s'\)</span> means there are no abrupt changes in slope.</li>
 <li>Continuity of <span class="math inline">\(s''\)</span> means curvature, as measured by the second derivative, changes continuously.</li>
 </ul>
-<div id="1d4177c8" class="cell" data-execution_count="2">
+<div id="828747af" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
@@ -761,7 +767,7 @@ s(x) = \begin{cases}1+2x, &amp;x\leq 2 \\ 7-x, &amp; 2&lt; x\leq 5 \\ 2, &amp; x
 <h3 data-number="3.4" class="anchored" data-anchor-id="interpretation-and-limitations"><span class="header-section-number">3.4</span> Interpretation and limitations</h3>
 <p>Linear splines provide a simple mechanism for relaxing the assumption of a constant regression slope. They are useful when the underlying phenomenon plausibly changes its rate at identifiable thresholds. Example include changes in marginal costs, piecewise trends, and dose-response relationships.</p>
 <p>Their main limitation is geometric. Although the fitted function is continuous, its first derivative can jump abruptly at knot. Such discontinues in slope may be appropriate if a genuine change point exists. However, if the underlying relationship is expected to vary smoothly, a linear spline may introduce artificial corners. This motivates the use of higher-degree splines, particularly cubic splines, which permit greater flexibility while enforcing smoothness of both the first and second derivatives.</p>
-<div id="d6f86680" class="cell" data-execution_count="3">
+<div id="984c41da" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
@@ -957,7 +963,7 @@ s''(2^{-}) &amp;= s''(2^{+}) = 0,
 \end{aligned}
 \]</span></p>
 <p>Thus, unlike a linear spline, the cubic spline changes its shape gradually after knot.</p>
-<div id="7efbbfed" class="cell" data-execution_count="4">
+<div id="f157c861" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> positive_part(z):</span>
@@ -1062,7 +1068,7 @@ s(x) = A+ Bx + Cx^2 + Dx^3
 <blockquote class="blockquote">
 <p><em>The relationship should be allowed to exhibit nonlinear behavior where sufficient information is available, but unnecessary curvature should be restricted at the boundaries.</em></p>
 </blockquote>
-<div id="85e37195" class="cell" data-execution_count="5">
+<div id="ebcaa235" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
@@ -1570,6 +1576,116 @@ Wood, Simon N. 2017. <em>Generalized Additive Models: An Introduction with <span
 </section>
 
 </main> <!-- /main -->
+<script>
+(() => {
+  "use strict";
+
+  const boxSelector = ".theorem, .example, .callout";
+  const displayMathSelector = 'mjx-container[display="true"]';
+  let fitFrame = 0;
+  let fittingStarted = false;
+
+  function fitDisplayMath(displayMath) {
+    // Measure at the normal MathJax size every time so equations can grow
+    // back after their container becomes wider.
+    displayMath.style.removeProperty("font-size");
+    displayMath.removeAttribute("data-math-fit-scale");
+
+    const wrapper = displayMath.closest(".math.display") || displayMath.parentElement;
+    // Quarto may configure MathJax's SVG or CHTML renderer. Both express
+    // their natural width relative to the container's font size.
+    const renderedMath = displayMath.querySelector("mjx-math, svg");
+
+    if (!wrapper || !renderedMath) {
+      return;
+    }
+
+    const wrapperStyle = window.getComputedStyle(wrapper);
+    const horizontalPadding =
+      Number.parseFloat(wrapperStyle.paddingLeft) +
+      Number.parseFloat(wrapperStyle.paddingRight);
+    const availableWidth = wrapper.clientWidth - horizontalPadding;
+    const naturalWidth = renderedMath.getBoundingClientRect().width;
+
+    if (availableWidth <= 0 || naturalWidth <= availableWidth) {
+      return;
+    }
+
+    // Leave a small margin so sub-pixel rounding does not create a scrollbar.
+    const scale = (availableWidth / naturalWidth) * 0.98;
+    displayMath.style.fontSize = `${scale * 100}%`;
+    displayMath.dataset.mathFitScale = scale.toFixed(3);
+  }
+
+  function fitAllBoxMath() {
+    document.querySelectorAll(boxSelector).forEach((box) => {
+      box.querySelectorAll(displayMathSelector).forEach(fitDisplayMath);
+    });
+  }
+
+  function scheduleFit() {
+    window.cancelAnimationFrame(fitFrame);
+    fitFrame = window.requestAnimationFrame(() => {
+      // Use a second frame so layout reflects the reset to normal size.
+      window.requestAnimationFrame(fitAllBoxMath);
+    });
+  }
+
+  async function startFitting() {
+    if (fittingStarted) {
+      return;
+    }
+    fittingStarted = true;
+
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
+    scheduleFit();
+
+    if ("ResizeObserver" in window) {
+      const resizeObserver = new ResizeObserver(scheduleFit);
+      document.querySelectorAll(boxSelector).forEach((box) => resizeObserver.observe(box));
+    } else {
+      window.addEventListener("resize", scheduleFit, {passive: true});
+    }
+
+    // Also handle equations inserted later by notebook or Quarto components.
+    const mutationObserver = new MutationObserver((mutations) => {
+      if (
+        mutations.some((mutation) =>
+          [...mutation.addedNodes].some(
+            (node) =>
+              node.nodeType === Node.ELEMENT_NODE &&
+              (node.matches?.(displayMathSelector) || node.querySelector?.(displayMathSelector))
+          )
+        )
+      ) {
+        scheduleFit();
+      }
+    });
+
+    mutationObserver.observe(document.body, {childList: true, subtree: true});
+  }
+
+  const mathJaxReady = window.MathJax?.startup?.promise;
+
+  if (mathJaxReady && typeof mathJaxReady.then === "function") {
+    // Plotly outputs can load their own MathJax renderer and cause the shared
+    // startup promise to reject even though the page equations were rendered.
+    // Fit in either case.
+    mathJaxReady.then(startFitting, startFitting);
+  }
+
+  // Always keep the ordinary page-load event as a fallback. Some embedded
+  // widgets replace window.MathJax and leave an earlier startup promise pending.
+  if (document.readyState === "complete") {
+    startFitting();
+  } else {
+    window.addEventListener("load", startFitting, {once: true});
+  }
+})();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -1977,8 +2093,8 @@ Wood, Simon N. 2017. <em>Generalized Additive Models: An Introduction with <span
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../references.html" class="pagination-link" aria-label="References">
-        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../weeks/07.html" class="pagination-link" aria-label="Comparing Nonlinear Regression Models">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Comparing Nonlinear Regression Models</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

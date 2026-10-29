@@ -1,0 +1,1339 @@
+---
+title: "Comparing Nonlinear Regression Models"
+jupyter: ds-6400
+tags: 
+  - machine learning 
+  - statistical learning 
+  - regression
+  - mathematical framework 
+  - basis function
+---
+
+The objective is to compare polynomial regression, regression splines, and kernel methods under a mathematical framework, emphasizing their function spaces, design matrices, dimensionality, and estimation objectives. 
+
+## Common Mathematical Setup 
+
+Suppose we observe $\mathcal D_n = \{(x_i, y_i)\}_{i=1}^n$, where $x_i\in [a, b]\subset \R$,and assume the regression model 
+
+$$
+Y_i = f_0(x_i) + \epsilon, \quad \E[\epsilon_i\mid X_i]=0, \quad \Var(\epsilon_i\mid X_i) = \sigma^2. 
+$$
+
+Our objective is to estimate the unknown regression function $f_0(x) = \E[Y\mid X=x]$. Most of the models considered can be written as 
+
+$$
+f_\beta(x) = \sum_{j=1}^p \beta_j \phi_j(x) = \boldsymbol\phi(x)^\top \boldsymbol \beta
+$$
+
+We can define the design matrix $\boldsymbol\Phi_{n\times p}$:
+
+$$
+\boldsymbol \Phi=\begin{bmatrix}
+\phi_1(x_1) & \ldots & \phi_p(x_1) \\ 
+\vdots && \vdots \\ 
+\phi_1(x_n) & \ldots & \phi_p(x_n) \\ 
+\end{bmatrix}
+$$
+
+and the corresponding function space is $\mathcal F = \mathrm{span}\{\phi_1, \ldots, \phi_p\}$. Note that we have three distinctions here:
+
+- __Function space dimension__: $\dim(\mathcal F)= p$ when the basis functions are linearly independent.
+- __Design-matrix rank__: $\rank(\boldsymbol \Phi)\leq \min(n, p)$, which is the dimension of the evaluated column space $\mathcal C(\boldsymbol \phi)$. 
+- __Effective degrees of freedom__: a measure of model flexibility, particularly for penalized splines and kernel methods.
+
+When the design matrix has full column rank, the fitted response is the orthogonal projection:
+
+$$
+\hat{\mathbf{y}} = \boldsymbol\Phi(\boldsymbol\Phi^{\top}\boldsymbol\Phi)^{-1}\boldsymbol\Phi^\top \mathbf y = P_{\mathcal C(\boldsymbol{\Phi})}\mathbf y
+$$
+
+Consequently, for any invertible matrix $R\in \R^{p\times p}$, $\mathcal C(\boldsymbol\Phi) = \mathcal C(\boldsymbol \Phi R)$, so the basis transformation $\boldsymbol \Phi \mapsto \boldsymbol \Phi R$ does not change the OLS fitted values. 
+
+## Polynomial regression 
+
+Let $m\geq 0$ denote the maximum polynomial degree. A polynomal representation can be written as 
+
+$$
+\mathcal P_m = \left\{f(x) = \sum_{j=0}^m c_j x^j: c_j\in \R  \right\}
+$$
+
+with $\dim(\mathcal{P}_m) = m+1$. 
+
+### Ordinary (monomial) polynomials 
+
+::: {#def-ordinary-polynomial}
+
+$$
+f_\beta(x) = \beta_0 + \beta_1 x + \ldots + \beta_m x^m.  
+$$
+
+The basis functions are $\phi_j(x) = x^j, j=0,\ldots, m$.
+:::
+
+The design matrix is the [Vandermonde matrix](https://en.wikipedia.org/wiki/Vandermonde_matrix):
+
+$$
+\boldsymbol\Phi_{\text{poly}} = \begin{bmatrix} 
+1 & x_1 & x_1^2 & \ldots & x_1^m \\ 
+1 & x_2 & x_2^2 & \ldots & x_2^m \\ 
+\vdots & \vdots & \vdots && \vdots \\ 
+1 & x_n & x_n^2 & \ldots & x_n^m \\ 
+\end{bmatrix}
+$$
+
+The model has global support: changing any coefficient can affect predictions across the entire domain. High-degree Vandermonde matrices can also be ill-conditioned.
+
+```{python}
+#| code-fold: True 
+#| code-summary: "View Python code"
+from copy import deepcopy
+from itertools import product
+from math import comb
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+
+np.random.seed(6400)
+x = np.linspace(-1, 1, 20)
+y = 3*x**2 + 2*x + np.sin(2*np.pi*x) + np.random.normal(0, 0.14, len(x))
+
+x_plot = np.linspace(-1.1, 1.1, 500)
+
+plt.figure(figsize=(10, 6))
+plt.scatter(x, y, alpha=0.6)
+
+for degree in [1, 2, 5, 10]:
+    coefficients = np.polyfit(x, y, degree)
+    y_pred = np.polyval(coefficients, x_plot)
+    plt.plot(x_plot, y_pred, label=f"Degree {degree}")
+
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Polynomial Regression")
+plt.legend()
+plt.show()
+```
+
+### Bernstein polynomials 
+
+In order to use Bernstein polynomials, it's a good practice to transfrom $x\in [a, b]$ into:
+$$
+t = \frac{x-a}{b-a} \in [0,1]
+$$
+
+::: {#def-bernstein-polynomials}
+
+The Bernstein basis of degree $m$ consists of 
+
+$$
+B_{j, m}(t) = \binom{m}{j} t^{j}(1-t)^{m-j},\quad j = 0, \ldots, m
+$$
+
+The regression function is 
+
+$$
+f_\beta(x) = \sum_{j=0}^m \beta_j B_{j,m}\left(\frac{x-a}{b-a}\right)
+$$
+
+:::
+
+The Bernstein design matrix $X_B$ can be expressed in terms of the ordinary polynomial design matrix $Z$ as $X_B = ZR$, where $R$ is an invertible $(m+1) \times (m+1)$ matrix that depends on the polynomial degree $m$. 
+
+Suppse we observed $(x_i, y_i)$ where $x_i \in [a,b]$. We then apply the transformation on $x$:
+
+$$
+t_i = \frac{x_i -a}{b-a}. 
+$$
+
+An ordinary polynomial regression of degree $m$, written in terms of $t$ is $f(t) = \sum_{k=0}^m \beta_k t^k$, hence its design matrix 
+
+$$
+Z = \begin{pmatrix} 
+1 & t_1 & t_1^2 & \ldots & t_1^m \\ 
+1 & t_2 & t_2^2 & \ldots & t_2^m \\ 
+\vdots & \vdots & \vdots && \vdots \\ 
+1 & t_n & t_n^2 & \ldots & t_n^m \\ 
+\end{pmatrix}
+$$
+
+Equivalently, $Z_{ik} = t_i^k$. The corresponding regression model is $\E[Y] = Z\beta$.
+
+We want to express each $B_{j,m}(t)$ as a linear combination of ordinary $1, t, \ldots, t^m$. Apply the binomial theorem:
+
+$$
+(1-t)^{m-j} = \sum_{r=0}^{m-j} \binom{m-j}{r} (-1)^r t^r. 
+$$
+
+Substitute this into $B_{j, m} (t)$:
+
+$$
+\begin{aligned}
+B_{j,m}(t) = \binom{m}{j} t^j (1-t)^{m-j} &= \binom{m}{j} t^{j} \sum_{r=0}^{m-j} \binom{m-j}{r} (-1)^r t^r  \\ 
+& = \sum_{r=0}^{m-j} (-1)^r \binom{m}{j} \binom{m-j}{r} t^{j+r}
+\end{aligned}
+$$
+
+Now let $k = j+r$. Then 
+
+$$
+B_{j, m}(t) = \sum_{k=j}^m (-1)^{k-j} \binom{m}{j} \binom{m-j}{k-j} t^k 
+$$
+
+Now we define two basis row vectors:
+
+$$
+\begin{aligned}
+z(t)^\top &= (1, t, t^2, \ldots, t^m), \\
+b(t)^\top &= (B_{0, m}(t), B_{1, m}(t), \ldots, B_{m,m}(t)).  
+\end{aligned}
+$$
+
+We seek $R$ satisfying $b(t)^\top = z(t)^\top R$. From the expansion above, the matrix entry in row $k$, column $j$, with indices $0,\ldots, m$ must be 
+
+$$
+\begin{aligned}
+R_{kj}=\begin{cases}
+(-1)^{k-j} \binom{m}{j}\binom{m-j}{k-j}, & k \geq j \\ 
+0, & k < j 
+\end{cases}
+\end{aligned}
+$$
+Equivalently, using a binomial coefficient identity, 
+
+$$
+R_{kj} = (-1)^{k-j} \binom{m}{k}\binom{k}{j}, \quad k \geq j 
+$$
+
+So the general transformation matrix has the structure 
+
+$$
+R = \begin{pmatrix}
+1 & 0 & 0 & \cdots & 0 \\ 
+-m & m & 0 & \cdots & 0 \\ 
+\binom{m}{2} & -2 \binom{m}{2} & \binom{m}{2} & \cdots & 0  \\ 
+\vdots & \vdots & \vdots & \ddots & \vdots \\ 
+(-1)^m & (-1)^{m-1}\binom{m}{1} & (-1)^{m-2}\binom{m}{2} & \cdots & 1
+\end{pmatrix}
+$$
+
+Notice that $R$ is lower triangular with diagonal elements $R_{jj}= \binom{m}{j}$. Therefore, $\det(R) = \prod_{j=0}^m \binom{m}{j}\neq 0$. This guarantees that $R$ is invertible for every nonnegative integer $m$.
+
+::: {#exm-m-3}
+
+For cubic Bernstein regression, the basis functions are
+
+$$
+\begin{aligned}
+B_{0,3}(t) &= \binom{3}{0} t^0 (1-t)^3 = 1-3t+3t^2 -t^3 \\ 
+B_{1,3}(t) &= \binom{3}{1} t^1 (1-t)^2 = 3t(1-2t+t^2) = 3t -6t^2 + 3t^3 \\ 
+B_{2,3}(t) &= \binom{3}{2} t^2 (1-t)^1 = 3t^2(1-t) = 3t^2 - 3t^3 \\ 
+B_{3,3}(t) &= \binom{3}{3} t^3 (1-t)^0 = t^3 
+\end{aligned}
+$$
+
+The corresponding transformation is 
+
+$$
+\underbrace{\begin{pmatrix}B_{0,3}(t) & B_{1,3}(t) & B_{2,3}(t) & B_{3,3}\end{pmatrix}}_{b(t)^\top} = \underbrace{\begin{pmatrix}1&t&t^2&t^3\end{pmatrix}}_{z(t)^\top} \underbrace{\begin{pmatrix}1&0&0&0 \\ 
+-3 & 3 & 0 & 0 \\ 
+3 & -6 & -3 & 0 \\ 
+-1 & 3 & -3 & 1 \\ 
+\end{pmatrix}}_{R}
+$$
+
+For $n$ observations, this becomes:
+
+$$
+X_B = \begin{pmatrix}
+1 & t_1 & t_1^2 & t_1^3 \\ 
+1& t_2 & t_2^2 & t_2^3 \\ 
+\vdots & \vdots & \vdots & \vdots \\ 
+1 & t_n & t_n^2 & t_n^3 
+\end{pmatrix}
+\begin{pmatrix}1&0&0&0 \\ 
+-3 & 3 & 0 & 0 \\ 
+3 & -6 & -3 & 0 \\ 
+-1 & 3 & -3 & 1 \\ 
+\end{pmatrix}
+$$
+
+:::
+
+The Bernstein basis satisfies 
+
+$$
+B_{j,m}(t) \geq 0, \quad \sum_{j=0}^m B_{j, m}(t) = 1. 
+$$
+
+It provides a useful representation for shape-constrained regression, such as imposing monotonicity through restrictions on coefficients. Without such restrictions, however, the basis spans exactly $\mathcal P_m$. 
+
+```{python}
+#| code-fold: true
+#| code-summary: "View Python code"
+C = np.array([[1, 0, 0], [-2, 2, 0], [1, -2, 1]], dtype=float)
+
+I = np.eye(3)
+
+
+def transformation_matrix(s):
+    """
+    s=0: identity, giving monomial coordinates
+    s=1: exact monomial-to-Bernstein transformation
+
+    Intermediate values are only used to animate the change.
+    """
+    return (1 - s) * I + s * C
+
+
+def transform(points, s):
+    return points @ transformation_matrix(s)
+
+
+u, v = np.meshgrid(np.linspace(0, 1, 21), np.linspace(0, 1, 21))
+
+# Every point satisfies q0 = 1
+monomial_plane = np.stack([np.ones_like(u), u, v], axis=-1)
+
+# The meaningful polynomial-feature curve on that plane
+x = np.linspace(0, 1, 201)
+monomial_curve = np.column_stack([np.ones_like(x), x, x**2])
+
+# A few labeled locations on the curve
+x_marked = np.array([0, 0.25, 0.50, 0.75, 1.0])
+marked_curve = np.column_stack([np.ones_like(x_marked), x_marked, x_marked**2])
+
+# Boundary of the Bernstein simplex:
+# q0 + q1 + q2 = 1, with all coordinates nonnegative
+bernstein_simplex = np.array(
+    [[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0]], dtype=float
+)
+
+
+def coordinates_at(s):
+    plane = transform(monomial_plane, s)
+    curve = transform(monomial_curve, s)
+    points = transform(marked_curve, s)
+    return plane, curve, points
+
+
+def frame_traces(s, include_style=False):
+    plane, curve, points = coordinates_at(s)
+
+    surface_args = dict(x=plane[..., 0], y=plane[..., 1], z=plane[..., 2])
+    curve_args = dict(x=curve[:, 0], y=curve[:, 1], z=curve[:, 2])
+    point_args = dict(x=points[:, 0], y=points[:, 1], z=points[:, 2])
+
+    if include_style:
+        surface_args.update(
+            opacity=0.42,
+            colorscale=[[0, "royalblue"], [1, "royalblue"]],
+            showscale=False,
+            hoverinfo="skip",
+            name="Coordinate plane",
+        )
+        curve_args.update(
+            mode="lines",
+            line=dict(color="crimson", width=8),
+            name="Polynomial feature curve",
+            hovertemplate="q₀=%{x:.3f}<br>q₁=%{y:.3f}<br>q₂=%{z:.3f}<extra></extra>",
+        )
+        point_args.update(
+            mode="markers+text",
+            marker=dict(color="crimson", size=5),
+            text=[f"x={value:g}" for value in x_marked],
+            textposition="top center",
+            name="Selected x values",
+            hovertemplate="%{text}<extra></extra>",
+        )
+
+    return [
+        go.Surface(**surface_args),
+        go.Scatter3d(**curve_args),
+        go.Scatter3d(**point_args),
+        go.Scatter3d(
+            x=bernstein_simplex[:, 0],
+            y=bernstein_simplex[:, 1],
+            z=bernstein_simplex[:, 2],
+            mode="lines",
+            line=dict(color="seagreen", width=6),
+            opacity=s,
+            name="Bernstein simplex",
+            hoverinfo="skip",
+        ),
+    ]
+
+s_values = np.linspace(0, 1, 21)
+frame_names = [f"step-{i}" for i in range(len(s_values))]
+
+fig = go.Figure(data=frame_traces(0, include_style=True))
+
+fig.frames = [go.Frame(name=name, data=frame_traces(s), traces=[0, 1, 2, 3])
+              for name, s in zip(frame_names, s_values)]
+
+
+fig.update_layout(
+    title="Monomial coordinates → Bernstein coordinates",
+    template="plotly_white",
+    height=500,
+    margin=dict(l=0, r=0, b=20, t=70),
+    scene=dict(
+        xaxis=dict(title="q₀", range=[-1.1, 2.1]),
+        yaxis=dict(title="q₁", range=[-2.1, 2.1]),
+        zaxis=dict(title="q₂", range=[-0.1, 1.1]),
+        aspectmode="cube",
+        camera=dict(eye=dict(x=1.55, y=1.45, z=1.15)),
+    ),
+    updatemenus=[dict(
+        type="buttons",
+        direction="left",
+        x=0,
+        y=1.08,
+        showactive=False,
+        buttons=[
+            dict(
+                label="▶ Play",
+                method="animate",
+                args=[
+                    frame_names,
+                    {"fromcurrent": True, "frame": {"duration": 80, "redraw": True},
+                     "transition": {"duration": 20}},
+                ],
+            ),
+            dict(
+                label="⏸ Pause",
+                method="animate",
+                args=[
+                    [None],
+                    {"mode": "immediate", "frame": {"duration": 0, "redraw": False}},
+                ],
+            ),
+        ],
+    )],
+)
+
+fig.show()
+```
+
+### Orthogonal polynomials 
+
+::: {#def-orthogonal-polynomials}
+
+We construct polynomials $q_0, \ldots, q_m$, where $\deg(q_j)=j$, that are orthogonal under a specified inner product. For empirical orthonormal polynomials, we define 
+
+$$
+\langle g, h \rangle_n = \frac{1}{n} \sum_{i=1}^n g(x_i) h(x_i), \quad \text{s.t. } \langle q_j, q_k\rangle_n = \delta_{jk} = \begin{cases}1, & j=k \\ 0, & j\neq k\end{cases}
+$$
+
+The regression function then is: 
+
+$$
+f_\beta(x) = \sum_{j=0}^m \beta_j q_j(x). 
+$$
+
+:::
+
+::: {#exm-orthogonal-polynomials}
+
+Consider the cubic polynomial basis $\mathcal P_3=\mathrm{span}\{1,x,x^2, x^3\}$. We want to construct four polynoimal $q_0, q_1, q_2, q_3$ such that 
+
+$$
+\frac{1}{n} \sum_{i=1}^n q_j(x_i)q_k(x_i) = \delta_{jk}
+$$
+
+Starting from the Vandermonde matrix,
+
+$$
+\frac{1}{n} V^\top V = \begin{pmatrix} \mathbf 1^\top \mathbf 1 &  \mathbf 1^\top \mathbf x& \mathbf 1^\top\mathbf x^2 &\mathbf 1^\top \mathbf x^3 \\
+\mathbf x^\top \mathbf 1 & \mathbf x^\top \mathbf x & \mathbf x^\top \mathbf x^2 & \mathbf x^\top \mathbf x^3 \\ 
+(\mathbf x^2)^\top \mathbf 1 & (\mathbf x^2)^\top \mathbf x & (\mathbf x^2)^\top \mathbf x^2 & (\mathbf x^2)^\top \mathbf x^3 \\ 
+(\mathbf x^3)^\top \mathbf 1 & (\mathbf x^3)^\top \mathbf x & (\mathbf x^3)^\top \mathbf x^2 & (\mathbf x^3)^\top \mathbf x^3 
+\end{pmatrix} = 
+\begin{pmatrix} n &  \sum_{i=1}^n x_i& \sum_{i=1}^n x_i^2 &\sum_{i=1}^n x_i^3 \\
+\sum_{i=1}^n x_i & \sum_{i=1}^n x_i^2  & \sum_{i=1}^n x_i^3 & \sum_{i=1}^n x_i^4 \\ 
+\sum_{i=1}^n x_i^2  & \sum_{i=1}^n x_i^3 & \sum_{i=1}^n x_i^4 & \sum_{i=1}^n x_i^5 \\ 
+\sum_{i=1}^n x_i^3 & \sum_{i=1}^n x_i^4& \sum_{i=1}^n x_i^5 & \sum_{i=1}^n x_i^6
+\end{pmatrix}
+$$
+
+Now we want to find an upper triangular matrix $U$ such that 
+
+$$
+\frac{1}{n}V^\top V = U^\top U
+$$
+
+By calculation, we can obtain 
+
+$$
+U = \begin{pmatrix}
+1 &\frac{1}{n}\sum x_i & \frac{1}{n} \sum x_i^2 & \frac{1}{n}\sum x_i^3 \\ 
+0& \sqrt{\frac{1}{n}\sum x_i^2 -(\frac{1}{n} \sum x_i)^2} & \frac{\frac{1}{n} \sum x_i^3 - (\frac{1}{n}\sum x_i)(\frac{1}{n} \sum x_i^2)}{u_{11}} &\frac{\frac{1}{n} \sum x_i^4 - (\frac{1}{n}\sum x_i)(\frac{1}{n} \sum x_i^3)}{u_{11}} \\ 
+0&0&\sqrt{\frac{1}{n}\sum x_i^4 - (\frac{1}{n}\sum x_i^2)^2 - u^2_{12}} & \frac{\frac{1}{n}\sum x_i^5 - (\frac{1}{n} \sum x_i^2)(\frac{1}{n}\sum x_i^3)- u_{12}u_{13}}{u_{22}}\\ 
+0&0&0&  \sqrt{\frac{1}{n}\sum x_i^6 - \left( \frac{1}{n} \sum x_i^3 \right)^2 - u_{13}^2 - u_{23}^2}
+\end{pmatrix}
+$$
+
+The full-rank transformation matrix $R$ is 
+
+$$
+R = U^{-1} = 
+\begin{pmatrix}
+1&
+-\frac{u_{01}}{u_{11}}&
+\frac{u_{01}u_{12}-u_{02}u_{11}}{u_{11}u_{22}}&
+\frac{-u_{01}u_{12}u_{23}+u_{01}u_{13}u_{22}+u_{02}u_{11}u_{23}-u_{03}u_{11}u_{22}}{u_{11}u_{22}u_{33}}
+\\
+0&
+\frac1{u_{11}}&
+-\frac{u_{12}}{u_{11}u_{22}}&
+\frac{u_{12}u_{23}-u_{13}u_{22}}{u_{11}u_{22}u_{33}}
+\\
+0&0&
+\frac1{u_{22}}&
+-\frac{u_{23}}{u_{22}u_{33}}
+\\
+0&0&0&
+\frac1{u_{33}}
+\end{pmatrix}.
+$$
+
+The orthonomal polynomial functions should be 
+
+$$
+Z = VR = (\mathbf q_0, \mathbf q_1, \mathbf q_2, \mathbf q_3)
+$$
+
+where 
+
+$$
+\begin{aligned}
+q_0(x) &= 1\\ 
+q_1(x) &= -\frac{u_{01}}{u_{11}} + \frac{x}{u_{11}}\\ 
+q_2(x) &= \frac{u_{01}u_{12} - u_{02}u_{11}}{u_{11}{u_{22}}} - \frac{u_{12}}{u_{11}u_{22}}x + \frac{x^2}{u_{22}}\\ 
+q_3(x) &= \frac{-u_{01}u_{12}u_{23}+u_{01}u_{13}u_{22}+u_{02}u_{11}u_{23}-u_{03}u_{11}u_{22}}{u_{11}u_{22}u_{33}} + \frac{u_{12}u_{23}-u_{13}u_{22}}{u_{11}u_{22}u_{33}}x -\frac{u_{23}}{u_{22}u_{33}}x^2 +\frac{x^3}{u_{33}} 
+\end{aligned}
+$$
+:::
+
+```{python}
+#| code-fold: true
+#| code-summary: "View Python code"
+# Three observations give a genuine R³ visualization.
+x = np.array([0.0, 0.5, 1.0])
+n = len(x)
+
+# Ordinary quadratic Vandermonde matrix
+V = np.vander(x, N=3, increasing=True)
+
+# Empirical Gram matrix and Cholesky factorization
+G = V.T @ V / n
+U = np.linalg.cholesky(G).T
+R = np.linalg.inv(U)
+
+I = np.eye(3)
+
+colors = ["royalblue", "darkorange", "seagreen"]
+labels = ["1 → q₀", "x → q₁", "x² → q₂"]
+
+
+def columns_at(s):
+    """
+    s=0 gives V.
+    s=1 gives Z = V R.
+    """
+    return V @ ((1 - s) * I + s * R)
+
+
+def vector_traces(s, include_style=False):
+    columns = columns_at(s)
+    traces = []
+
+    for j in range(3):
+        vector = columns[:, j]
+
+        options = dict(x=[0, vector[0]], y=[0, vector[1]], z=[0, vector[2]])
+
+        if include_style:
+            options.update(
+                mode="lines+markers+text",
+                line=dict(color=colors[j], width=10),
+                marker=dict(color=colors[j], size=[0, 7]),
+                text=["", labels[j]],
+                textposition="top center",
+                name=labels[j],
+                hovertemplate="Column values:<br>(%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>",
+            )
+
+        traces.append(go.Scatter3d(**options))
+
+    return traces
+
+def endpoint_plane_traces(s, include_style=False):
+    """
+    Triangle whose vertices are the endpoints of the three
+    basis-column vectors.
+    """
+    columns = columns_at(s)
+
+    # Each column of columns is a vector in R³.
+    px, py, pz = columns
+
+    mesh_options = dict(x=px, y=py, z=pz, i=[0], j=[1], k=[2])
+
+    boundary_options = dict(
+        x=[px[0], px[1], px[2], px[0]],
+        y=[py[0], py[1], py[2], py[0]],
+        z=[pz[0], pz[1], pz[2], pz[0]],
+    )
+
+    if include_style:
+        mesh_options.update(color="royalblue", opacity=0.18, flatshading=True,
+                            hoverinfo="skip", name="Plane through column endpoints")
+        boundary_options.update(mode="lines", line=dict(color="gray", width=4),
+                                hoverinfo="skip", name="Plane boundary")
+
+    return [go.Mesh3d(**mesh_options), go.Scatter3d(**boundary_options)]
+
+
+def all_traces(s, include_style=False):
+    return endpoint_plane_traces(s, include_style) + vector_traces(s, include_style)
+
+s_values = np.linspace(0, 1, 31)
+frame_names = [f"step-{i}" for i in range(len(s_values))]
+
+fig = go.Figure(data=all_traces(0, include_style=True))
+fig.frames = [go.Frame(name=name, data=all_traces(s), traces=[0, 1, 2, 3, 4])
+              for name, s in zip(frame_names, s_values)]
+
+
+fig.update_layout(
+    title="Vandermonde columns → orthogonal basis",
+    template="plotly_white",
+    height=650,
+    margin=dict(l=0, r=0, b=20, t=70),
+    showlegend=False,
+    scene=dict(
+        # Each axis corresponds to one row/sample point.
+        xaxis=dict(title="row x=0", range=[-1.65, 1.65]),
+        yaxis=dict(title="row x=0.5", range=[-1.65, 1.65]),
+        zaxis=dict(title="row x=1", range=[-1.65, 1.65]),
+        aspectmode="cube",
+        camera=dict(eye=dict(x=1.15, y=1.25, z=0.95)),
+    ),
+    updatemenus=[dict(
+        type="buttons",
+        showactive=False,
+        x=0,
+        y=1.08,
+        buttons=[
+            dict(
+                label="▶ Play",
+                method="animate",
+                args=[
+                    frame_names,
+                    {"fromcurrent": True, "frame": {"duration": 80, "redraw": True},
+                     "transition": {"duration": 20}},
+                ],
+            )
+        ],
+    )],
+)
+
+fig.show()
+```
+Notice that, for a fixed degree $m$, there exist invertible tranformation matrices such that 
+
+$$
+\boldsymbol \Phi_{\text{Bern}} = \boldsymbol\Phi_{\text{poly}}R_B, \quad \boldsymbol \Phi_{\text{orth}} = \boldsymbol\Phi_{\text{poly}}R_O
+$$
+
+Therefore, 
+
+$$
+\mathcal C(\boldsymbol \Phi_{\text{poly}}) = \mathcal C(\boldsymbol \Phi_{\text{Bern}}) = \mathcal (\boldsymbol \Phi_{\text{orth}})
+$$
+
+and their unpenalized OLS fitted values are identical in exact arithmetic. 
+
+## Regression Splines 
+
+Read [Regression Splines](06.qmd)
+
+## Kernel Methods
+
+::: {#def-kernel-methods}
+
+Let $c_1, \ldots, c_M$ denote $M$ selected centers, and let $h>0$ be a bandwidth parameter. We define the kernel basis functions as 
+
+$$
+\phi_j(x) = K\left(\frac{x-c_j}{h}\right), \quad j=1,\ldots , M. 
+$$
+
+A common choice is the Gaussian kernel, 
+
+$$
+K(u) = \exp\left(\frac{-u^2}{2}\right), \quad \phi_j(x) = \exp\left(-\frac{(x-c_j)^2}{2h^2}\right)
+$$
+
+The regression function is 
+
+$$
+f_\beta(x) = \beta_0 +\sum_{j=1}^M \beta_j\phi_j(x).
+$$
+:::
+
+```{python}
+#| code-fold: true
+#| code-summary: "View Python code"
+x = np.linspace(-5, 5, 500)
+c = 0  # Kernel center
+
+def gaussian_kernel(x, c, sigma):
+    return np.exp(-(x - c)**2 / (2 * sigma**2))
+
+plt.figure(figsize=(8, 4))
+
+for sigma in [0.5, 1, 2]:
+    plt.plot(x, gaussian_kernel(x, c, sigma), label=fr"$\sigma={sigma}$", linewidth=2)
+
+plt.axvline(c, color="gray", linestyle="--", alpha=0.5)
+plt.xlabel("x")
+plt.ylabel("K(x, c)")
+plt.title("Gaussian Kernel with Different Bandwidths")
+plt.legend()
+plt.grid(alpha=0.2)
+plt.show()
+```
+
+## Computational Exploration 
+
+```{python}
+#| code-fold: true
+
+def row_tensor(bases):
+    out = bases[0]
+    for mat in bases[1:]:
+        out = (out[:, :, None] * mat[:, None, :]).reshape(len(out), -1)
+    return out 
+
+class OLSBasisModel:
+    @staticmethod
+    def _array(X):
+        X = np.asarray(X, dtype=float)
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+        if X.ndim != 2 or len(X) == 0:
+            raise ValueError("X must have shape (n,) or (n, d).")
+        return X
+    
+    def fit(self, X, y):
+        X = self._array(X)
+        y = np.asarray(y, dtype=float).reshape(-1)
+
+        if len(X) != len(y):
+            raise ValueError("X and y must have the same length.")
+        self.n_features_in_ = X.shape[1]
+
+        self._setup(X)
+        Phi = self._basis(X)
+        self.coef_, _, self.df_, _ = np.linalg.lstsq(Phi, y, rcond=None)
+        self.condition_number_ = np.linalg.cond(Phi)
+        return self
+
+    def design_matrix(self, X):
+        if not hasattr(self, "coef_"):
+            raise RuntimeError("Fit the model first.")
+        X = self._array(X)
+        if X.shape[1] != self.n_features_in_:
+            raise ValueError("Incorrect number of features.")
+        return self._basis(X)
+    
+    def predict(self, X):
+        Phi = self.design_matrix(X)
+        return Phi @ self.coef_
+```
+
+```{python}
+#| code-fold: true
+
+class Polynomial(OLSBasisModel):
+    def __init__(self, degree=3, kind="monomial"):
+        if kind not in ("monomial", "bernstein", "orthogonal"):
+            raise ValueError("Invalid polynomial basis.")
+
+        self.degree = degree
+        self.kind = kind
+    
+    def _setup(self, X):
+        # Scale Bernstein and orthogonal polynomials.
+        if self.kind != "monomial":
+            self.bounds_ = np.column_stack((X.min(axis=0), X.max(axis=0)))
+            if np.any(self.bounds_[:, 1] == self.bounds_[:, 0]):
+                raise ValueError("Predictors must vary.")
+
+        # Empirical orthogonalization.
+        if self.kind == "orthogonal":
+            V = self._raw_basis(X)
+            if len(X) < V.shape[1] or np.linalg.matrix_rank(V) < V.shape[1]:
+                raise ValueError("Polynomial design is rank deficient.")
+            _, R = np.linalg.qr(V, mode="reduced")
+            self.R_ = R / np.sqrt(len(X))
+    
+    def _raw_basis(self, X):
+        bases = []
+        for k in range(X.shape[1]):
+            x = X[:, k]
+            if self.kind == "monomial":
+                B = x[:, None] ** np.arange(self.degree + 1)
+            else: 
+                a, b = self.bounds_[k]
+                t = (x - a) / (b - a)
+
+                if self.kind == "bernstein":
+                    m = self.degree
+                    B = np.column_stack(
+                        [comb(m, j) * t**j * (1 - t)**(m - j) for j in range(m + 1)]
+                    )
+                else:
+                    B = np.polynomial.legendre.legvander(2 * t - 1, self.degree)
+            bases.append(B)
+        return row_tensor(bases)
+
+    def _basis(self, X):
+        V = self._raw_basis(X)
+        if self.kind == "orthogonal":
+            return np.linalg.solve(self.R_.T, V.T).T
+        return V
+```
+
+```{python}
+#| code-fold: true
+
+class Spline(OLSBasisModel):
+    def __init__(self, kind="linear", n_knots=4):
+        if kind not in ("linear", "cubic", "natural", "restricted"):
+            raise ValueError("Invalid spline kind.")
+
+        self.kind = "natural" if kind == "restricted" else kind
+        self.n_knots = n_knots
+
+    def _setup(self, X):
+        self.bounds_ = np.column_stack((X.min(axis=0), X.max(axis=0)))
+
+        self.knots_ = []
+
+        for j in range(X.shape[1]):
+            x = X[:, j]
+
+            q = np.arange(1, self.n_knots + 1) / (self.n_knots + 1)
+
+            knots = np.quantile(x, q) if self.n_knots > 0 else np.array([])
+
+            a, b = self.bounds_[j]
+
+            if a == b or np.any(np.diff(np.r_[a, knots, b]) <= 0):
+                raise ValueError("Knots are not distinct; use fewer knots.")
+            self.knots_.append(knots)
+
+    def _basis(self, X):
+        bases = []
+
+        for j in range(X.shape[1]):
+            x = X[:, j]
+            inner = self.knots_[j]
+
+            cols = [np.ones_like(x), x]
+
+            if self.kind == "linear":
+                cols += [np.maximum(x - t, 0) for t in inner]
+
+            elif self.kind == "cubic":
+                cols += [x**2, x**3]
+                cols += [np.maximum(x - t, 0)**3 for t in inner]
+
+            else:  # Natural / restricted cubic
+                a, b = self.bounds_[j]
+
+                if len(inner) > 0:
+                    last = inner[-1]
+
+                    for t in np.r_[a, inner[:-1]]:
+                        h = (
+                            np.maximum(x - t, 0)**3
+                            - (b - t) / (b - last) * np.maximum(x - last, 0)**3
+                            + (last - t) / (b - last) * np.maximum(x - b, 0)**3
+                        )
+
+                        cols.append(h)
+
+            bases.append(np.column_stack(cols))
+
+        return row_tensor(bases)
+```
+
+```{python}
+#| code-fold: true
+
+class Kernels(OLSBasisModel):
+    def __init__(self, n_centers=5, bandwidth=None, centers=None):
+        self.n_centers = n_centers
+        self.bandwidth = bandwidth
+        self.centers = centers
+
+    def _setup(self, X):
+        d = X.shape[1]
+
+        # Automatically select evenly spaced centers
+        if self.centers is None:
+            grids = [np.linspace(X[:, j].min(), X[:, j].max(), self.n_centers) for j in range(d)]
+            self.centers_ = np.asarray(list(product(*grids)))
+        else:
+            C = np.asarray(self.centers, dtype=float)
+            self.centers_ = C.reshape(-1, 1) if C.ndim == 1 else C
+
+            if self.centers_.shape[1] != d:
+                raise ValueError("Center dimension does not match X.")
+
+        # Default bandwidth based on predictor range
+        span = np.mean(np.ptp(X, axis=0))
+
+        self.bandwidth_ = (
+            span / max(self.n_centers - 1, 1)
+            if self.bandwidth is None
+            else float(self.bandwidth)
+        )
+
+        if self.bandwidth_ <= 0:
+            raise ValueError("Bandwidth must be positive.")
+
+    def _basis(self, X):
+        sqdist = np.sum((X[:, None, :] - self.centers_[None, :, :]) ** 2, axis=2)
+
+        return np.column_stack([np.ones(len(X)), np.exp(-sqdist / (2 * self.bandwidth_**2))])
+```
+
+```{python}
+models = {
+    # Polynomials
+    "Monomial": Polynomial(degree=5, kind="monomial"),
+    "Bernstein": Polynomial(degree=5, kind="bernstein"),
+    "Orthogonal": Polynomial(degree=5, kind="orthogonal"),
+    # Splines
+    "Linear Spline": Spline(kind="linear", n_knots=4),
+    "Cubic Spline": Spline(kind="cubic", n_knots=2),
+    "Natural Spline": Spline(kind="natural", n_knots=4),
+    # Kernel basis regression
+    "Gaussian RBF": Kernels(n_centers=5, bandwidth=0.15),
+}
+```
+
+Now we introduce some prediction surface class. 
+
+```{python}
+#| code-fold: true
+
+class SurfaceGenerator:
+    SURFACES = (
+        "pringle", "monkey_saddle", "ripple", "rastrigin", "diagonal_ridge",
+        "interaction", "discontinuous_step",
+    )
+
+    def __init__(self, surface="pringle", domain=(-1.0, 1.0), noise_std=0.2,
+                 standardize=True, seed=6400, ridge_width=0.18,
+                 ripple_frequency=4 * np.pi):
+        surface = surface.lower().strip().replace(" ", "_")
+
+        if surface not in self.SURFACES:
+            raise ValueError(f"Unknown surface: {surface}")
+        lo, hi = map(float, domain)
+        if not lo < hi:
+            raise ValueError("Domain must satisfy lower < upper.")
+
+        if noise_std < 0 or ridge_width <= 0 or ripple_frequency <= 0:
+            raise ValueError("Invalid noise or surface parameters.")
+
+        self.surface = surface
+        self.domain = (lo, hi)
+        self.noise_std = float(noise_std)
+        self.standardize = standardize
+        self.ridge_width = ridge_width
+        self.ripple_frequency = ripple_frequency
+        self.rng = np.random.default_rng(seed)
+
+        # Approximate population mean and standard deviation
+        self.mean_, self.scale_ = 0.0, 1.0
+
+        if standardize:
+            u = np.linspace(lo, hi, 201)
+            U, V = np.meshgrid(u, u)
+            X_ref = np.column_stack([U.ravel(), V.ravel()])
+            z_ref = self._raw_surface(X_ref)
+            self.mean_ = float(z_ref.mean())
+            self.scale_ = float(z_ref.std())
+            if self.scale_ < 1e-12:
+                raise ValueError("Surface is nearly constant.")
+
+    @staticmethod
+    def _as_points(X):
+        X = np.asarray(X, dtype=float)
+        if X.ndim == 1 and X.shape == (2,):
+            X = X.reshape(1, 2)
+        if X.ndim != 2 or X.shape[1] != 2:
+            raise ValueError("X must have shape (n, 2).")
+        return X
+
+    # Define the true regression surfaces
+    def _raw_surface(self, X):
+        x, y = X[:, 0], X[:, 1]
+        if self.surface == "pringle":
+            return x**2 - y**2
+        if self.surface == "monkey_saddle":
+            return x**3 - 3 * x * y**2
+        if self.surface == "ripple":
+            r = np.hypot(x, y)
+            return np.exp(-r**2) * np.cos(self.ripple_frequency * r)
+        if self.surface == "rastrigin":
+            return 20 + x**2 + y**2 - 10 * np.cos(2 * np.pi * x) - 10 * np.cos(2 * np.pi * y)
+        if self.surface == "diagonal_ridge":
+            return np.exp(-(x - y)**2 / (2 * self.ridge_width**2))
+        if self.surface == "interaction":
+            return np.sin(np.pi * x * y) + 0.3 * x * y
+
+        return np.where(x + y >= 0, 1.0, -1.0)  # Discontinuous step
+
+    # Evaluate the noiseless regression function
+    def true_function(self, X):
+        X = self._as_points(X)
+        z = self._raw_surface(X)
+        return (z - self.mean_) / self.scale_
+
+    # Generate observations with Gaussian noise
+    def sample(self, n, seed=None):
+        if not isinstance(n, (int, np.integer)) or n <= 0:
+            raise ValueError("n must be a positive integer.")
+
+        rng = np.random.default_rng(seed) if seed is not None else self.rng
+        lo, hi = self.domain
+        X = rng.uniform(lo, hi, size=(n, 2))
+        y_true = self.true_function(X)
+        epsilon = rng.normal(loc=0, scale=self.noise_std, size=n)
+        y = y_true + epsilon
+        return X, y, y_true
+
+    # Create a regular grid for visualization.
+    def grid(self, resolution=120):
+        if resolution < 2:
+            raise ValueError("Resolution must be at least 2.")
+
+        lo, hi = self.domain
+        u = np.linspace(lo, hi, resolution)
+        U, V = np.meshgrid(u, u)
+        X_grid = np.column_stack([U.ravel(), V.ravel()])
+        Z = self.true_function(X_grid).reshape(U.shape)
+        return U, V, Z
+
+    # Visualize the prediction surface
+    def visualize(self, resolution=120, X=None, y=None):
+        U, V, Z = self.grid(resolution)
+        fig = plt.figure(figsize=(12, 4.5))
+        # 3D prediction surface.
+        ax1 = fig.add_subplot(1, 2, 1, projection="3d")
+        ax1.plot_surface(U, V, Z, cmap="viridis", linewidth=0, antialiased=True)
+
+        ax1.set(xlabel="x1", ylabel="x2", zlabel="f(x1, x2)", title="True surface")
+        ax1.view_init(elev=25, azim=-60)
+
+        # 2D contour visualization.
+        ax2 = fig.add_subplot(1, 2, 2)
+        contour = ax2.contourf(U, V, Z, levels=25, cmap="viridis")
+        fig.colorbar(contour, ax=ax2, label="f(x1, x2)")
+        ax2.set(xlabel="x1", ylabel="x2", title="Contour map", aspect="equal")
+
+        # Overlay sampled observations.
+        if X is not None:
+            X = self._as_points(X)
+            ax2.scatter(X[:, 0], X[:, 1], s=10, c="black", alpha=0.4)
+
+            if y is not None:
+                y = np.asarray(y).reshape(-1)
+                if len(y) != len(X):
+                    raise ValueError("X and y must match.")
+                ax1.scatter(X[:, 0], X[:, 1], y, s=8, c="crimson", alpha=0.45)
+        fig.suptitle(self.surface.replace("_", " ").title())
+        fig.tight_layout()
+        plt.show()
+        return fig, (ax1, ax2)
+```
+
+Let $r= \sqrt{x^2+y^2}$. 
+
+```{python}
+#| code-fold: true
+SurfaceGenerator("pringle").visualize()
+```
+
+$$
+f(x, y)= x^2 - y^2 
+$$
+
+A smooth surface curving upward in one direction and downward in the other. It is used to test whether models can represent global quadratic curvature and saddle geometry.
+
+```{python}
+#| code-fold: true
+SurfaceGenerator("monkey_saddle").visualize()
+```
+
+$$
+f(x, y) = x^3 - 3xy^2
+$$
+
+A cubic saddle with three alternating rising and falling directions. It is used to test higher-order structure and polynomial interactions. 
+
+```{python}
+#| code-fold: true
+SurfaceGenerator("ripple").visualize()
+```
+
+$$
+f(x, y) = e^{-r^2} \cos(4\pi r)
+$$
+
+Concentric oscillations with decreasing amplitude away from the origin. It is used to test whether models can reproduce repeated local peaks and valleys. 
+
+```{python}
+#| code-fold: true
+SurfaceGenerator("rastrigin").visualize()
+```
+
+$$
+f(x, y) = 20 + x^2 + y^2 - 10\cos(2\pi x) - 10\cos(2\pi y)
+$$
+A classical multimodal benchmark containing many local minima. It tests oscillatory approximation over a structured surface. We use its restriction to $[-1, 1]^2$, rather than its usual larger optimization domain. 
+
+```{python}
+#| code-fold: true
+SurfaceGenerator("diagonal_ridge").visualize()
+```
+
+$$
+f(x, y) = \exp\left(-\frac{(x-y)^2}{2(0.18)^2}\right)
+$$
+
+A narrow ridge concentrated along $x=y$. It is used to test localized structure, steep gradients, and behavior away from the ridge. 
+
+```{python}
+#| code-fold: true
+SurfaceGenerator("interaction").visualize()
+```
+
+$$
+f(x, y) = \sin(\pi xy) + 0.3xy
+$$
+
+A nonlinear, nonaddiive interaction: the effect of changing $x$ depends on $y$. It is used to tests whether a model can capture relationships that cannot be expressed as $g(x) + h(y)$. 
+
+```{python}
+#| code-fold: true
+SurfaceGenerator("discontinuous_step").visualize()
+```
+
+$$
+f(x, y) = \begin{cases}
+1, & x+y\geq 0, 
+-1, & x+y < 0. 
+\end{cases}
+$$
+
+Two flat regions separated by a diagonal jump. It is used to test oversmoothing and the inability of continuous basis functions to represent an exact discontinuity. 
+
+Now we generate a sample dataset. Mathematically, the sample generation corresponds to 
+
+$$
+\begin{aligned}
+X_i &\sim \mathrm{Unif}([-1, 1]^2)\\ 
+f_i &= f_0^*(X_i),  \\ 
+\epsilon_i &\sim \mathcal N(0, 0.2^2)\\ 
+Y_i &= f_i + \epsilon_i 
+\end{aligned}
+$$
+
+```{python}
+datasets = {}
+
+for name in SurfaceGenerator.SURFACES:
+    generator = SurfaceGenerator(name)
+    X_train, y_train, f_train = generator.sample(n=400, seed=101)
+    X_test, y_test, f_test = generator.sample(n=1500, seed=202)
+    datasets[name] = {"generator": generator,
+                      "X_train": X_train, "y_train": y_train, "f_train": f_train,
+                      "X_test": X_test, "y_test": y_test, "f_test": f_test}
+```
+
+```{python}
+def regression_metrics(y_true, y_pred, prefix="test"):
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
+    residuals = y_true - y_pred
+    mse = np.mean(residuals**2)
+    mae = np.mean(np.abs(residuals))
+    rmse = np.sqrt(mse)
+    ss_res = np.sum(residuals**2)
+    ss_tot = np.sum((y_true - y_true.mean())**2)
+    r2 = 1 - ss_res / ss_tot if ss_tot > 0 else np.nan
+    return {f"{prefix}_MSE": mse, f"{prefix}_RMSE": rmse,
+            f"{prefix}_MAE": mae, f"{prefix}_R2": r2}
+```
+
+```{python}
+results = []
+fitted_models = {}
+predictions = {}
+
+for surface_name, data in datasets.items():
+    X_train = data["X_train"]
+    y_train = data["y_train"]
+    f_train = data["f_train"]
+    X_test = data["X_test"]
+    y_test = data["y_test"]
+    f_test = data["f_test"]
+    generator = data["generator"]
+
+    for model_name, model_template in models.items():
+        model = deepcopy(model_template)
+        model.fit(X_train, y_train)
+
+        yhat_train = model.predict(X_train)
+        yhat_test = model.predict(X_test)
+
+        row = {
+            "Surface": surface_name,
+            "Model": model_name,
+            "Family": type(model).__name__,
+            "Kind": getattr(model, "kind", "gaussian_rbf"),
+            "n_train": len(X_train),
+            "n_test": len(X_test),
+            "n_features": X_train.shape[1],
+            "df": model.df_,
+            "condition_number": model.condition_number_,
+            "noise_std": generator.noise_std,
+            "standardized": generator.standardize,
+        }
+
+        row.update(regression_metrics(y_train, yhat_train, "train_noisy"))
+        row.update(regression_metrics(y_test, yhat_test, "test_noisy"))
+        row.update(regression_metrics(f_train, yhat_train, "train_true"))
+        row.update(regression_metrics(f_test, yhat_test, "test_true"))
+        results.append(row)
+
+        key = (surface_name, model_name)
+        fitted_models[key] = model
+        predictions[key] = {"train": yhat_train.copy(), "test": yhat_test.copy()}
+
+
+# Construct results table
+results_df = pd.DataFrame(results)
+print(f"Total experiments: {len(results_df)}")
+display(results_df.head())
+```
+
+```{python}
+performance_cols = [
+    "Surface", "Model", "df", "train_true_RMSE",
+    "test_true_RMSE", "test_true_MAE", "test_true_R2", "test_noisy_RMSE",
+]
+
+performance_df = results_df[performance_cols].sort_values(
+    ["Surface", "test_true_RMSE"]
+).reset_index(drop=True)
+
+display(performance_df.round(4))
+```
+
+The condition number measures the numerical sensitivity of the design matrix,
+
+$$
+\kappa(\Phi)=\frac{\sigma_{\max}(\Phi)}{\sigma_{\min}(\Phi)}.
+$$
+
+A value near $1$ indicates a well-conditioned design matrix. A large value indicates that some columns are nearly linearly dependent, so small numerical or data changes can produce large changes in the estimated coefficients. It describes numerical stability rather than predictive accuracy.
+
+``` {python}
+characteristic_cols = [
+    "Surface", "Model", "Family", "Kind", "n_features", "df",
+    "condition_number",
+]
+
+characteristics_df = results_df[characteristic_cols]
+
+display(characteristics_df)
+```
+
+```{python}
+best_models = results_df.loc[
+    results_df.groupby("Surface")["test_true_RMSE"].idxmin(),
+    ["Surface", "Model", "df", "test_true_RMSE", "test_true_R2"],
+].sort_values("Surface").reset_index(drop=True)
+
+display(best_models.round(4))
+```
+
+```{python}
+#| code-fold: true
+#| fig-width: 12
+#| fig-height: 11
+
+# Test RMSE for every surface-model combination
+rmse_matrix = results_df.pivot(
+    index="Surface", columns="Model", values="test_true_RMSE"
+).rename(index=lambda name: name.replace("_", " ").title())
+
+# Average performance across the standardized response surfaces
+model_summary = (
+    results_df.groupby("Model")["test_true_RMSE"]
+    .mean()
+    .sort_values()
+)
+
+fig, (ax_heatmap, ax_bar) = plt.subplots(
+    2, 1, figsize=(12, 11), gridspec_kw={"height_ratios": [1.25, 1]}
+)
+
+# Heatmap: detailed comparison by response surface
+image = ax_heatmap.imshow(rmse_matrix, cmap="coolwarm", aspect="auto")
+ax_heatmap.set_xticks(range(len(rmse_matrix.columns)), rmse_matrix.columns,
+                      rotation=35, ha="right")
+ax_heatmap.set_yticks(range(len(rmse_matrix.index)), rmse_matrix.index)
+ax_heatmap.set_xlabel("Model")
+ax_heatmap.set_ylabel("Response surface")
+ax_heatmap.set_title("Test RMSE by surface and model (lower is better)")
+
+for row in range(rmse_matrix.shape[0]):
+    for col in range(rmse_matrix.shape[1]):
+        value = rmse_matrix.iloc[row, col]
+        normalized = image.norm(value)
+        color = "white" if normalized < 0.18 or normalized > 0.82 else "black"
+        ax_heatmap.text(col, row, f"{value:.3f}", ha="center", va="center",
+                        color=color, fontsize=8)
+
+fig.colorbar(image, ax=ax_heatmap, pad=0.02, label="Test RMSE")
+
+# Bar chart: overall comparison across response surfaces
+bars = ax_bar.barh(
+    model_summary.index,
+    model_summary,
+    color="royalblue",
+    alpha=0.85,
+)
+ax_bar.invert_yaxis()
+ax_bar.bar_label(bars, fmt="%.5f", padding=4)
+ax_bar.set_xlim(0, model_summary.max() * 1.18)
+ax_bar.set_xlabel("Mean test RMSE")
+ax_bar.set_ylabel("Model")
+ax_bar.set_title("Average predictive performance across surfaces")
+ax_bar.grid(axis="x", alpha=0.25)
+
+fig.suptitle("Model performance summary", fontsize=16)
+fig.tight_layout()
+plt.show()
+```
