@@ -1,0 +1,2222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>10&nbsp; Lasso Regression – DS 6400 Weekly Writing</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../references.html" rel="next">
+<link href="../weeks/09.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5ccb035bea26c1e21f80f44cf7c27909.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+window.MathJax = {
+  loader: {
+    load: ["[tex]/mathtools"]
+  },
+  tex: {
+    packages: {"[+]": ["mathtools"]},
+    macros: {
+      R: "\\mathbb{R}",
+      N: "\\mathbb{N}",
+      Z: "\\mathbb{Z}",
+      Q: "\\mathbb{Q}",
+      C: "\\mathbb{C}",
+      E: "\\mathbb{E}",
+      Var: "\\operatorname{Var}",
+      Cov: "\\operatorname{Cov}",
+      Corr: "\\operatorname{Corr}",
+      argmin: "\\operatorname*{arg\\,min}",
+      argmax: "\\operatorname*{arg\\,max}",
+      ind: "\\mathbb{1}",
+      Err: "\\operatorname{Err}",
+      err: "\\operatorname{err}",
+      var: "\\operatorname{var}",
+      indep: "\\perp\\!\\!\\!\\perp",
+      PD: "\\operatorname{PD}",
+      ALE: "\\operatorname{ALE}",
+      mg: "\\operatorname{mg}",
+      av: "\\operatorname{av}",
+      PE: "\\operatorname{PE}",
+      mr: "\\operatorname{mr}",
+      rmg: "\\operatorname{rmg}",
+      sd: "\\operatorname{sd}",
+      P: "\\mathbb{P}", 
+      rank: "\\operatorname{rank}",
+      dim: "\\operatorname{dim}",
+      V: "\\mathcal{V}",
+      W: "\\mathcal{W}",
+      U: "\\mathcal{U}",
+    }
+  }
+};
+</script>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/10.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Lasso Regression</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">DS 6400 Weekly Writing</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Weekly Writing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Apparent Error to Modern Error: Efron’s Optimism and Evaluation of Predictive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">40 years of Predictive Performance Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Are the Forests really Random?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Comparison Under Complexity and Tuning Constraints</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Regression Splines</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Comparing Nonlinear Regression Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">High-Dimensional Regression in Python</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Ridge Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/10.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Lasso Regression</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/ols-cv-independence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">OLS, Linear Invariance, and Conditional Independence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/linear-algebra-revision.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#from-ridge-regression-to-the-lasso" id="toc-from-ridge-regression-to-the-lasso" class="nav-link active" data-scroll-target="#from-ridge-regression-to-the-lasso"><span class="header-section-number">1</span> From Ridge Regression to the Lasso</a>
+  <ul class="collapse">
+  <li><a href="#changing-the-structure-of-the-constraint" id="toc-changing-the-structure-of-the-constraint" class="nav-link" data-scroll-target="#changing-the-structure-of-the-constraint"><span class="header-section-number">1.1</span> Changing the structure of the constraint</a></li>
+  <li><a href="#definition-of-the-lasso-estimator" id="toc-definition-of-the-lasso-estimator" class="nav-link" data-scroll-target="#definition-of-the-lasso-estimator"><span class="header-section-number">1.2</span> Definition of the lasso estimator</a></li>
+  <li><a href="#convexity-and-the-mechanism-of-variable-selection" id="toc-convexity-and-the-mechanism-of-variable-selection" class="nav-link" data-scroll-target="#convexity-and-the-mechanism-of-variable-selection"><span class="header-section-number">1.3</span> Convexity and the mechanism of variable selection</a></li>
+  </ul></li>
+  <li><a href="#geometry-and-mathematical-properties-of-the-lasso" id="toc-geometry-and-mathematical-properties-of-the-lasso" class="nav-link" data-scroll-target="#geometry-and-mathematical-properties-of-the-lasso"><span class="header-section-number">2</span> Geometry and Mathematical Properties of the Lasso</a>
+  <ul class="collapse">
+  <li><a href="#orthonormal-design-and-soft-thresholding" id="toc-orthonormal-design-and-soft-thresholding" class="nav-link" data-scroll-target="#orthonormal-design-and-soft-thresholding"><span class="header-section-number">2.1</span> Orthonormal design and soft thresholding</a></li>
+  <li><a href="#geometry-of-the-constraint" id="toc-geometry-of-the-constraint" class="nav-link" data-scroll-target="#geometry-of-the-constraint"><span class="header-section-number">2.2</span> Geometry of the constraint</a></li>
+  <li><a href="#the-two-predictor-case" id="toc-the-two-predictor-case" class="nav-link" data-scroll-target="#the-two-predictor-case"><span class="header-section-number">2.3</span> The two-predictor case</a></li>
+  <li><a href="#existence-uniqueness-and-sparsity" id="toc-existence-uniqueness-and-sparsity" class="nav-link" data-scroll-target="#existence-uniqueness-and-sparsity"><span class="header-section-number">2.4</span> Existence, uniqueness, and sparsity</a></li>
+  </ul></li>
+  <li><a href="#computation-prediction-error-and-statistical-interpretation" id="toc-computation-prediction-error-and-statistical-interpretation" class="nav-link" data-scroll-target="#computation-prediction-error-and-statistical-interpretation"><span class="header-section-number">3</span> Computation, Prediction Error, and Statistical Interpretation</a>
+  <ul class="collapse">
+  <li><a href="#computing-the-lasso-estimator" id="toc-computing-the-lasso-estimator" class="nav-link" data-scroll-target="#computing-the-lasso-estimator"><span class="header-section-number">3.1</span> Computing the lasso estimator</a></li>
+  <li><a href="#prediction-error-and-regularization-parameter-selection" id="toc-prediction-error-and-regularization-parameter-selection" class="nav-link" data-scroll-target="#prediction-error-and-regularization-parameter-selection"><span class="header-section-number">3.2</span> Prediction error and regularization parameter selection</a></li>
+  <li><a href="#bayesian-interpretation-uncertainty-and-empirical-behavior" id="toc-bayesian-interpretation-uncertainty-and-empirical-behavior" class="nav-link" data-scroll-target="#bayesian-interpretation-uncertainty-and-empirical-behavior"><span class="header-section-number">3.3</span> Bayesian interpretation, uncertainty, and empirical behavior</a></li>
+  </ul></li>
+  <li><a href="#elastic-net-sparsity-with-correlated-predictors" id="toc-elastic-net-sparsity-with-correlated-predictors" class="nav-link" data-scroll-target="#elastic-net-sparsity-with-correlated-predictors"><span class="header-section-number">4</span> Elastic Net: Sparsity with Correlated Predictors</a>
+  <ul class="collapse">
+  <li><a href="#motivation-and-the-naive-elastic-net" id="toc-motivation-and-the-naive-elastic-net" class="nav-link" data-scroll-target="#motivation-and-the-naive-elastic-net"><span class="header-section-number">4.1</span> Motivation and the naive elastic net</a></li>
+  <li><a href="#the-augmented-data-repersentation" id="toc-the-augmented-data-repersentation" class="nav-link" data-scroll-target="#the-augmented-data-repersentation"><span class="header-section-number">4.2</span> The augmented-data repersentation</a></li>
+  <li><a href="#orthonormal-elastic-net-and-double-shrinkage" id="toc-orthonormal-elastic-net-and-double-shrinkage" class="nav-link" data-scroll-target="#orthonormal-elastic-net-and-double-shrinkage"><span class="header-section-number">4.3</span> Orthonormal elastic net and double shrinkage</a></li>
+  <li><a href="#the-grouping-effect" id="toc-the-grouping-effect" class="nav-link" data-scroll-target="#the-grouping-effect"><span class="header-section-number">4.4</span> The grouping effect</a></li>
+  </ul></li>
+  <li><a href="#the-corrected-elastic-net-stabilization-without-excessive-shrinkage" id="toc-the-corrected-elastic-net-stabilization-without-excessive-shrinkage" class="nav-link" data-scroll-target="#the-corrected-elastic-net-stabilization-without-excessive-shrinkage"><span class="header-section-number">5</span> The corrected elastic net: stabilization without excessive shrinkage</a>
+  <ul class="collapse">
+  <li><a href="#correcting-the-naive-elastic-net" id="toc-correcting-the-naive-elastic-net" class="nav-link" data-scroll-target="#correcting-the-naive-elastic-net"><span class="header-section-number">5.1</span> Correcting the naive elastic net</a></li>
+  <li><a href="#elastic-net-as-a-stabilized-zero" id="toc-elastic-net-as-a-stabilized-zero" class="nav-link" data-scroll-target="#elastic-net-as-a-stabilized-zero"><span class="header-section-number">5.2</span> Elastic net as a stabilized zero</a></li>
+  <li><a href="#the-limiting-connection-to-univariate-soft-thresholding" id="toc-the-limiting-connection-to-univariate-soft-thresholding" class="nav-link" data-scroll-target="#the-limiting-connection-to-univariate-soft-thresholding"><span class="header-section-number">5.3</span> The limiting connection to univariate soft thresholding</a></li>
+  <li><a href="#computation-and-parameter-selection-for-the-elastic-net" id="toc-computation-and-parameter-selection-for-the-elastic-net" class="nav-link" data-scroll-target="#computation-and-parameter-selection-for-the-elastic-net"><span class="header-section-number">5.4</span> Computation and parameter selection for the elastic net</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/10.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Lasso Regression</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Lasso Regression</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This chapter develops the lasso and elastic net as extensions of the regularization framework. The discussion follows <span class="citation" data-cites="tibshiraniRegressionShrinkageSelection1996">Tibshirani (<a href="../references.html#ref-tibshiraniRegressionShrinkageSelection1996" role="doc-biblioref">1996</a>)</span>, <span class="citation" data-cites="tibshiraniRegressionShrinkageSelection2011">Tibshirani (<a href="../references.html#ref-tibshiraniRegressionShrinkageSelection2011" role="doc-biblioref">2011</a>)</span>, and <span class="citation" data-cites="zouRegularizationVariableSelection2005">Zou and Hastie (<a href="../references.html#ref-zouRegularizationVariableSelection2005" role="doc-biblioref">2005</a>)</span>, with proofs and visualizations accompanying the principal results.</p>
+<section id="from-ridge-regression-to-the-lasso" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="from-ridge-regression-to-the-lasso"><span class="header-section-number">1</span> From Ridge Regression to the Lasso</h2>
+<section id="changing-the-structure-of-the-constraint" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="changing-the-structure-of-the-constraint"><span class="header-section-number">1.1</span> Changing the structure of the constraint</h3>
+<p><a href="../weeks/10.html">Ridge regression</a> demonstrates how imposing a restriction on the coefficient vector can improve the stability and prediction accuracy of a linear model. As established previously, the quadratic penalty stabilizes estimation by reducing the influence of directions associated with small eigenvalues of <span class="math inline">\(X^\top X\)</span>. It generally produces smaller, more stable coefficients at the expense of introducing bias. However, reducing the magnitudes of coefficients does not necessarily produce a simpler model in terms of the number of predictors. Ridge regression retains every predictor, even when some contribute little to explaning the response.</p>
+<p>Suppose, instead that we want an estimator that can both control coefficient magnitudes and identify a smaller subset of relevant predictors. One possibilty is best subset selection, which solves</p>
+<p><span class="math display">\[
+\min_\beta ||y-X\beta||_2^2 \quad \text{subject to } ||\beta||_0 \leq k,
+\]</span></p>
+<p>where <span class="math inline">\(|| \beta||_0 = \#\{j:\beta_j \neq 0\}\)</span> counts the number of nonzero coefficients.</p>
+<p>This formulation directly controls model complexity, but introduces a combinatorial optimization problem. For <span class="math inline">\(p\)</span> predictors, there are <span class="math inline">\(2^p\)</span> possible subsets. Moreover, selection is discrete: a small perturbation of the observations may cause a predictor to be either included or excluded, leading to considerable instability. We therefore seek a constraint that encourages sparsity while retaining the convexity and continuous optimization structure.</p>
+<p>The central idea is to replace the quadratic constraint with a constraint on absolute coefficient magnitudes:</p>
+<p><span class="math display">\[
+\sum_{j=1}^p \beta_j^2 \leq t \implies \sum_{j=1}^p |\beta_j|\leq t
+\]</span></p>
+<p>This gives the <strong>least absolute shrinkage and selection operator</strong>, or <strong>lasso</strong>, introduces by <span class="citation" data-cites="tibshiraniRegressionShrinkageSelection1996">Tibshirani (<a href="../references.html#ref-tibshiraniRegressionShrinkageSelection1996" role="doc-biblioref">1996</a>)</span>.</p>
+<p>The relationship can be expressed through a broader family of bridge penalties,</p>
+<p><span class="math display">\[
+J_q (\beta) =\sum_{j=1}^p |\beta_j|^q .
+\]</span></p>
+<p>Ridge regression corresponds to <span class="math inline">\(q=2\)</span>, the lasso corresponds to <span class="math inline">\(q=1\)</span>, and the formal limiting case as <span class="math inline">\(q\to 0^+\)</span> approaches the number of nonzero coefficients for a fixed coefficient vector. Among penalties of this form, <span class="math inline">\(q=1\)</span> is the smallest exponent that preserves convexity.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    A["Least-squares estimation"]
+    B["Add a constraint on coefficients"]
+    C["L2: sum of squared coefficients"]
+    D["L1: sum of absolute coefficients"]
+    E["L0: number of nonzero coefficients"]
+    F["Ridge: continuous shrinkage"]
+    G["Lasso: shrinkage and exact zeros"]
+    H["Best subset: discrete selection"]
+    A --&gt; B
+    B --&gt; C
+    B --&gt; D
+    B --&gt; E
+    C --&gt; F
+    D --&gt; G
+    E --&gt; H
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="definition-of-the-lasso-estimator" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="definition-of-the-lasso-estimator"><span class="header-section-number">1.2</span> Definition of the lasso estimator</h3>
+<p>Consider observations <span class="math inline">\((x_i, y_i)\)</span>, <span class="math inline">\(i=1, \ldots, n\)</span> with <span class="math inline">\(p\)</span> predictors. We write <span class="math inline">\(y=X\beta + \epsilon\)</span>, where <span class="math inline">\(X=(x_1|\ldots |x_p)\)</span> is the design matrix and <span class="math inline">\(x_j\in R^n\)</span> denotes the <span class="math inline">\(j\)</span>th predictor column. For the subsequent derivations, assume that the response is centered and the predictors are centered and standardized:</p>
+<p><span class="math display">\[
+\sum_{i=1}^n y_i = 0, \quad \sum_{i=1}^n x_ij = 0, \quad \sum_{i=1}^n x_{ij}^2 = 1.
+\]</span></p>
+<p>This is the normalization used by <span class="citation" data-cites="zouRegularizationVariableSelection2005">Zou and Hastie (<a href="../references.html#ref-zouRegularizationVariableSelection2005" role="doc-biblioref">2005</a>)</span>. <span class="citation" data-cites="tibshiraniRegressionShrinkageSelection1996">Tibshirani (<a href="../references.html#ref-tibshiraniRegressionShrinkageSelection1996" role="doc-biblioref">1996</a>)</span> instead standardizes each predictor to have empirical variance 1; the difference is a scaling convention. The formulas below use <span class="math inline">\(x_j^\top x_j = 1\)</span> when standardization is required.</p>
+<div id="def-lasso-estimator" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Lasso estimator)</strong></span> For <span class="math inline">\(t\geq 0\)</span>, the lasso estimator is</p>
+<p><span class="math display">\[
+\hat \beta(t) = \arg\min_{\beta\in \R^p} ||y-X\beta||_2^2 \quad \text{subject to } || \beta||_1 \leq t,
+\]</span></p>
+<p>where <span class="math inline">\(||\beta||_1 = \sum_{j=1}^p |\beta_j|\)</span></p>
+</div>
+<p>In the orginal formulation, the intercept is not penalized. If it is included, the objective becomes</p>
+<p><span class="math display">\[
+\min_{\beta_0, \beta} \sum_{i=1}^n \left(y_i -\beta_0 -\sum_{j=1}^p x_{ij}\beta_j \right)^2
+\]</span></p>
+<p>subject to <span class="math inline">\(||\beta||_1 \leq t\)</span>. Centering the response and predictors give <span class="math inline">\(\hat \beta_0 = \overline{y}\)</span>, allowing the intercept to be ommited from the subsequent analysis.</p>
+<p>The tuning parameter <span class="math inline">\(t\)</span> determines the size of the feasible region. When <span class="math inline">\(t=0\)</span>, the only admissible coefficeint vector is zero. Increasing <span class="math inline">\(t\)</span> enlarges the feasible region, allowing increasiling complex models.</p>
+<p>If the least-squares coefficient vector is unique, we can define <span class="math inline">\(t_0 = || \hat \beta^{\text{OLS}}||_1\)</span>. For <span class="math inline">\(t\geq t_0\)</span>, the OLS solution satisfies the constraint and remains optimal. For <span class="math inline">\(t&lt; t_0\)</span>, the contraint becomes active and produces coefficient shrinkage.</p>
+<p>The constraint also has an equivalent penalized representation.</p>
+<div id="prp-penalized-lasso" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 1 (Penalized lasso)</strong></span> A solution of the contrained problem can be obtained, for an appropriate Lagrange multiplier <span class="math inline">\(\lambda\geq 0\)</span>, by minimizing</p>
+<p><span id="eq-penalized-lasso"><span class="math display">\[
+L(\beta; \lambda) = ||y-X\beta||_2^2 + \lambda||\beta||_1
+\tag{1}\]</span></span></p>
+<p>Conversely, a minimizer of <a href="#eq-penalized-lasso" class="quarto-xref">Equation&nbsp;<span>1</span></a> solves the constrained problem with <span class="math inline">\(t=||\hat \beta||_1\)</span>.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Introduce the Lagrangian</p>
+<p><span class="math display">\[
+\mathcal L(\beta, \lambda) = ||y-X\beta||_2^2 + \lambda(||\beta||_1-t), \quad \lambda \geq 0
+\]</span></p>
+<p>For fixed <span class="math inline">\(\lambda\)</span>, the term <span class="math inline">\(-\lambda t\)</span> does not depend on <span class="math inline">\(\beta\)</span>. Therefore,</p>
+<p><span class="math display">\[
+\arg\min_\beta\mathcal L(\beta, \lambda) = \arg\min_\beta \{||y-X\beta||_2^2 +\lambda||\beta||_1\}.
+\]</span></p>
+<p>The <a href="https://www.stat.cmu.edu/~ryantibs/convexopt-F16/scribes/kkt-scribed.pdf">KKT complementary slackness condition</a> is</p>
+<p><span class="math display">\[
+\lambda(||\hat \beta||_1-t) = 0
+\]</span></p>
+<p>When the constraint is active, the multiplier coefficient magnitudes strongly enough to enforce the require bound. Convexity makes the KKT conditions sufficient for optimality. The reverse statement follows by selecting the constraint radius equal to the norm of a penalized minimizer.</p>
+</div>
+<p>The two formulations describe the same family of estimators, although the mapping between <span class="math inline">\(t\)</span> and <span class="math inline">\(\lambda\)</span> need not be one-to-one. In the constrained formulation, smaller values of <span class="math inline">\(t\)</span> impose stronger regularization. In the penalized formulation, larger values of <span class="math inline">\(\lambda\)</span> impose stronger regularization.</p>
+</section>
+<section id="convexity-and-the-mechanism-of-variable-selection" class="level3" data-number="1.3">
+<h3 data-number="1.3" class="anchored" data-anchor-id="convexity-and-the-mechanism-of-variable-selection"><span class="header-section-number">1.3</span> Convexity and the mechanism of variable selection</h3>
+<p>The lasso objective is convex because both the squared-error loss and the absolute-value penalty are convex. However, unlike ridge regression, the penalty is not differentiable at zero.</p>
+<p>Recall that</p>
+<p><span class="math display">\[
+\frac{d}{d\beta_j} |\beta_j| = \begin{cases} 1,&amp; \beta_j &gt; 0 \\ -1,&amp; \beta_j &lt; 0 \end{cases}
+\]</span></p>
+<p>while the derivatives is undefined at <span class="math inline">\(\beta_j = 0\)</span>.</p>
+<p>Convex optimization handles this through the <em>subdifferential</em>,</p>
+<p><span class="math display">\[
+\partial |\beta_j| = \begin{cases}
+\{1\}, &amp; \beta_j &gt; 0 \\
+[-1, 1], &amp; \beta_j = 0 \\
+\{-1\}, &amp; \beta_j &lt; 0 .
+\end{cases}
+\]</span></p>
+<p>The interval at zero creates a range of residual correlations for which a zero coefficient satisfies the optimality conditions.</p>
+<div id="thm-optimality-conditions" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1</strong></span> Let <span class="math inline">\(\hat \beta\)</span> minimize <a href="#eq-penalized-lasso" class="quarto-xref">Equation&nbsp;<span>1</span></a>, and define the residual vector</p>
+<p><span class="math display">\[
+r = y-X\hat \beta.
+\]</span></p>
+<p>Then, for each <span class="math inline">\(j=1, \ldots, p\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+2x_j^\top r = \lambda\, \mathrm{sign}(\hat \beta_j),&amp; \quad \hat \beta_j \neq 0 \\
+|2x_j^\top r| \leq \lambda,&amp; \quad \hat \beta_j = 0
+\end{aligned}
+\]</span></p>
+<p>These conditions are necessary and sufficient for optimality.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>The differentiable part of the objective has gradient</p>
+<p><span class="math display">\[
+\nabla_\beta ||y-X\beta||_2^2 = -2X^\top (y-X\beta).
+\]</span></p>
+<p>Since the full objective is convex, a vector <span class="math inline">\(\hat \beta\)</span> is optimal if and only if</p>
+<p><span class="math display">\[
+0 \in -2X^\top (y-X\hat \beta) + \lambda \partial||\hat \beta||_1
+\]</span></p>
+<p>Thus, for every coordinate,</p>
+<p><span class="math display">\[
+2x_j^\top r \in \lambda \partial |\hat \beta_j|.
+\]</span></p>
+<p>When <span class="math inline">\(\hat \beta_j\neq 0\)</span>, its subgradient contains only <span class="math inline">\(\mathrm{sign}(\hat \beta_j)\)</span>, giving the equality conidition.</p>
+<p>When <span class="math inline">\(\hat \beta_j=0\)</span>, the subgradient is the interval <span class="math inline">\([-1, 1]\)</span>, giving</p>
+<p><span class="math display">\[
+-\lambda \leq 2x_j^\top r \leq \lambda
+\]</span></p>
+<p>Both conditions together establish the result.</p>
+</div>
+<p>A coefficient can therefore remain zero whenever</p>
+<p><span class="math display">\[
+|x_j^\top r| \leq \frac{\lambda}{2}.
+\]</span></p>
+<p>This is a crucial difference from ridge regression. For ridge, stationarity requires</p>
+<p><span class="math display">\[
+-2X^\top (y-X\hat \beta) + 2\lambda \hat \beta = 0
+\]</span></p>
+<p>There is no interval of admissible gradients at zero. Ridge continuously shrinks coefficients but does not possess a comparable thresholding mechanism. The lasso, by contrast, can eliminate predictors entirely because the nondifferentiability of the <span class="math inline">\(L_1\)</span>-penalty creates a region in which zero is an optimal solution.</p>
+</section>
+</section>
+<section id="geometry-and-mathematical-properties-of-the-lasso" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="geometry-and-mathematical-properties-of-the-lasso"><span class="header-section-number">2</span> Geometry and Mathematical Properties of the Lasso</h2>
+<section id="orthonormal-design-and-soft-thresholding" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="orthonormal-design-and-soft-thresholding"><span class="header-section-number">2.1</span> Orthonormal design and soft thresholding</h3>
+<p>The behavior of the lasso is easy to understand when the predictors are orthonormal:</p>
+<p><span class="math display">\[
+X^\top X = I_p
+\]</span></p>
+<p>Under this assumption,</p>
+<p><span class="math display">\[
+\hat \beta^{\text{OLS}} = X^\top y.
+\]</span></p>
+<p>Expanding the squared-error criterion gives</p>
+<p><span class="math display">\[
+\begin{aligned}
+||y-X\beta||_2^2 &amp;= y^\top y - 2\beta^\top X^\top y + \beta^\top X^\top X\beta \\
+&amp;= y^\top y - 2\beta^\top \hat \beta^{\text{OLS}} + \beta^\top \beta \\
+&amp;= \text{constant} + \sum_{j=1}^p (\beta_j - \hat \beta_j^{\text{OLS}})^2.
+\end{aligned}
+\]</span></p>
+<p>Consequently, the lasso objective separates across coordinates</p>
+<p><span class="math display">\[
+L(\beta; \lambda) = \text{constant} + \sum_{j=1}^p \left[(\beta_j - \hat\beta_j^{\text{OLS}})^2 + \lambda|\beta_j|\right].
+\]</span></p>
+<p>Each coefficient can be estimated independently.</p>
+<div id="thm-thresholding-estimator" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 2 (Soft-thresholding estimator)</strong></span> Under <span class="math inline">\(X^\top X=I_p\)</span>,</p>
+<p><span class="math display">\[
+\hat \beta_j^{\text{lasso}} = \mathrm{sign}(\hat \beta_j^\text{OLS})\left(|\hat \beta_j^{\text{OLS}}|-\frac{\lambda}{2}\right)_{+},
+\]</span></p>
+<p>where <span class="math inline">\((a)_+ = \max(a, 0)\)</span>.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Let <span class="math inline">\(z = \hat \beta_j^{\text{OLS}}\)</span>. The corresponding scalar optimization problem is</p>
+<p><span class="math display">\[
+\min_b \{(b-z)^2 +\lambda|b|\}.
+\]</span></p>
+<p>For <span class="math inline">\(b&gt;0\)</span>, differentiating yields</p>
+<p><span class="math display">\[
+2(b-z) + \lambda = 0,
+\]</span></p>
+<p>so <span class="math inline">\(b=z-\frac{\lambda}{2}\)</span>. This is positive only <span class="math inline">\(z&gt;\frac{\lambda}{2}\)</span>. For <span class="math inline">\(b&lt; 0\)</span>,</p>
+<p><span class="math display">\[
+2(b-z) - \lambda = 0
+\]</span></p>
+<p>giving <span class="math inline">\(b= z+\frac{\lambda}{2}\)</span>, which is negative only if <span class="math inline">\(z&lt;-\lambda/2\)</span>. Finally, at <span class="math inline">\(b=0\)</span>, the subgradient condition is</p>
+<p><span class="math display">\[
+0 \in -2z + \lambda[-1, 1]
+\]</span></p>
+<p>This holds precisely when <span class="math inline">\(|z|\leq \lambda/2\)</span>. Thus,</p>
+<p><span class="math display">\[
+\hat \beta = \begin{cases}
+z-\lambda/2, &amp; z&gt; \lambda/2, \\
+0,&amp; |z| \leq \lambda/2, \\
+z+\lambda/2, &amp; z&lt; -\lambda/2.
+\end{cases}
+\]</span></p>
+<p>Combining the cases gives the stated formula.</p>
+</div>
+<p>We can define the <em>soft-thresholding operator</em>:</p>
+<p><span class="math display">\[
+S(z, \tau) = \mathrm{sign}(z)(|z| - \tau)_{+}.
+\]</span></p>
+<p>Then</p>
+<p><span class="math display">\[
+\hat \beta_j^{\text{lasso}} = S(\hat\beta_j^{OLS}, \lambda/2)
+\]</span></p>
+<p>In the original constrained formulation, <span class="citation" data-cites="tibshiraniRegressionShrinkageSelection1996">Tibshirani (<a href="../references.html#ref-tibshiraniRegressionShrinkageSelection1996" role="doc-biblioref">1996</a>)</span> write the solution as</p>
+<p><span class="math display">\[
+\hat \beta_j = \mathrm{sign}(\hat \beta_j^\text{OLS})(|\hat \beta_j^{\text{OLS}}| - \gamma)_{+},
+\]</span></p>
+<p>where <span class="math inline">\(\gamma\)</span> is selected so that <span class="math inline">\(\sum_j |\hat \beta_j|=t\)</span> when the constraint is active. The behavior is different from ridge regression, which under the same orthonormality assumption satisfies</p>
+<p><span class="math display">\[
+\hat \beta_j^{\text{ridge}} = \frac{\hat \beta_j^{\text{OLS}}}{1+\lambda_2}
+\]</span></p>
+<p>Ridge regression scales all the coefficeints by the same multiplicative factor. The lasso instead subtracts a common threshold from their absolute values and truncates coefficients that become nonpositive.</p>
+<div id="767475f8" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">6</span>, <span class="dv">500</span>) </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>threshold <span class="op">=</span> <span class="fl">1.0</span> </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>ols <span class="op">=</span> z</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>ridge <span class="op">=</span> z<span class="op">/</span><span class="dv">2</span> </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>lasso <span class="op">=</span> np.maximum(z<span class="op">-</span>threshold, <span class="dv">0</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>subset <span class="op">=</span> np.where(z<span class="op">&gt;</span> threshold, z, <span class="dv">0</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">5</span>))</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>ax.plot(z, ols, <span class="st">"k:"</span>, label<span class="op">=</span><span class="st">"OLS"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>ax.plot(z, ridge, label<span class="op">=</span><span class="st">"Ridge"</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>ax.plot(z, lasso, label<span class="op">=</span><span class="st">"Lasso"</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>ax.plot(z, subset, label<span class="op">=</span><span class="st">"Subset"</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"OLS coefficient"</span>, ylabel<span class="op">=</span><span class="st">"Estimated coefficient"</span>, title<span class="op">=</span><span class="st">"Coefficient shrinkage: orthonormal design"</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="10_files/figure-html/cell-2-output-1.png" width="651" height="451" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As we can see, ridge regression continuously shrinks all coefficients, whereas best subset selection creates a discontinuous decision to retain or remove a coefficient. The lasso both shrinks and select, but does so through a continuous soft-thresholding function.</p>
+</section>
+<section id="geometry-of-the-constraint" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="geometry-of-the-constraint"><span class="header-section-number">2.2</span> Geometry of the constraint</h3>
+<p>Assume temporarily that <span class="math inline">\(X^\top X\)</span> is invertible. By the least-quares normal equations,</p>
+<p><span class="math display">\[
+X^\top (y-X\hat \beta^{\text{OLS}}) = 0  
+\]</span></p>
+<p>We can therefore expand the rsidual sum of squares around the OLS estimator:</p>
+<p><span class="math display">\[
+||y-X\beta||_2^2 = ||y-X\hat \beta^{\text{OLS}}||_2^2 + (\beta- \hat \beta^{\text{OLS}})^\top X^\top X (\beta - \hat \beta^{\text{OLS}}).
+\]</span></p>
+<p>The first term does not depend on <span class="math inline">\(\beta\)</span>. The second term is a quadratic from centered at the OLS solution, so its level sets are ellipsoids in coefficient space.</p>
+<p>For two predictors, the lasso feasible region is</p>
+<p><span class="math display">\[
+|\beta_1| +|\beta_2| \leq t
+\]</span></p>
+<p>Its boundary is a diamond with corners on the coordinate axes. By comparison, the ridge constraint</p>
+<p><span class="math display">\[
+\beta_1^2 +\beta_2^2 \leq t^2
+\]</span></p>
+<p>defines a circular region.</p>
+<p>In both methods, the constrained solution is the point where the smallest attainable least-squares ellipsoid intersects the feasible region. The lasso diamond has corners at which one or more coefficients are zero. Consequently, an ellipsodial contour can first contact the region at a corner, producing a sparse solution. The ridge region has a smooth boundary, making an exact zero less likely.</p>
+<div id="1c9094d2" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>b1 <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">3.5</span>, <span class="dv">400</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>b2 <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">3.5</span>, <span class="dv">400</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>B1, B2 <span class="op">=</span> np.meshgrid(b1, b2)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>beta_ols <span class="op">=</span> np.array([<span class="fl">2.5</span>, <span class="fl">1.5</span>])</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>rho <span class="op">=</span> <span class="fl">0.6</span> </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>G <span class="op">=</span> np.array([[<span class="dv">1</span>, rho], [rho, <span class="dv">1</span>]])</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> np.stack([B1 <span class="op">-</span> beta_ols[<span class="dv">0</span>], B2 <span class="op">-</span> beta_ols[<span class="dv">1</span>]], axis<span class="op">=-</span><span class="dv">1</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>loss <span class="op">=</span> np.einsum(<span class="st">"...i,ij,...j-&gt;..."</span>, D, G, D)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> <span class="fl">2.0</span> </span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">2</span><span class="op">*</span>np.pi, <span class="dv">400</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="fl">4.5</span>))</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes:</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    ax.contour(B1, B2, loss, levels<span class="op">=</span>[<span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">12</span>])</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    ax.plot(<span class="op">*</span>beta_ols, <span class="st">"kx"</span>, label<span class="op">=</span><span class="st">"OLS"</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="vs">r"</span><span class="dv">$\b</span><span class="vs">eta_1</span><span class="dv">$</span><span class="vs">"</span>, ylabel<span class="op">=</span><span class="vs">r"</span><span class="dv">$\b</span><span class="vs">eta_2</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    ax.set_aspect(<span class="st">"equal"</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    ax.set_xlim(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">3.5</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    ax.set_ylim(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">3.5</span>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].fill([t, <span class="dv">0</span>, <span class="op">-</span>t, <span class="dv">0</span>], [<span class="dv">0</span>, t, <span class="dv">0</span>, <span class="op">-</span>t], alpha<span class="op">=</span><span class="fl">0.15</span>)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_title(<span class="vs">r"Lasso: </span><span class="dv">$</span><span class="cf">|</span><span class="dv">\b</span><span class="vs">eta_1</span><span class="cf">|</span><span class="vs"> </span><span class="op">+</span><span class="vs"> </span><span class="cf">|</span><span class="dv">\b</span><span class="vs">eta_2</span><span class="cf">|</span><span class="vs"> </span><span class="er">\</span><span class="vs">leq t</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].fill(t<span class="op">*</span>np.cos(theta), t<span class="op">*</span>np.sin(theta), alpha<span class="op">=</span><span class="fl">0.15</span>)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_title(<span class="vs">r"Ridge: </span><span class="dv">$\b</span><span class="vs">eta_1</span><span class="dv">^</span><span class="vs">2 </span><span class="op">+</span><span class="dv">\b</span><span class="vs">eta_2</span><span class="dv">^</span><span class="vs">2</span><span class="er">\</span><span class="vs">leq t</span><span class="dv">^</span><span class="vs">2</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="10_files/figure-html/cell-3-output-1.png" width="876" height="421" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The <span class="math inline">\(L_1\)</span>-ball is a convex polytope with vertices and lower-dimensional faces aligned with coordinate subspaces. Optimization over these faces can produce several coefficient equal to zero simultaneously.</p>
+<p>In the general correlated setting, the lasso solution depends jointly on all predictors. <span class="citation" data-cites="tibshiraniRegressionShrinkageSelection1996">Tibshirani (<a href="../references.html#ref-tibshiraniRegressionShrinkageSelection1996" role="doc-biblioref">1996</a>)</span> shows that for <span class="math inline">\(p&gt;2\)</span>, a coefficient can even change sign relative to its OLS estimate. The estimator is therefore determined by the full geometry of <span class="math inline">\(X^\top X\)</span>, rather than by separate transformations of the OLS coefficients.</p>
+</section>
+<section id="the-two-predictor-case" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="the-two-predictor-case"><span class="header-section-number">2.3</span> The two-predictor case</h3>
+<p>Consider a case when there are two standardize predictors with correlation</p>
+<p><span class="math display">\[
+x_1^\top x_2 = \rho, \quad |\rho| &lt; 1
+\]</span></p>
+<p>Suppose that the two OLS coefficients are positive and that the lasso solution remains in the positive quadrant.</p>
+<div id="prp-equal-coefficient-reduction" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 2 (Equal coefficient reduction)</strong></span> While both lasso coefficients are positive and the <span class="math inline">\(L_1\)</span>-constraint is active,</p>
+<p><span class="math display">\[
+\hat \beta_j =\hat \beta_j^\text{OLS} - \frac{\hat \beta_1^{\text{OLS}} + \hat \beta_2^\text{OLS} - t}{2}, \quad j =1, 2.
+\]</span></p>
+<p>In particular, for a fixed constraint <span class="math inline">\(t\)</span>, the reduction does not depend on <span class="math inline">\(\rho\)</span>, provided the solution remains on this part of the constraint boundary.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Under the assumed signs, the active constraint becomes <span class="math inline">\(\beta_1 + \beta_2 = t\)</span>. The Lagrangian first-order condition gives</p>
+<p><span class="math display">\[
+2X^\top X (\hat \beta - \hat \beta^{\text{OLS}}) + \nu\begin{pmatrix}1 \\ 1 \end{pmatrix} = 0 .
+\]</span></p>
+<p>Since <span class="math inline">\(X^\top X= \begin{pmatrix}1 &amp; \rho \\ \rho &amp; 1\end{pmatrix}\)</span>, we have</p>
+<p><span class="math display">\[
+(X^\top X)^{-1} \begin{pmatrix}1 \\ 1\end{pmatrix} =\frac{1}{1+\rho} \begin{pmatrix} 1 \\1 \end{pmatrix}
+\]</span></p>
+<p>Consequently,</p>
+<p><span class="math display">\[
+\hat \beta - \hat \beta^{\text{OLS}} = -\frac{\nu}{2(1+\rho)} \begin{pmatrix}1\\1\end{pmatrix}
+\]</span></p>
+<p>Thus the two coefficients are reduced by an equal amount, say <span class="math inline">\(c\)</span>. Applying the constraint,</p>
+<p><span class="math display">\[
+\hat \beta_1^{\text{OLS}} + \hat \beta_2^{\text{OLS}} -2c = t,
+\]</span></p>
+<p>so</p>
+<p><span class="math display">\[
+c = \frac{\hat \beta_1^{\text{OLS}}+ \beta_2^{\text{OLS}}-t}{2}
+\]</span></p>
+<p>Substitution establishes the result.</p>
+</div>
+<p>This differs from ridge regression, whose shrinkage depends on the eigenstructure of <span class="math inline">\(X^\top X\)</span>. As <span class="math inline">\(\rho\)</span> increases, ridge tends to shrink the difference between the coefficients more strongly, encouraging similar coefficients for highly correlated predictors.</p>
+</section>
+<section id="existence-uniqueness-and-sparsity" class="level3" data-number="2.4">
+<h3 data-number="2.4" class="anchored" data-anchor-id="existence-uniqueness-and-sparsity"><span class="header-section-number">2.4</span> Existence, uniqueness, and sparsity</h3>
+<p>Unlike OLS, the penalized lasso problem with <span class="math inline">\(\lambda &gt; 0\)</span> has a minimizer even when the design matrix is a rank deficient. The objective is continuous, convex, and grows without bound as <span class="math inline">\(||\beta||_1\to \infty\)</span>. Existence, however, does not imply that the coefficient vector is unique.</p>
+<div id="thm-uniqueness-of-fitted-values" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 3 (Uniqueness of fitted values)</strong></span> If <span class="math inline">\(\hat \beta^{(1)}\)</span> and <span class="math inline">\(\hat \beta^{(2)}\)</span> are two lasso minimizers for the same <span class="math inline">\(\lambda&gt;0\)</span>, then</p>
+<p><span class="math display">\[
+X\hat \beta^{(1)} = X\hat \beta^{(2)}.
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Suppose the fitted values are different. Consider</p>
+<p><span class="math display">\[
+\overline \beta = \frac{\hat \beta^{(1)} + \hat \beta^{(2)}}{2}
+\]</span></p>
+<p>Because squared error is strictly convex in the fitted-value vector,</p>
+<p><span class="math display">\[
+||y-X\overline \beta||_2^2 &lt; \frac{1}{2} ||y-X\hat \beta^{(1)}||_2^2 + \frac{1}{2}||y-X\hat \beta^{(2)}||_2^2
+\]</span></p>
+<p>Convexity of the <span class="math inline">\(L_1\)</span>-norm gives</p>
+<p><span class="math display">\[
+||\overline \beta||_1 \leq \frac{1}{2} \left(||\hat \beta^{(1)}||_1  + ||\hat \beta^{(2)}||_1\right).
+\]</span></p>
+<p>Combining the two inequalities produces an objective value at <span class="math inline">\(\overline \beta\)</span> strictly smaller than the minimum, which is a contradction. Hence the fitted values must agree.</p>
+</div>
+<p>When <span class="math inline">\(X\)</span> has full column rank, the quadratic term is strictly convex in <span class="math inline">\(\beta\)</span>, so the coefficient is unique as well. When <span class="math inline">\(p&gt;n\)</span>, multiple coefficient vectors can yield the same predictions. A related property concerns the number of predictors that can be selected.</p>
+<div id="prp-sparse-minimizer" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 3 (Sprase minimizer)</strong></span> For <span class="math inline">\(\lambda&gt;0\)</span>, there exists a lasso minimizer having at most <span class="math inline">\(\rank(X)\)</span> nonzero coefficients.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Let <span class="math inline">\(A\)</span> denote the active set of a lasso solution. Suppose <span class="math inline">\(|A| &gt; \rank(X)\)</span>. The columns of <span class="math inline">\(X_A\)</span> are linearly dependent, so there exists a nonzero vector <span class="math inline">\(d\)</span> satisfying <span class="math inline">\(X_A d=0\)</span></p>
+<p>The active-coordinate optimality equations give</p>
+<p><span class="math display">\[
+2X_A^\top r = \lambda s_A,
+\]</span></p>
+<p>where <span class="math inline">\(s_A\)</span> is the sign vector of the active coefficients. Multiplication by <span class="math inline">\(d^\top\)</span> yields</p>
+<p><span class="math display">\[
+0 = 2d^\top X_A^\top r = \lambda d^\top s_A
+\]</span></p>
+<p>Since <span class="math inline">\(\lambda&gt;0\)</span>, we obtain <span class="math inline">\(d^\top s_A = 0.\)</span></p>
+<p>Now perturb the active coefficients according to</p>
+<p><span class="math display">\[
+\beta_A(u) =\hat \beta_A + ud.  
+\]</span></p>
+<p>Because <span class="math inline">\(X_a d=0\)</span>, this pertubation leaves the fitted values unchanged. As long as the signs of the active coefficients remain fixed,</p>
+<p><span class="math display">\[
+||\beta_A(u)||_1 = ||\hat \beta_A||_1 + us_A^\top d = ||\hat \beta_A||_1.
+\]</span></p>
+<p>Thus the objective remains unchanged. We can move along this direction until at least one active coefficient reaches zero. Repeating the argument eventually produces a minimizer whose active columns are linearly independent. Therefore,</p>
+<p><span class="math display">\[
+|A|\leq \rank(X).
+\]</span></p>
+</div>
+<p>This result explains that the lasso selects no more than <span class="math inline">\(n\)</span> predictors when <span class="math inline">\(p&gt;n\)</span>. More precisely, it guarantees the existence of a sparse minimizer, nonunique lasso solutions may have larger supports.</p>
+<p>A final structural property follows from the optimality equations. Let <span class="math inline">\(A\)</span> be an active set whose columns are linearly independent, and suppose the signs <span class="math inline">\(s_A\)</span> remain fixed. Then</p>
+<p><span class="math display">\[
+2X_A^\top(y-X_A \hat \beta_a) = \lambda s_A.
+\]</span></p>
+<p>Rearranging gives</p>
+<p><span class="math display">\[
+\hat \beta_A (\lambda) = (X_A^\top X_A)^{-1}(X_A^\top y - \frac{\lambda}{2} s_A)
+\]</span></p>
+<p>For a fixed active set and sign vector, this is an affine function of <span class="math inline">\(\lambda\)</span>. As the penalty changes, the coefficient path follows linear segments separated by events at which predictors enter or leave the active set. This piecewise-linear structure provides the theoretical basis for path-following algorithms such as least-angle regression and homotopy methods, discussed in <span class="citation" data-cites="tibshiraniRegressionShrinkageSelection2011">Tibshirani (<a href="../references.html#ref-tibshiraniRegressionShrinkageSelection2011" role="doc-biblioref">2011</a>)</span>.</p>
+</section>
+</section>
+<section id="computation-prediction-error-and-statistical-interpretation" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="computation-prediction-error-and-statistical-interpretation"><span class="header-section-number">3</span> Computation, Prediction Error, and Statistical Interpretation</h2>
+<section id="computing-the-lasso-estimator" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="computing-the-lasso-estimator"><span class="header-section-number">3.1</span> Computing the lasso estimator</h3>
+<p>The lasso is convex optimization problem, but the nondifferentiability of the <span class="math inline">\(L_1\)</span>-penalty prevents the direct application of the OLS normal equations. In particular, there is no general closed-form estimator analogous to</p>
+<p><span class="math display">\[
+\hat \beta^{\text{ridge}} = (X^\top X + \lambda I)^{-1}X^{\top}y
+\]</span></p>
+<p>The orginal lasso problem can nevertheless be reformulated as a quadratic programming problem. We can write</p>
+<p><span class="math display">\[
+\beta_j = \beta_j^+ - \beta_j^-, \quad \beta^+_j, \beta_j^- \geq 0
+\]</span></p>
+<p>For an optimal decomposition, the positive and negative parts do not both need to be positive. Therefore,</p>
+<p><span class="math display">\[
+|\beta_j| = \beta_j^+ + \beta_j^-,  
+\]</span></p>
+<p>and the constrained lasso becomes</p>
+<p><span class="math display">\[
+\min_{\beta^+, \beta^-} || y-X(\beta^+ - \beta^-)||_2^2, \quad \text{subject to } \sum_{j=1}^{p}(\beta_j^+ + \beta_j^-) \leq t, \beta_j^+, \beta_j^- \geq 0
+\]</span></p>
+<p>This express the lasso as a quadratic objective with linear inequality constraints. <span class="citation" data-cites="tibshiraniRegressionShrinkageSelection1996">Tibshirani (<a href="../references.html#ref-tibshiraniRegressionShrinkageSelection1996" role="doc-biblioref">1996</a>)</span> discusses algorithms based on this representation and an alternative approach that introduces violated sign constraints sequentially.</p>
+<p>The later development of least-angle regression (LARS) and coordinate descent made lasso estimation considerably more efficient. In particular, coordinate descent uses the fact that minimizing the objective over a single coefficient, while holding all others fixed is another soft-thresholding problem. These developments are discussed in <span class="citation" data-cites="tibshiraniRegressionShrinkageSelection2011">Tibshirani (<a href="../references.html#ref-tibshiraniRegressionShrinkageSelection2011" role="doc-biblioref">2011</a>)</span>.</p>
+<p>Let</p>
+<p><span class="math display">\[
+r_j = y-\sum_{k\neq j} x_k \beta_k
+\]</span></p>
+<p>denote the partial residual obtained by removing the contribution of all predictors except <span class="math inline">\(x_j\)</span>. The coordinate specific objective is</p>
+<p><span class="math display">\[
+\min_{\beta_j} \{||r_j-x_j\beta_j||_2^2 +\lambda|\beta_j|\}
+\]</span></p>
+<p>Expanding the squared-error term gives</p>
+<p><span class="math display">\[
+||r_j||^2_2 - 2\beta_j x_j^\top r_j + \beta_j^2 x_j^\top x_j + \lambda|\beta_j|
+\]</span></p>
+<p>Terms independent of <span class="math inline">\(\beta_j\)</span> can be ommitted.</p>
+<div id="prp-coordinate-descent-update" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 4 (Coordinate descent update)</strong></span> The minimizer with respect to coordinate <span class="math inline">\(j\)</span> is</p>
+<p><span id="eq-coordinate-descent-update"><span class="math display">\[
+\beta_j^{\text{new}} = \frac{S(x_j^\top r_j, \lambda/2)}{x_j^\top x_j}
+\tag{2}\]</span></span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Set <span class="math inline">\(a_j = x_j^\top x_j\)</span>, <span class="math inline">\(c_j = x_j^\top r_j\)</span>. The coordinate-specific objective is, up to a constant,</p>
+<p><span class="math display">\[
+a_j\beta_j^2 - 2c_j \beta_j + \lambda|\beta_j|
+\]</span></p>
+<p>Completing the square,</p>
+<p><span class="math display">\[
+a_j\left(\beta_j - \frac{c_j}{a_j}\right)^2 + \lambda |\beta_j| + \text{constant}.
+\]</span></p>
+<p>By the soft-thresholding result,</p>
+<p><span class="math display">\[
+\beta_j^{\text{new}} = S\left(\frac{c_j}{a_j}, \frac{\lambda}{2a_j}\right)
+\]</span></p>
+<p>Using the scaling identity for <span class="math inline">\(S\)</span>,</p>
+<p><span class="math display">\[
+S(c/a, \tau/a) = \frac{S(c, \tau)}{a}, \quad a&gt; 0
+\]</span></p>
+<p>we obtain <a href="#eq-coordinate-descent-update" class="quarto-xref">Equation&nbsp;<span>2</span></a>.</p>
+</div>
+<p>Under our standardization <span class="math inline">\(x_j^\top x_j = 1\)</span>, the update simplifies to</p>
+<p><span class="math display">\[
+\beta_j^{\text{new}} = S(x_j^\top r_j , \lambda_j/2)
+\]</span></p>
+<p>Coordinate descent repeatedly updates the coefficients until convergence. Each iteration minimizes the objective with respect to one coordinate, and the objective cannot increase after an exact update. Convexity ensures that a coordinatewise optinum satisfying the subgradient conditions is globally optimal.</p>
+<p>The approach is efficient for sparse solutions because inactive coefficients can frequently remain at zero. The piecewise-linear coefficeint paths provide another way to compute the lasso. Starting from a sufficiently large penalty, where every coefficient is zero, a path-following algorithm reduces <span class="math inline">\(\lambda\)</span>. Predictors enter when their residual correlation reaches the active threshold, and coefficients may leave when they return when they return to zero.</p>
+<div id="ab12fd1c" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> lars_path </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">6400</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>n, p <span class="op">=</span> <span class="dv">80</span>, <span class="dv">8</span> </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> rng.normal(size <span class="op">=</span> (n, p))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>X <span class="op">-=</span> X.mean(axis <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>X <span class="op">/=</span> np.linalg.norm(X, axis <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>beta_true <span class="op">=</span> np.array([<span class="dv">3</span>, <span class="op">-</span><span class="dv">2</span>, <span class="fl">1.5</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>])</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> X <span class="op">@</span> beta_true <span class="op">+</span> rng.normal(<span class="dv">0</span>, <span class="fl">0.3</span>, n)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>y <span class="op">-=</span> y.mean()</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>_, _, coefs <span class="op">=</span> lars_path(X, y , method<span class="op">=</span><span class="st">"lasso"</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> np.<span class="bu">sum</span>(np.<span class="bu">abs</span>(coefs), axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>s <span class="op">/=</span> s[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(p): </span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  ax.plot(s, coefs[j], label<span class="op">=</span><span class="vs">fr"</span><span class="dv">$\b</span><span class="vs">eta_</span><span class="sc">{</span>j<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"black"</span>, lw<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="vs">r"Fraction of </span><span class="dv">$</span><span class="vs">L_1</span><span class="dv">$</span><span class="vs"> norm"</span>, ylabel<span class="op">=</span><span class="st">"Estimated coeffcient"</span>, title<span class="op">=</span><span class="st">"Lasso coefficient paths"</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>ax.legend(ncol<span class="op">=</span><span class="dv">2</span>, fontsize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="10_files/figure-html/cell-4-output-1.png" width="663" height="451" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The horizontal axis measures the fraction of the final <span class="math inline">\(L_1\)</span>-norm attained along the path. At the origin, the constraint is most restrictive and the coefficient vector is zero. As the constraint relaxes, predictors enter the model and their coefficients follow piecewise-linear trajectories.</p>
+<p>The exact ordering of the predictors depends on the data. Variables may enter or leave as the active set changes, so an early-entering predictor is not retained throughout the entire path.</p>
+</section>
+<section id="prediction-error-and-regularization-parameter-selection" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="prediction-error-and-regularization-parameter-selection"><span class="header-section-number">3.2</span> Prediction error and regularization parameter selection</h3>
+<p>The purpose of regularization is also to improve the prediction of future responses by balancing bias and variance. Suppose <span class="math inline">\(Y = f(X) + \epsilon\)</span>, where <span class="math inline">\(\E[\epsilon]=0\)</span>, <span class="math inline">\(\var(\epsilon) = \sigma^2\)</span>, and future noise is independent of the fitted model.</p>
+<p>For a fixed fitted function <span class="math inline">\(\hat f\)</span>, we define its means squared estimation error as</p>
+<p><span class="math display">\[
+\mathrm{ME} = \E_X\left[\{\hat f(X) - f(X)\}^2\right]
+\]</span></p>
+<p>The prediction error is</p>
+<p><span class="math display">\[
+PE= \E_{X, Y} \left[\{Y-\hat f(X)\}^2\right]
+\]</span></p>
+<p>Expanding the expression</p>
+<p><span class="math display">\[
+\begin{aligned}
+PE &amp;= \E\left[\{f(X) + \epsilon - \hat f(X)\}^2\right] \\
+&amp;= \E\left[\{f(X) - \hat f(X)\}^2\right] + \E[\epsilon^2] + 2\E\left[\epsilon\{f(X) - \hat f(X)\}\right]
+\end{aligned}
+\]</span></p>
+<p>The final term is zero under the independence and zero-mean assumption. Therefore,</p>
+<p><span class="math display">\[
+PE = ME + \sigma^2
+\]</span></p>
+<p>The irreducible noise variance separates prediction error from estimation error. When <span class="math inline">\(f(X)=X^\top \beta\)</span> and the population predictor covariance matrix is <span class="math inline">\(V\)</span>, the conditional estimation error becomes</p>
+<p><span class="math display">\[
+ME = (\hat \beta - \beta)^\top V (\hat \beta - \beta)
+\]</span></p>
+<p>Thus, prediction accuracy also depends on the covariance structure of the predictors. In <span class="math inline">\(K\)</span>-fold cross-validation, the observations are partitioned into <span class="math inline">\(K\)</span> disjoint folds <span class="math inline">\(I_1,\ldots, I_k\)</span>. For each candidate <span class="math inline">\(\lambda\)</span>, a model is fitted on the observations outside fold <span class="math inline">\(k\)</span>, yielding <span class="math inline">\(\hat \beta^{(-k)}(\lambda)\)</span>. Its prediction error is then evaluated on the excluded observations.</p>
+<p>The cross-validation criterion is</p>
+<p><span class="math display">\[
+CV(\lambda) = \frac{1}{n} \sum_{k=1}^{K} \sum_{i\in I_k} \left[y_i - x_i^\top \hat \beta^{(-k)}(\lambda)\right]^2
+\]</span></p>
+<p>The selected penalty is</p>
+<p><span class="math display">\[
+\hat \lambda = \arg\min_{\lambda \geq 0} CV(\lambda)
+\]</span></p>
+<p>An equivalent approach in the constrained formulation is to select <span class="math inline">\(t\)</span>. <span class="citation" data-cites="tibshiraniRegressionShrinkageSelection1996">Tibshirani (<a href="../references.html#ref-tibshiraniRegressionShrinkageSelection1996" role="doc-biblioref">1996</a>)</span> uses the normalized parameter</p>
+<p><span class="math display">\[
+s = \frac{t}{t_0}, \quad t_0 = ||\hat \beta^{\text{OLS}}||_1,
+\]</span></p>
+<p>when the full least-squares solution is well defined. Values of <span class="math inline">\(s\in [0,1]\)</span> describe increasing fractions of the unrestricted. Cross-validation is computationally intensive because the estimator must be fitted repeatedly. This motivates approximations to the prediction risk.</p>
+<p>One approach is to approximate the lasso locally as a weighted ridge estimator. For a fitted coefficient vector <span class="math inline">\(\hat \beta\)</span>, define</p>
+<p><span class="math display">\[
+W = \mathrm{diag}(|\hat \beta_1|, \ldots, |\hat\beta_p|).
+\]</span></p>
+<p>The <span class="math inline">\(L_1\)</span>-penalty can formally be written, for nonzero coordinates, as</p>
+<p><span class="math display">\[
+\sum_{j=1}^p |\beta_j| = \sum_{j=1}^p \frac{\beta_j^2}{|\beta_j|}
+\]</span></p>
+<p>Using the fitted magnitudes in the denominators yields a local quadratic approximation. The corresponding estimator has the ridge-like expression</p>
+<p><span class="math display">\[
+\hat \beta \approx (X^\top X + \lambda^\dagger)^{-1}X^\top y,
+\]</span></p>
+<p>with appropriate handling of zero coefficients and generalized inverses. This suggests approximating the effective number of parameters by</p>
+<p><span class="math display">\[
+p(t) \approx \mathrm{tr}[X(X^\top X+ \lambda W^\dagger)^{-1}X^\top].
+\]</span></p>
+<p>The generalized cross-validation criterion can then be written as</p>
+<p><span class="math display">\[
+GCV(t) = \frac{RSS(t)/n}{\{1-p(t)/n\}^2}
+\]</span></p>
+<p>Note that this is an approximation and should not be interpreted as the degrees of freedom of the lasso.</p>
+<p>A different approach follows from <strong>Stein’s unbiased risk estimation</strong>, particularly in the orthogonal Gaussian model. Suppose</p>
+<p><span class="math display">\[
+z_j = \beta_j + \sigma Z_j, \quad Z_j \overset{iid}{\sim} N(0, 1),
+\]</span></p>
+<p>and estimate <span class="math inline">\(\beta_j\)</span> using soft thresholding,</p>
+<p><span class="math display">\[
+\delta_j(z_j) = S(z_j, \tau).
+\]</span></p>
+<p>For an almost-everywhere different estimator <span class="math inline">\(\delta\)</span>, Stein’s identity gives an unbiased estimate of the squared-error risk,</p>
+<p><span class="math display">\[
+\hat R = \sum_{j=1}^p \left[\{\delta_j(z_j) - z_j\}^2 + 2\sigma^2 \delta_j' (z_j) - \sigma^2\right].
+\]</span></p>
+<p>For soft thresholding,</p>
+<p><span class="math display">\[
+\{\delta_j(z_j) - z_j\}^2 = \min(z_j^2, \tau^2),
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\delta'_j(z_j) = \mathbf{1}(|z_j|&gt;\tau)
+\]</span></p>
+<p>except at the threshold points, which have probability zero under the continuous Gaussian model. Substitution yields</p>
+<p><span class="math display">\[
+\hat R (\tau) = p\sigma^2 + \sum_{j=1}^p \min(z_j^2, \tau^2) - 2\sigma^2 \# \{j: |z_j| \leq \tau\}.
+\]</span></p>
+<p>One can select the threshold <span class="math inline">\(\tau\)</span> by minimizing this estimated risk. The formula is unbiased for the stated Gaussian sequence problem with known <span class="math inline">\(\sigma^2\)</span>. Its use for more general nonorthogonal designs requires additional justification or approximation.</p>
+</section>
+<section id="bayesian-interpretation-uncertainty-and-empirical-behavior" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="bayesian-interpretation-uncertainty-and-empirical-behavior"><span class="header-section-number">3.3</span> Bayesian interpretation, uncertainty, and empirical behavior</h3>
+<p>Assume the Gaussian regression model</p>
+<p><span class="math display">\[
+y|\beta, X \sim N(X\beta, \sigma^2 I)
+\]</span></p>
+<p>The likelihood is proportional to</p>
+<p><span class="math display">\[
+p(y | \beta, X) \propto \exp\left[-\frac{||y-X\beta||_2^2}{2\sigma^2}\right].
+\]</span></p>
+<p>Suppose each coeffcient has an independent Laplace, or double-exponential prior,</p>
+<p><span class="math display">\[
+p(\beta_j) = \frac{1}{2b} \exp\left(-\frac{|\beta_j}{b}\right)
+\]</span></p>
+<p>The joint prior is</p>
+<p><span class="math display">\[
+p(\beta)\propto \exp\left[-\frac{1}{b} \sum_{j=1}^{p}|\beta_j|\right].
+\]</span></p>
+<p>By Bayes’s rule, the negative log posterior, ignoring constants, is</p>
+<p><span class="math display">\[
+-\log p (\beta\mid y, X) = \frac{||y-X\beta||_2^2}{2\sigma^2} + \frac{1}{b} ||\beta||_1
+\]</span></p>
+<p>Multiplying by <span class="math inline">\(2\sigma^2\)</span>, the posterior mode satisfies</p>
+<p><span class="math display">\[
+\hat \beta^{\text{MAP}} = \arg\min_\beta \left\{||y-X\beta||_2^2 + \frac{2\sigma^2}{b}||\beta||_1 \right\}
+\]</span></p>
+<p>Therefore, the lasso estimator is the posterior mode under independent Laplace priors, with</p>
+<p><span class="math display">\[
+\lambda = \frac{2\sigma^2}{b}
+\]</span></p>
+<p>The Laplace density has a sharper peak at zero and heavier tails than a Gaussian density with comparable scale. This reflects the lasso’s tendency to suppress weak coefficients while permitting some larger coefficients.</p>
+<div id="f80ff32a" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> norm, laplace </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">1000</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>gaussian <span class="op">=</span> norm.pdf(x, loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>laplacian <span class="op">=</span> laplace.pdf(x, loc<span class="op">=</span><span class="dv">0</span>, scale<span class="op">=</span><span class="dv">1</span><span class="op">/</span>np.sqrt(<span class="dv">2</span>))</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">5</span>))</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>plt.plot(x, gaussian, label<span class="op">=</span><span class="st">"Gaussian"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>plt.plot(x, laplacian, label<span class="op">=</span><span class="st">"Laplace"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"x"</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Probability Density"</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Gaussian vs. Laplace Distribution"</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="10_files/figure-html/cell-5-output-1.png" width="664" height="450" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The lasso’s exact zero coefficients arise from finding the model of a nondifferentiable posterior density. A continuous Laplace prior itself does not assign positive probability to the event <span class="math inline">\(\beta_j=0\)</span>.</p>
+<p>The estimator’s nonlinear and nondifferentiable behavior also complicates uncertainty quantification. The estimated active set can change across repeated samples, making OLS standard errors inappropriate if they ignore the selection process.</p>
+<p><span class="citation" data-cites="tibshiraniRegressionShrinkageSelection1996">Tibshirani (<a href="../references.html#ref-tibshiraniRegressionShrinkageSelection1996" role="doc-biblioref">1996</a>)</span> considers bootstrap procedures in which the tuning parameter is either held fixed or re-estimated in each bootstrap sample. Re-estimating the parameter incorporates an additional source of variability and can produce larger uncertainty estimates.</p>
+<p>A local weighted-ridge approximation can also be used to construct an approximate covariance expression</p>
+<p><span class="math display">\[
+\widehat{\Cov}(\hat \beta) \approx \hat \sigma^2(X^\top  X + \lambda W^\dagger)^{-1} X^\top X (X^\top X +\lambda W^\dagger)^{-1}
+\]</span></p>
+<p>However, this approximation may assign zero estimated variance to coefficients that the lasso sets to zero, even though substantial uncertainty may remain about whether the underlying effects are actually absent.</p>
+<p>The empirical results in <span class="citation" data-cites="tibshiraniRegressionShrinkageSelection1996">Tibshirani (<a href="../references.html#ref-tibshiraniRegressionShrinkageSelection1996" role="doc-biblioref">1996</a>)</span> also demonstrate that no regularization method uniformly dominates the others. When few predictors have strong effects, subset selection or lasso can perform well. When many predictors have moderate effects, the lasso can offer a favorable compromise between shrinkage and selection. When the true model contains many small zero nonzero effects, ridge regression can be preferable because it retains information distributed across many variables.</p>
+<p>The <span class="math inline">\(L_1\)</span> principle can also be extended beyond Gaussian linear regression. For a model with log-likelihood <span class="math inline">\(\ell(\beta)\)</span>, the corresponding penalized estimator is</p>
+<p><span class="math display">\[
+\hat \beta = \arg\max_\beta \{\ell(\beta) - \lambda ||\beta||_1\}
+\]</span></p>
+<p>This provides extensions to generalized linear models and survival regression. Related sparse penalties can be applied to basis expensions, regression trees, and other statistical structures.</p>
+<p>The retrospective discussion in <span class="citation" data-cites="tibshiraniRegressionShrinkageSelection2011">Tibshirani (<a href="../references.html#ref-tibshiraniRegressionShrinkageSelection2011" role="doc-biblioref">2011</a>)</span> describes further developments, including group lasso, fused lasso, adaptive lasso, graphical lasso, sparse matrix estimation, and related methods. These extensions modify which quantities are penalized while preserving the idea that a nonsmooth penalty can encode structural simplicity.</p>
+<p>Nevertheless, an important limitation remains. When several predictors are strongly correlated, the lasso may select one and discard the others. This can produce a sparse model, but the selected variables may be unstable or fail to reveal the underlying group structure.</p>
+</section>
+</section>
+<section id="elastic-net-sparsity-with-correlated-predictors" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="elastic-net-sparsity-with-correlated-predictors"><span class="header-section-number">4</span> Elastic Net: Sparsity with Correlated Predictors</h2>
+<section id="motivation-and-the-naive-elastic-net" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="motivation-and-the-naive-elastic-net"><span class="header-section-number">4.1</span> Motivation and the naive elastic net</h3>
+<p>Consider a regression problem with <span class="math inline">\(p\)</span> predictors and <span class="math inline">\(n\)</span> observations, where <span class="math inline">\(p\)</span> may be much larger than <span class="math inline">\(n\)</span>. Suppose several predictors are strongly correlated because they measure related aspects of the same underlying phenomenon.</p>
+<p>The lasso can produce sparse estimates in this setting, but it has two limitations of particular interest. First, it has a sparse solution with at most <span class="math inline">\(\rank(X)\)</span> active predictors. Second, when several predictors are highly correlated, it may select one representative without retaining the remaining members of the group.</p>
+<p>This behavior is undesirable when the group itself carries scientific meaning. In gene-expression analysis, for example, several genes belonging to a related biological process may have highly correlated expression measurements. Identifying only one gene may conceal the broader structure that explains the response.</p>
+<p>Ridge regression behaves differently. Because the squared <span class="math inline">\(L_2\)</span>-penalty is strictly convex, it discourages assigning a share effect entirely to one variable when several correlation variables can represent the same information. The goal is to combine the sparse behavior of the lasso with ridge regression’s tendency to distribute effects among correlated predictors.</p>
+<p><span class="citation" data-cites="zouRegularizationVariableSelection2005">Zou and Hastie (<a href="../references.html#ref-zouRegularizationVariableSelection2005" role="doc-biblioref">2005</a>)</span> begin with the following criterion.</p>
+<div id="def-naive-elastic-net" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Naive elastic net)</strong></span> For <span class="math inline">\(\lambda_1, \lambda_2 \geq 0\)</span>, define</p>
+<p><span id="eq-naive-elastic-net"><span class="math display">\[
+L(\lambda_1, \lambda_2, \beta) = ||y-X\beta||_2^2 + \lambda_2 ||\beta||_2^2 + \lambda_1 ||\beta||_1
+\tag{3}\]</span></span></p>
+<p>The naive elastic net estimator is</p>
+<p><span class="math display">\[
+\hat \beta^{\text{naive}} = \arg\min_\beta L(\lambda_1, \lambda_2, \beta).
+\]</span></p>
+</div>
+<p>Here, <span class="math inline">\(\lambda_1\)</span> controls the <span class="math inline">\(L_1\)</span>-penalty responsible for sparsity, while <span class="math inline">\(\lambda_2\)</span> controls the quadratic penalty that stabilizes the coefficients.</p>
+<p>For <span class="math inline">\(\lambda_1+ \lambda_2&gt;0\)</span>, let <span class="math inline">\(\alpha = \frac{\lambda_2}{\lambda_1+\lambda_2}\)</span>. Then, up to an overall positive scaling factor, the penalty can be written as</p>
+<p><span class="math display">\[
+J_{\alpha}(\beta) = (1-\alpha)||\beta||_1 + \alpha||\beta||_2^2
+\]</span></p>
+<p>This is the mixing convention using in <span class="citation" data-cites="zouRegularizationVariableSelection2005">Zou and Hastie (<a href="../references.html#ref-zouRegularizationVariableSelection2005" role="doc-biblioref">2005</a>)</span>: <span class="math inline">\(\alpha=0\)</span> corresponds to the lasso penalty and <span class="math inline">\(\alpha=1\)</span> to the ridge penalty. Some modern software packages use the opposite interpretation of their mixing parameter.</p>
+<p>For <span class="math inline">\(0&lt; \alpha&lt; 1\)</span>, the penalty is nondifferentiable whenever a coordiante is zero, owing to the <span class="math inline">\(L_1\)</span>-component, and strictly convex because of the positive quadratic component. Strict convexity improves uniqueness and stability, while nondifferentiability permits exact zeros.</p>
+<div id="33b228cc" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="dv">400</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>B1, B2 <span class="op">=</span> np.meshgrid(b, b)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>l1 <span class="op">=</span> np.<span class="bu">abs</span>(B1) <span class="op">+</span> np.<span class="bu">abs</span>(B2)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>l2 <span class="op">=</span> B1<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> B2<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>enet <span class="op">=</span> <span class="fl">0.5</span><span class="op">*</span>l1 <span class="op">+</span> <span class="fl">0.5</span><span class="op">*</span>l2 </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize <span class="op">=</span> (<span class="dv">11</span>, <span class="dv">4</span>)) </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, penalty, title <span class="kw">in</span> <span class="bu">zip</span>(axes, [l1, l2, enet], [<span class="st">"Lasso (L1)"</span>, <span class="st">"Ridge (L2)"</span>, <span class="st">"Elastic Net"</span>]):</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    ax.contour(B1, B2, penalty, levels<span class="op">=</span>[<span class="dv">1</span>])</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    ax.axhline(<span class="dv">0</span>, lw<span class="op">=</span><span class="fl">0.5</span>, color<span class="op">=</span><span class="st">"gray"</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    ax.axvline(<span class="dv">0</span>, lw<span class="op">=</span><span class="fl">0.5</span>, color<span class="op">=</span><span class="st">"gray"</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    ax.set_title(title)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    ax.set_aspect(<span class="st">"equal"</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    ax.set_xlim(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    ax.set_ylim(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">1.5</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="10_files/figure-html/cell-6-output-1.png" width="1049" height="344" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The lasso contraint has sharp vertices on the coordinate axes, while the ridge constraint has a smooth curved boundary. The elastic net combines both characteristic; it retains axis-aligned corners associated with sparsity but introduces curvature away from the axes.</p>
+</section>
+<section id="the-augmented-data-repersentation" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="the-augmented-data-repersentation"><span class="header-section-number">4.2</span> The augmented-data repersentation</h3>
+<p>A useful property of the naive elastic net is that its optimization problem can be transformed into a lasso problem on an augmented dataset.</p>
+<div id="lem-augmented-data-equivalence" class="theorem lemma">
+<p><span class="theorem-title"><strong>Lemma 1 (Augmented-data equivalence)</strong></span> Given <span class="math inline">\(y, X\)</span>, and fixed <span class="math inline">\(\lambda_1, \lambda_2\)</span>, define</p>
+<p><span class="math display">\[
+X^* = \frac{1}{\sqrt{1+\lambda_2}}\begin{pmatrix}X \\ \sqrt{\lambda_2} I_p \end{pmatrix},\quad  y^* = \begin{pmatrix}y \\ 0_p\end{pmatrix}
+\]</span></p>
+<p>Let <span class="math display">\[
+\beta^* = \sqrt{1+ \lambda_2}\beta, \quad \gamma = \frac{\lambda_1}{\sqrt{1+ \lambda_2}}
+\]</span></p>
+<p>Then the naive elastic net criterion is exactly equivalent to</p>
+<p><span class="math display">\[
+L^*(\gamma, \beta^*) = ||y^* - X^* \beta^*||_2^2 + \gamma||\beta^*||_1.
+\]</span></p>
+<p>If <span class="math inline">\(\hat \beta^*\)</span> solves the augmented lasso problem, then</p>
+<p><span class="math display">\[
+\hat \beta^\text{naive} = \frac{\hat \beta^*}{\sqrt{1+ \lambda_2}}
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Substitute the augmented matrices</p>
+<p><span class="math display">\[
+\begin{aligned}
+\|y^* - X^* \beta ^*\|_2^2 &amp;= \left\|\begin{pmatrix}y \\ 0\end{pmatrix} - \frac{1}{\sqrt{1+ \lambda_2}}\begin{pmatrix}X \\ \sqrt{\lambda_2}I\end{pmatrix}\beta^* \right\|_2^2 \\
+&amp;= \left\| y - \frac{X\beta^*}{\sqrt{1+\lambda_2}}\right\|_2^2 + \left\|\frac{\sqrt{\lambda_2} \beta^*}{\sqrt{1+ \lambda_2}}\right\|
+\end{aligned}
+\]</span></p>
+<p>Using <span class="math inline">\(\beta^* = \sqrt{1+\lambda_2}\beta\)</span>,</p>
+<p><span class="math display">\[
+\| y^* - X^*\beta^* \|_2^2 = \|y- X\beta \|_2^2 + \lambda_2 \|\beta\|_2^2
+\]</span></p>
+<p>Similarly,</p>
+<p><span class="math display">\[
+\gamma\|\beta^*\|_1 = \frac{1}{\sqrt{1+\lambda_2}}\sqrt{1+\lambda_2} ||\beta||_1 = \lambda_1 \|\beta\|_1
+\]</span></p>
+<p>Thus,</p>
+<p><span class="math display">\[
+L^*(\gamma, \beta^*) = \|y - X\beta\|_2^2 + \lambda_2\|\beta\|_2^2 + \lambda_1 \|\beta\|_1,
+\]</span></p>
+<p>which is exactly the naive elastic net criterion. The transformation is invertible, so the minimizers correspond as stated.</p>
+</div>
+<p>The augmented design matrix has <span class="math inline">\(n+ p\)</span> rows and <span class="math inline">\(p\)</span> columns, with</p>
+<p><span class="math display">\[
+{X^*}^{\top}X^* = \frac{X^\top X + \lambda_2 I}{1+ \lambda_2}.
+\]</span></p>
+<p>If <span class="math inline">\(\lambda_2&gt;0\)</span>, this matrix is positive definite, even when <span class="math inline">\(X^\top X\)</span> is singular. Therefore, the augmented problem has a full-column-rank design matrix. The naive elastic net can potentially select all <span class="math inline">\(p\)</span> predictors, rather than being constrained to a sparse representation with at most <span class="math inline">\(n\)</span> active predictors.</p>
+</section>
+<section id="orthonormal-elastic-net-and-double-shrinkage" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="orthonormal-elastic-net-and-double-shrinkage"><span class="header-section-number">4.3</span> Orthonormal elastic net and double shrinkage</h3>
+<p>Under an orthonomal design, <span class="math inline">\(x^\top X= I\)</span>, the naive elastic net objective separates across coordinates just as the lasso objective does. For a single coefficient,</p>
+<p><span class="math display">\[
+(\beta_j - \hat \beta_j^{\text{OLS}})^2 + \lambda_2\beta_j^2 + \lambda_1 |\beta_j|
+\]</span></p>
+<p>is minimized.</p>
+<div id="prp-orthonormal-naive-elastic-net" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 5 (Orthonormal naive elastic net)</strong></span> If <span class="math inline">\(X^\top X = I_p,\)</span> then</p>
+<p><span class="math display">\[
+\hat \beta_j^{\text{naive}} = \frac{S(\hat \beta_j^\text{OLS}, \lambda_1/2)}{1 + \lambda_2}
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Ignoring constants, the scalar objective is</p>
+<p><span class="math display">\[
+(1+ \lambda_2)\beta_j^2 -2\hat \beta_j^\text{OLS} \beta_j + \lambda_1 |\beta_j|
+\]</span></p>
+<p>For <span class="math inline">\(\beta_j&gt;0\)</span>, the first order-condition is</p>
+<p><span class="math display">\[
+2(1+\lambda_2)\beta_j - 2\hat \beta_j^{\text{OLS}} + \lambda_1 = 0,
+\]</span></p>
+<p>giving</p>
+<p><span class="math display">\[
+\beta_j = \frac{\hat \beta_j^{\text{OLS}} - \lambda_1 / 2}{1+ \lambda_2}
+\]</span></p>
+<p>For <span class="math inline">\(\beta_j &lt; 0\)</span>, the corresponding expression is</p>
+<p><span class="math display">\[
+\beta_j = \frac{\hat \beta_j^{\text{OLS}} + \lambda_1 / 2}{1+ \lambda_2}
+\]</span></p>
+<p>At zero, the subgradient condition requires</p>
+<p><span class="math display">\[
+|\hat \beta_j^{\text{OLS}} |\leq \lambda_1 / 2
+\]</span></p>
+<p>Combining the three cases gives the claimed result.</p>
+</div>
+<p>The <span class="math inline">\(L_1\)</span> component first substracts a threshold and potentially sets the coefficient to zero. The quadratic component the scales the remaining coefficient by <span class="math inline">\(1/(1+\lambda_2)\)</span>.</p>
+<p>This can create excessive shrinkage. Once the lasso component has already reduced the coefficient magnitude, the additional scaling may introduce more bias than is beneficial for prediction. <span class="citation" data-cites="zouRegularizationVariableSelection2005">Zou and Hastie (<a href="../references.html#ref-zouRegularizationVariableSelection2005" role="doc-biblioref">2005</a>)</span> therefore distinguish the naive elastic net from a corrected estimator, which will be developed after establishing the grouping effect.</p>
+</section>
+<section id="the-grouping-effect" class="level3" data-number="4.4">
+<h3 data-number="4.4" class="anchored" data-anchor-id="the-grouping-effect"><span class="header-section-number">4.4</span> The grouping effect</h3>
+<p>A central motivation for the elastic net is its tendency to assign similar coefficients to strongly correlated predictors.</p>
+<p>A regression method exhibits a <strong>grouping effect</strong> when variables with highly correlated predictor columns tend to receive similar estimated coefficients, up to a sign change for negatively correlated variables. The extreme case occurs when two predictor columns are identical, i.e., <span class="math inline">\(x_i = x_j\)</span>. These predictors contain the same information about the response.</p>
+<p>Consider the general problem</p>
+<p><span class="math display">\[
+\hat \beta = \arg\min_\beta \{\| y - X\beta\|_2^2 + \lambda J(\beta)\}, \quad \lambda &gt; 0
+\]</span></p>
+<div id="lem-identical-predictors" class="theorem lemma">
+<p><span class="theorem-title"><strong>Lemma 2 (Identical predictors)</strong></span> Suppose <span class="math inline">\(x_i = x_j\)</span>. If <span class="math inline">\(J\)</span> is strictly convex and invariant under exchanging coordinates <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, then <span class="math inline">\(\hat \beta_i = \hat \beta_j\)</span>. for the lasso penalty <span class="math inline">\(J(\beta) = \|\beta\|_1\)</span>, the optimal coefficients have</p>
+<p><span class="math display">\[
+\hat \beta_i \hat \beta_j \geq 0,
+\]</span></p>
+<p>but need not be equal. If <span class="math inline">\(\hat \beta\)</span> is a minimizer, then replacing the two coefficients by</p>
+<p><span class="math display">\[
+\begin{aligned}
+\tilde{\beta_i} &amp;= s(\hat \beta_i + \hat \beta_j),\\
+\tilde{\beta_j} &amp;= (1-s)(\hat \beta_i + \hat \beta_j), \quad 0 \leq s\leq 1,  
+\end{aligned}
+\]</span></p>
+<p>produces another minimizer.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Suppose first that <span class="math inline">\(J\)</span> is strictly convex and symmetric in the two coordinates. Let <span class="math inline">\(\tilde{\beta}\)</span> be obtained by exchanging <span class="math inline">\(\hat \beta_i\)</span> and <span class="math inline">\(\hat \beta_j\)</span>. Since <span class="math inline">\(x_i = x_j\)</span>,</p>
+<p><span class="math display">\[
+X\tilde{\beta} = X\hat \beta
+\]</span></p>
+<p>Symmetry gives <span class="math inline">\(J(\tilde{\beta}) = J(\hat \beta)\)</span>, so <span class="math inline">\(\tilde{\beta}\)</span> is also a minimizer. If <span class="math inline">\(\hat \beta_i \neq \hat \beta_j\)</span>, then <span class="math inline">\(\hat \beta \neq \tilde{\beta}\)</span>. Strict convexity implies</p>
+<p><span class="math display">\[
+J\left(\frac{\hat \beta + \tilde \beta}{2}\right) &lt; \frac{J(\hat \beta) + J(\tilde{\beta})}{2}
+\]</span></p>
+<p>The midpoint has exactly the same fitted values as the two original vectors, so its objective is strictly smaller. This contradicts optimality. Thus <span class="math inline">\(\hat \beta_i = \hat \beta_j\)</span></p>
+<p>For the lasso, suppose that <span class="math inline">\(\hat \beta_i\)</span> and <span class="math inline">\(\hat \beta_j\)</span> have opposite signs. Then</p>
+<p><span class="math display">\[
+|\hat \beta_i + \hat \beta_j| &lt; |\hat \beta_i| + |\hat \beta_j|
+\]</span></p>
+<p>Combining their contributiosn into a single coefficeint leaves <span class="math inline">\(X\hat\beta\)</span> unchanged but strictly reduces the <span class="math inline">\(L_1\)</span>-penalty. This is impossible at an optinum, so the two coefficients must have the same sign or one must be zero. When this condition holds,</p>
+<p><span class="math display">\[
+|\hat \beta_i| + |\hat \beta_j| = |\hat \beta_i + \hat \beta_j|
+\]</span></p>
+<p>Any redistribution of their sum using the stated nonnegative proportions preserves the fitted values and the penalty, producing another minimizer.</p>
+</div>
+<p>For the elastic net, strict convexity guarantees equal coefficients when two predictor columns are identical. For the lasso, the estimated coefficients need not be unique, even though the combined fitted effect is determined.</p>
+<p>The grouping effect can also be quantified when predictor columns are close but not identical.</p>
+<div id="thm-quantitative-grouping-effect" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 4 (Quantitative grouping effect)</strong></span> Assume the response is centered, the predictors satisfy <span class="math inline">\(\|x_j \|_2= 1\)</span>, and <span class="math inline">\(\lambda_2 &gt; 0\)</span>. Let <span class="math inline">\(\hat \beta(\lambda_1, \lambda_2)\)</span> denote the naive elastic net estimate. Suppose</p>
+<p><span class="math display">\[
+\hat \beta_i \hat \beta_j &gt; 0.
+\]</span></p>
+<p>Define</p>
+<p><span class="math display">\[
+D_{\lambda_1, \lambda_2}(i, j) = \frac{|\hat \beta_i - \hat \beta_j|}{\|y\|_2}
+\]</span></p>
+<p>for <span class="math inline">\(y\neq 0\)</span>, and let <span class="math inline">\(\rho = x_i^\top x_j\)</span>. Then</p>
+<p><span class="math display">\[
+D_{\lambda_1, \lambda_2}(i, j) \leq \frac{\sqrt{2(1-p)}}{\lambda_2}
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>The two coefficients are nonzero and have the same sign. Therefore, the differentiable first-order conditions for the active coordinates are</p>
+<p><span class="math display">\[
+-2x_i^\top r + \lambda_1 \mathrm{sign}(\hat \beta_i) + 2\lambda_2 \hat \beta_i = 0
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+-2x_j^\top r + \lambda_1 \mathrm{sign}(\hat \beta_j) + 2\lambda_2 \hat \beta_j = 0
+\]</span></p>
+<p>where <span class="math inline">\(r= y - X\hat \beta\)</span>. Since the signs are equal, the <span class="math inline">\(L_1\)</span>-penalty terms cancel when the equations are subtracted. Hence</p>
+<p><span class="math display">\[
+\lambda_2(\hat \beta_i - \hat \beta_j) = (x_i - x_j)^\top r
+\]</span></p>
+<p>Taking absolute values and applying Cauchy-Schwarz,</p>
+<p><span class="math display">\[
+|\hat \beta_i - \hat \beta_j| \leq \frac{\|x_i - x_j\|_2 \|r\|_2}{\lambda_2}
+\]</span></p>
+<p>By optimality,</p>
+<p><span class="math display">\[
+L(\lambda_1, \lambda_2, \hat \beta) \leq L(\lambda_1, \lambda_2, 0) = \|y\|_2^2
+\]</span></p>
+<p>Because the penalty terms are nonnegative,</p>
+<p><span class="math display">\[
+\|r\|_2 \leq \|y \|_2
+\]</span></p>
+<p>Also,</p>
+<p><span class="math display">\[
+\|x_i - x_j \|_2^2 = \|x_i\|^2_2 + \|x_j\|_2^2 -2x_i^\top x_j = 2(1-\rho)
+\]</span></p>
+<p>Therefore,</p>
+<p><span class="math display">\[
+\frac{|\hat \beta_i -\hat \beta_j|}{\|y\|_2} \leq \frac{\sqrt{2(1-p)}}{\lambda_2}
+\]</span></p>
+</div>
+<p>If two positively correlated predictors have nonzero coefficients of the same sign, the difference between their estimated coefficients is bounded by a quantity approaching zero as <span class="math inline">\(\rho \to 1\)</span>.</p>
+<p>The lasso, corresponding to <span class="math inline">\(\lambda_2=0\)</span> does not possess this bound. The theorem is proved for the naive estimator; after the original elastic net rescaling, the coefficient difference and its upper bound are both multiplied by <span class="math inline">\(1+ \lambda_2\)</span>.</p>
+<div id="e96f8e08" class="cell" data-execution_count="6">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> soft(z, t): </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.sign(z) <span class="op">*</span> <span class="bu">max</span>(<span class="bu">abs</span>(z) <span class="op">-</span> t, <span class="dv">0</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fit(X, y , lam1, lam2<span class="op">=</span><span class="dv">0</span>, iterations<span class="op">=</span><span class="dv">5000</span>):</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> np.zeros(X.shape[<span class="dv">1</span>])</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(iterations):</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        old <span class="op">=</span> beta.copy()</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(X.shape[<span class="dv">1</span>]):</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>            r <span class="op">=</span> y <span class="op">-</span> X<span class="op">@</span>beta <span class="op">+</span> X[:, j] <span class="op">*</span> beta[j]</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>            beta[j] <span class="op">=</span> soft(X[:, j] <span class="op">@</span> r, lam1<span class="op">/</span><span class="dv">2</span>) <span class="op">/</span> (X[:, j] <span class="op">@</span> X[:, j] <span class="op">+</span> lam2)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> np.<span class="bu">max</span>(<span class="bu">abs</span>(beta<span class="op">-</span>old)) <span class="op">&lt;</span> <span class="fl">1e-10</span>:</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> beta </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">6400</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>u, v <span class="op">=</span> rng.normal(size<span class="op">=</span>(<span class="dv">2</span>, <span class="dv">100</span>))</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>u <span class="op">-=</span> u.mean()</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>u <span class="op">/=</span> np.linalg.norm(u)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>v <span class="op">-=</span> v.mean() </span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>v <span class="op">-=</span> u <span class="op">@</span> v <span class="op">*</span> u </span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>v <span class="op">/=</span> np.linalg.norm(v) </span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="dv">3</span><span class="op">*</span>u <span class="op">+</span> <span class="fl">0.1</span><span class="op">*</span> v </span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>rhos <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="fl">0.999</span>, <span class="dv">60</span>)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>lasso_coef, enet_coef <span class="op">=</span> [] , []</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>lam1, lam2 <span class="op">=</span> <span class="fl">0.35</span>, <span class="fl">0.75</span> </span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> rho <span class="kw">in</span> rhos: </span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>    x1 <span class="op">=</span> u</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>    x2 <span class="op">=</span> rho<span class="op">*</span>u <span class="op">+</span> np.sqrt(<span class="dv">1</span><span class="op">-</span>rho<span class="op">**</span><span class="dv">2</span>)<span class="op">*</span>v</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> np.column_stack([x1, x2])</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>    lasso_coef.append(fit(X, y, lam1))</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>    naive <span class="op">=</span> fit(X, y, lam1, lam2)</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>    enet_coef.append((<span class="dv">1</span><span class="op">+</span> lam2) <span class="op">*</span> naive)</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>lasso_coef <span class="op">=</span> np.array(lasso_coef)</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>enet_coef <span class="op">=</span> np.array(enet_coef)</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, coef, title <span class="kw">in</span> <span class="bu">zip</span>(axes, [lasso_coef, enet_coef], [<span class="st">"Lasso"</span>, <span class="st">"Corrected elastic net"</span>]):</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>    ax.plot(rhos, coef[:, <span class="dv">0</span>], label<span class="op">=</span><span class="vs">r"</span><span class="dv">$\b</span><span class="vs">eta_1</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>    ax.plot(rhos, coef[:, <span class="dv">1</span>], label<span class="op">=</span><span class="vs">r"</span><span class="dv">$\b</span><span class="vs">eta_2</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">"Correlation between predictors"</span>, ylabel<span class="op">=</span><span class="st">"Estimated coefficient"</span>, title<span class="op">=</span>title)</span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>    ax.legend()</span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="10_files/figure-html/cell-7-output-1.png" width="951" height="374" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>When two predictors become nearly identical, the lasso can allocate most of their shared effect to one coefficient. The elastic net’s quadratic component encourages the two estimates to approach one another. The precise paths depend on the response and penalty parameters. The theorem guarantees closeness for the naive elastic net under its stated assumptions; it does not assert that every correlated group must enter the model together in every dataset.</p>
+</section>
+</section>
+<section id="the-corrected-elastic-net-stabilization-without-excessive-shrinkage" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="the-corrected-elastic-net-stabilization-without-excessive-shrinkage"><span class="header-section-number">5</span> The corrected elastic net: stabilization without excessive shrinkage</h2>
+<section id="correcting-the-naive-elastic-net" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="correcting-the-naive-elastic-net"><span class="header-section-number">5.1</span> Correcting the naive elastic net</h3>
+<p>The naive elastic net combines the advantages of the <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L_2\)</span> penalties, but its orthonormal solution reveals a problem:</p>
+<p><span class="math display">\[
+\hat \beta_j^\text{naive} = \frac{S(\hat \beta_j^\text{OLS}, \lambda_1/2)}{1+ \lambda_2}
+\]</span></p>
+<p>The <span class="math inline">\(L_1\)</span>-component already shrinks the coefficient through soft thresholding. The quadratic component then applies an additional multiplicative reduction. Although both shrinkage mechanisms can reduce variance, their combined effect may introduce unnecessary bias. The naive elastic net can therefore perform poorly in prediction even when its variable selection and grouping behavior are desirable. To address this, <span class="citation" data-cites="zouRegularizationVariableSelection2005">Zou and Hastie (<a href="../references.html#ref-zouRegularizationVariableSelection2005" role="doc-biblioref">2005</a>)</span> introduce a corrected estimator by rescaling the naive elastic net coefficients.</p>
+<div id="def-corrected-elastic-net" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3 (Corrected elastic net)</strong></span> Let <span class="math inline">\(\hat \beta^{\text{naive}}\)</span> minimize <a href="#eq-naive-elastic-net" class="quarto-xref">Equation&nbsp;<span>3</span></a>. The corrected elastic net estimator is defined as</p>
+<p><span class="math display">\[
+\hat \beta^{\text{EN}} = (1+\lambda_2)\hat\beta^{\text{naive}}
+\]</span></p>
+</div>
+<p>Equivalently, from the augmented-data representation,</p>
+<p><span class="math display">\[
+\hat \beta^{\text{EN}} = \sqrt{1+ \lambda_2} \hat \beta^*.
+\]</span></p>
+<p>The rescaling is a positive scalar transformation, so it does not change which coefficients are zero. Therefore,</p>
+<p><span class="math display">\[
+\hat \beta_j^\text{EN} = 0 \Longleftrightarrow \hat \beta_j^\text{naive} = 0
+\]</span></p>
+<p>The selected variables and their coefficient signs remain unchanged, while the magnitudes of the nonzero coefficients increase. This means that the corrected estimator retains the sparsity and grouping properties of the naive elastic net while compensating for its additional shrinkage.</p>
+<div id="prp-orthonormal-corrected-elastic-net" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 6 (Orthonormal corrected elastic net)</strong></span> If <span class="math inline">\(X^\top X = I_p\)</span>, then</p>
+<p><span class="math display">\[
+\hat \beta_j^{\text{EN}} = S(\hat \beta_j^\text{OLS}, \lambda_1/2)
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>From <a href="#prp-orthonormal-naive-elastic-net" class="quarto-xref">Proposition&nbsp;<span>5</span></a>,</p>
+<p><span class="math display">\[
+\hat\beta_j^\text{naive} = \frac{S(\hat \beta_j^{\text{OLS}}, \lambda_1/2)}{1+\lambda_2}
+\]</span></p>
+<p>Applying the corrected estimator definition gives</p>
+<p><span class="math display">\[
+\hat \beta_j^\text{EN} = (1+\lambda_2)\hat \beta_j^\text{naive} = S(\hat \beta_j^\text{OLS}, \lambda_1/2)
+\]</span></p>
+</div>
+<p>When predictors are orthogonal, there is no multicolinearity to stabilize, and the corrected elastic net reduces to the lasso. Thus, the direct scaling effect of the quadratic penalty has been removed.</p>
+<p>When predictors are correlated, however, the quadratic penalty still changes the way coeffcients are jointly estimated. The corrected elastic net consequently retains the stabilization effect of ridge regularization without imposing the same additional coefficient scaling.</p>
+</section>
+<section id="elastic-net-as-a-stabilized-zero" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="elastic-net-as-a-stabilized-zero"><span class="header-section-number">5.2</span> Elastic net as a stabilized zero</h3>
+<p>The rescaling has a deeper mathematical interpretation. It can be expressed as a modification of the quadratic component of the lasso objective of the lasso objective.</p>
+<div id="thm-stabilized-quadratic-representation" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 5 (Stabilized quadratic representation)</strong></span> The corrected elastic net estimator satisfies</p>
+<p><span id="eq-quadratic-representation"><span class="math display">\[
+\hat \beta^{EN} = \arg\min_\beta \left\{ \beta^\top \left(\frac{X^\top X + \lambda_2 I}{1 + \lambda_2}\right) \beta - 2y^\top X\beta + \lambda_1 \|\beta\|_1\right\}.
+\tag{4}\]</span></span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>By definition, <span class="math inline">\(\hat \beta^{\text{EN}}=(1+\lambda_2)\hat \beta^{\text{naive}}\)</span>. We introduce the transformation</p>
+<p><span class="math display">\[
+\beta = (1+ \lambda_2) b,
+\]</span></p>
+<p>where <span class="math inline">\(b\)</span> represents the coefficient vector in the naive elastic net objective. Therefore,</p>
+<p><span class="math display">\[
+b = \frac{\beta}{1+\lambda_2}.
+\]</span></p>
+<p>Substituting this expression into the naive objective gives</p>
+<p><span class="math display">\[
+L(\lambda_1, \lambda_2, b) = \left\|y - X\frac{\beta}{1+\lambda_2} \right\|_2^2 + \lambda_2 \left\|\frac{\beta}{1+\lambda_2} \right\|_2^2 + \lambda_1 \left\|\frac{\beta}{1+\lambda_2} \right\|
+\]</span></p>
+<p>Expanding the squared-error term,</p>
+<p><span class="math display">\[
+L = y^\top y - \frac{2}{1+\lambda_2}y^\top X\beta + \frac{1}{(1+\lambda_2)^2} \beta^\top (X^\top X + \lambda_2 I)\beta + \frac{\lambda_1}{1+\lambda_2}\|\beta\|_1.
+\]</span></p>
+<p>Multiplying by the positive constant <span class="math inline">\(1 + \lambda_2\)</span> does not change the mimizer. We obtain</p>
+<p><span class="math display">\[
+(1+\lambda_2) = (1+\lambda_2)y^\top y - 2y^\top X\beta + \beta^\top\left(\frac{X^\top X + \lambda_2 I}{1+\lambda_2}\right)\beta + \lambda_1 \|\beta\|_1
+\]</span></p>
+<p>The first term is independent of <span class="math inline">\(\beta\)</span> can be omitted. The remaining expression is the objective in <a href="#eq-quadratic-representation" class="quarto-xref">Equation&nbsp;<span>4</span></a>.</p>
+</div>
+<p>Expanding the lasso objective and omitting <span class="math inline">\(y^\top y\)</span> gives</p>
+<p><span class="math display">\[
+\hat \beta^{\text{lasso}} = \arg\min_\beta \{\beta^\top X^\top X\beta- 2y^\top X\beta + \lambda_1 \|\beta\|_1\}
+\]</span></p>
+<p>Both estimators contain the same linear term <span class="math inline">\(-2y^\top X \beta\)</span> and the same <span class="math inline">\(L_1\)</span>-penalty. Their difference lies entirely in the quadratic matrix. For the lasso, the quadratic term contains</p>
+<p><span class="math display">\[
+\hat \Sigma = X^\top X
+\]</span></p>
+<p>For the corrected elastic net, it contains</p>
+<p><span class="math display">\[
+\hat \Sigma_{\text{EN}} = \frac{X^\top X + \lambda_2 I}{1 + \lambda_2}
+\]</span></p>
+<p>Define</p>
+<p><span class="math display">\[
+\gamma = \frac{\lambda_2}{1+ \lambda_2}
+\]</span></p>
+<p>Then</p>
+<p><span class="math display">\[
+\hat \Sigma_{\text{EN}} = (1-\gamma)\hat \Sigma + \Sigma I.  
+\]</span></p>
+<p>This representation shows that the elastic net can be interpreted as a <strong>stabilized lasso</strong>, in which the Gram matrix is shrunk toward the identity matrix.</p>
+<p>Because the predictor columns are standardized to have unit squared norm, the diagonal entries of <span class="math inline">\(\hat \Sigma\)</span> equal one. Consequently,</p>
+<p><span class="math display">\[
+(\hat \Sigma_{EN})_{ii} = 1,
+\]</span></p>
+<p>while, for <span class="math inline">\(i \neq j\)</span>,</p>
+<p><span class="math display">\[
+(\hat \Sigma_{EN})_{ij} = \frac{\rho_{ij}}{1+ \lambda_2}
+\]</span></p>
+<p>The diagonal terms remain unchanged, while the off-diagonal correlations are reduced. The quadratic regularization therefore decreases the strength of predictor dependencies within the estimation problem.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+    A["Lasso quadratic matrix: XᵀX"]
+    B["Add ridge stabilization: XᵀX + λ₂I"]
+    C["Normalize by 1 + λ₂"]
+    D["Diagonal entries remain 1"]
+    E["Off-diagonal correlations shrink"]
+    F["L1 penalty still permits sparsity"]
+    G["Corrected elastic net"]
+    A --&gt; B
+    B --&gt; C
+    C --&gt; D
+    C --&gt; E
+    D --&gt; G
+    E --&gt; G
+    F --&gt; G
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>This also explains the connection with ridge regression’s treatment of correlated variables. Recall that the ridge estimator is</p>
+<p><span class="math display">\[
+\hat \beta^{\text{ridge}} = (X^\top X + \lambda_2 I)^{-1}X^\top y.
+\]</span></p>
+<p>Writing</p>
+<p><span class="math display">\[
+\hat \Sigma_{EN} = \frac{X^\top X + \lambda_2 I}{1 + \lambda_2},
+\]</span></p>
+<p>we can express the ridge operator as</p>
+<p><span class="math display">\[
+(X^\top X + \lambda_2 I)^{-1}X^\top  = \frac{1}{1+\lambda_2} \hat \Sigma_{\text{EN}}^{-1} X^\top.
+\]</span></p>
+<p>This decomposition separates ridge regression into two effects: stabilizing the Gram matrix and applying the shrink factor <span class="math inline">\(1/(1+\lambda_2)\)</span>. The corrected elastic net retains the first effect while eliminating the second through rescaling. Its remaining <span class="math inline">\(L_1\)</span>-penalty provides both coefficient shrinkage and variable selection.</p>
+<p>The stabilization also ensures uniqueness. Since <span class="math inline">\(\lambda_2 &gt;0\)</span>,</p>
+<p><span class="math display">\[
+X^\top X + \lambda_2 I
+\]</span></p>
+<p>is positive definite. Therefore, the objective in <a href="#eq-quadratic-representation" class="quarto-xref">Equation&nbsp;<span>4</span></a> is strictly convex in <span class="math inline">\(\beta\)</span>, and the corrected elastic net coefficient vector is unique even when <span class="math inline">\(X\)</span> has linearly dependent columns.</p>
+</section>
+<section id="the-limiting-connection-to-univariate-soft-thresholding" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="the-limiting-connection-to-univariate-soft-thresholding"><span class="header-section-number">5.3</span> The limiting connection to univariate soft thresholding</h3>
+<p>First, when <span class="math inline">\(\lambda_2 = 0\)</span>,</p>
+<p><span class="math display">\[
+\frac{X^\top X + \lambda_2 I}{1+\lambda_2 } = X^\top X.
+\]</span></p>
+<p><a href="#eq-quadratic-representation" class="quarto-xref">Equation&nbsp;<span>4</span></a> reduces to the ordinary lasso objective, so</p>
+<p><span class="math display">\[
+\hat \beta^{EN} (\lambda_1, 0) = \hat \beta^{\text{lasso}}(\lambda_1)
+\]</span></p>
+<p>At the other extreme, consider what happens when <span class="math inline">\(\lambda_2 \to \infty\)</span>, while <span class="math inline">\(\lambda_1\)</span> remains fixed. We have</p>
+<p><span class="math display">\[
+\frac{X^\top X+\lambda_2 I}{1 + \lambda_2} \to I
+\]</span></p>
+<p>The limiting estimator therefore minimizes</p>
+<p><span id="eq-limiting-estimator"><span class="math display">\[
+\hat \beta^{\infty} = \arg\min_{\beta} \{\beta^\top \beta - 2y^\top X \beta + \lambda_1 \|\beta\|_1\}
+\tag{5}\]</span></span></p>
+<p>Unlike the general lasso, this problem is separable across coordinates.</p>
+<div id="prp-univariate-soft-thresholding-limite" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 7 (Univariate soft-thresholding limit)</strong></span> As <span class="math inline">\(\lambda_2\to \infty\)</span>, with <span class="math inline">\(\lambda_1\)</span> fixed, the corrected elastic net coverges to</p>
+<p><span id="eq-univariate-soft-thresholding-limit"><span class="math display">\[
+\hat \beta_j^\infty = \mathrm{sign}(x_j^\top y) \left(|x_j^\top y| - \frac{\lambda_1}{2}\right)_{+}
+\tag{6}\]</span></span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Expanding <a href="#eq-limiting-estimator" class="quarto-xref">Equation&nbsp;<span>5</span></a>,</p>
+<p><span class="math display">\[
+\beta^\top \beta - 2y^\top X \beta + \lambda_1 ||\beta||_1 = \sum_{j=1}^p [\beta_j^2 -2(x_j^\top y)\beta_j + \lambda_1 |\beta_j|]
+\]</span></p>
+<p>The coefficients can therefore be optimized independently. Writing <span class="math inline">\(z_j = x_j^\top y\)</span>, each coordinate minimizes</p>
+<p><span class="math display">\[
+\beta_j^2 -2z_j \beta_j + \lambda_1 |\beta_j|
+\]</span></p>
+<p>Completing the square produces</p>
+<p><span class="math display">\[
+(\beta_j- z_j)^2 + \lambda_1 |\beta_j|
+\]</span></p>
+<p>up to a constant. Applying the soft-thresholding theorem gives</p>
+<p><span class="math display">\[
+\hat \beta_j^\infty = S(z_j, \lambda_1 / 2),
+\]</span></p>
+<p>which is <a href="#eq-univariate-soft-thresholding-limit" class="quarto-xref">Equation&nbsp;<span>6</span></a>.</p>
+</div>
+<p>This estimator is called <strong>univariate soft thresholding</strong>, since it thresholds each predictor’s marginal association with the response independently of the remaining predictors. At <span class="math inline">\(\lambda_2= 0\)</span>, the lasso uses the complete correlation structor of the predictor matrix. As <span class="math inline">\(\lambda_2\)</span> increases, the off-diagonal elements of the effective Gram matrix decrease. In the limit, the objective behaves as though the predictors were orthogonal.</p>
+</section>
+<section id="computation-and-parameter-selection-for-the-elastic-net" class="level3" data-number="5.4">
+<h3 data-number="5.4" class="anchored" data-anchor-id="computation-and-parameter-selection-for-the-elastic-net"><span class="header-section-number">5.4</span> Computation and parameter selection for the elastic net</h3>
+<p>The augmented-data representation provides a direct computational strategy for the elastic net. For fixed <span class="math inline">\(\lambda_2\)</span>, one can solve the equivalent lasso problem in <span class="math inline">\(\beta^*\)</span>, then apply the rescaling in <a href="#def-corrected-elastic-net" class="quarto-xref">Definition&nbsp;<span>3</span></a>. <span class="citation" data-cites="zouRegularizationVariableSelection2005">Zou and Hastie (<a href="../references.html#ref-zouRegularizationVariableSelection2005" role="doc-biblioref">2005</a>)</span> use this relationship to develop <strong>LARS-EN</strong>, an adaptation of least-angle regression that computes elastic net solution paths efficiently.</p>
+<p>For a fixed active set <span class="math inline">\(A\)</span> and sign vector <span class="math inline">\(s_A\)</span>, the naive elastic net first-order condition is</p>
+<p><span class="math display">\[
+2X_A^\top (X_A \hat \beta_A - y) + 2\lambda_2 \hat \beta_A + \lambda_1 s_A = 0
+\]</span></p>
+<p>Rearranging,</p>
+<p><span class="math display">\[
+2(X_A^\top X_A + \lambda_2 I) \hat \beta_A = 2X_A^\top y - \lambda_1 s_A.
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+\hat \beta_A^\text{naive} = (X_A^\top X_A + \lambda_2 I)^{-1} \left(X_A^\top y - \frac{\lambda_1}{2}s_A \right)
+\]</span></p>
+<p>For fixed <span class="math inline">\(A\)</span>, <span class="math inline">\(s_A\)</span>, and <span class="math inline">\(\lambda_2\)</span>, this is an affine function of <span class="math inline">\(\lambda_1\)</span>. Consequently, just as in the lasso, the elastic net solution path is piecewise linear.</p>
+<p>LARS-EN exploits this structure, updating the active set as the <span class="math inline">\(L_1\)</span>-penalty changes. Rather than constructing all <span class="math inline">\(n+p\)</span> rows of the augmented desgin matrix, the algorithm uses</p>
+<p><span class="math display">\[
+X_A^*\top X_A^* = \frac{X_A^\top X_A+\lambda_2 I}{1 + \lambda_2}
+\]</span></p>
+<p>and updates the relevant Cholesky factorizations as predictors enter or leave the model.</p>
+<p>Coordinate descent provides another computational strategy. Holding all coefficients except <span class="math inline">\(\beta_j\)</span> fixed, the naive elastic net coordinate problem is</p>
+<p><span class="math display">\[
+\min_{\beta_j} \{\|r_j - x_j \beta_j \|_2^2 + \lambda_2 \beta_j^2 + \lambda_1 \|\beta_j\|\}.
+\]</span></p>
+<p>The resulting exact coordinate update is</p>
+<p><span class="math display">\[
+\beta_j^\text{new} = \frac{S(x_j^\top r_j, \lambda_1/2)}{x_j^\top x_j + \lambda_2}
+\]</span></p>
+<p>Under the column normalization <span class="math inline">\(x_j^\top x_j = 1\)</span>,</p>
+<p><span class="math display">\[
+\beta_j^\text{new} = \frac{S(x_j^\top r_j, \lambda_1/2)}{1+\lambda_2}
+\]</span></p>
+<p>This resembles the lasso coordinate update, but incorporates an additional quadratic term in the denominator. After convergence, the original corrected elastic net is obtained by multiplying the naive coefficient vector by <span class="math inline">\(1+\lambda_2\)</span>.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-tibshiraniRegressionShrinkageSelection1996" class="csl-entry" role="listitem">
+Tibshirani, Robert. 1996. <span>“Regression Shrinkage and Selection via the Lasso.”</span> <em>Journal of the Royal Statistical Society. Series B (Methodological)</em> 58 (1): 267–88. <a href="https://doi.org/10.1111/j.2517-6161.1996.tb02080.x">https://doi.org/10.1111/j.2517-6161.1996.tb02080.x</a>.
+</div>
+<div id="ref-tibshiraniRegressionShrinkageSelection2011" class="csl-entry" role="listitem">
+Tibshirani, Robert. 2011. <span>“Regression Shrinkage and Selection via the Lasso: A Retrospective.”</span> <em>Journal of the Royal Statistical Society Series B (Statistical Methodology)</em> 73 (3): 273–82. <a href="https://doi.org/10.1111/j.1467-9868.2011.00771.x">https://doi.org/10.1111/j.1467-9868.2011.00771.x</a>.
+</div>
+<div id="ref-zouRegularizationVariableSelection2005" class="csl-entry" role="listitem">
+Zou, Hui, and Trevor Hastie. 2005. <span>“Regularization and Variable Selection via the Elastic Net.”</span> <em>Journal of the Royal Statistical Society Series B (Statistical Methodology)</em> 67 (2): 301–20. <a href="https://doi.org/10.1111/j.1467-9868.2005.00503.x">https://doi.org/10.1111/j.1467-9868.2005.00503.x</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+(() => {
+  "use strict";
+
+  const boxSelector = ".theorem, .example, .callout";
+  const displayMathSelector = 'mjx-container[display="true"]';
+  let fitFrame = 0;
+  let fittingStarted = false;
+
+  function fitDisplayMath(displayMath) {
+    // Measure at the normal MathJax size every time so equations can grow
+    // back after their container becomes wider.
+    displayMath.style.removeProperty("font-size");
+    displayMath.removeAttribute("data-math-fit-scale");
+
+    const wrapper = displayMath.closest(".math.display") || displayMath.parentElement;
+    // Quarto may configure MathJax's SVG or CHTML renderer. Both express
+    // their natural width relative to the container's font size.
+    const renderedMath = displayMath.querySelector("mjx-math, svg");
+
+    if (!wrapper || !renderedMath) {
+      return;
+    }
+
+    const wrapperStyle = window.getComputedStyle(wrapper);
+    const horizontalPadding =
+      Number.parseFloat(wrapperStyle.paddingLeft) +
+      Number.parseFloat(wrapperStyle.paddingRight);
+    const availableWidth = wrapper.clientWidth - horizontalPadding;
+    const naturalWidth = renderedMath.getBoundingClientRect().width;
+
+    if (availableWidth <= 0 || naturalWidth <= availableWidth) {
+      return;
+    }
+
+    // Leave a small margin so sub-pixel rounding does not create a scrollbar.
+    const scale = (availableWidth / naturalWidth) * 0.98;
+    displayMath.style.fontSize = `${scale * 100}%`;
+    displayMath.dataset.mathFitScale = scale.toFixed(3);
+  }
+
+  function fitAllBoxMath() {
+    document.querySelectorAll(boxSelector).forEach((box) => {
+      box.querySelectorAll(displayMathSelector).forEach(fitDisplayMath);
+    });
+  }
+
+  function scheduleFit() {
+    window.cancelAnimationFrame(fitFrame);
+    fitFrame = window.requestAnimationFrame(() => {
+      // Use a second frame so layout reflects the reset to normal size.
+      window.requestAnimationFrame(fitAllBoxMath);
+    });
+  }
+
+  async function startFitting() {
+    if (fittingStarted) {
+      return;
+    }
+    fittingStarted = true;
+
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
+    scheduleFit();
+
+    if ("ResizeObserver" in window) {
+      const resizeObserver = new ResizeObserver(scheduleFit);
+      document.querySelectorAll(boxSelector).forEach((box) => resizeObserver.observe(box));
+    } else {
+      window.addEventListener("resize", scheduleFit, {passive: true});
+    }
+
+    // Also handle equations inserted later by notebook or Quarto components.
+    const mutationObserver = new MutationObserver((mutations) => {
+      if (
+        mutations.some((mutation) =>
+          [...mutation.addedNodes].some(
+            (node) =>
+              node.nodeType === Node.ELEMENT_NODE &&
+              (node.matches?.(displayMathSelector) || node.querySelector?.(displayMathSelector))
+          )
+        )
+      ) {
+        scheduleFit();
+      }
+    });
+
+    mutationObserver.observe(document.body, {childList: true, subtree: true});
+  }
+
+  const mathJaxReady = window.MathJax?.startup?.promise;
+
+  if (mathJaxReady && typeof mathJaxReady.then === "function") {
+    // Plotly outputs can load their own MathJax renderer and cause the shared
+    // startup promise to reject even though the page equations were rendered.
+    // Fit in either case.
+    mathJaxReady.then(startFitting, startFitting);
+  }
+
+  // Always keep the ordinary page-load event as a fallback. Some embedded
+  // widgets replace window.MathJax and leave an earlier startup promise pending.
+  if (document.readyState === "complete") {
+    startFitting();
+  } else {
+    window.addEventListener("load", startFitting, {once: true});
+  }
+})();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../weeks/09.html" class="pagination-link" aria-label="Ridge Regression">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Ridge Regression</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../references.html" class="pagination-link" aria-label="References">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
