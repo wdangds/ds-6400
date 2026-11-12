@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>11&nbsp; Computational Exploration of Regularization in High-Dimensional Regression – DS 6400 Weekly Writing</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../references.html" rel="next">
+<link href="../weeks/10.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5ccb035bea26c1e21f80f44cf7c27909.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+window.MathJax = {
+  loader: {
+    load: ["[tex]/mathtools"]
+  },
+  tex: {
+    packages: {"[+]": ["mathtools"]},
+    macros: {
+      R: "\\mathbb{R}",
+      N: "\\mathbb{N}",
+      Z: "\\mathbb{Z}",
+      Q: "\\mathbb{Q}",
+      C: "\\mathbb{C}",
+      E: "\\mathbb{E}",
+      Var: "\\operatorname{Var}",
+      Cov: "\\operatorname{Cov}",
+      Corr: "\\operatorname{Corr}",
+      argmin: "\\operatorname*{arg\\,min}",
+      argmax: "\\operatorname*{arg\\,max}",
+      ind: "\\mathbb{1}",
+      Err: "\\operatorname{Err}",
+      err: "\\operatorname{err}",
+      var: "\\operatorname{var}",
+      indep: "\\perp\\!\\!\\!\\perp",
+      PD: "\\operatorname{PD}",
+      ALE: "\\operatorname{ALE}",
+      mg: "\\operatorname{mg}",
+      av: "\\operatorname{av}",
+      PE: "\\operatorname{PE}",
+      mr: "\\operatorname{mr}",
+      rmg: "\\operatorname{rmg}",
+      sd: "\\operatorname{sd}",
+      P: "\\mathbb{P}", 
+      rank: "\\operatorname{rank}",
+      dim: "\\operatorname{dim}",
+      V: "\\mathcal{V}",
+      W: "\\mathcal{W}",
+      U: "\\mathcal{U}",
+    }
+  }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/12.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Computational Exploration of Regularization in High-Dimensional Regression</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">DS 6400 Weekly Writing</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Weekly Writing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Apparent Error to Modern Error: Efron’s Optimism and Evaluation of Predictive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">40 years of Predictive Performance Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Are the Forests really Random?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Comparison Under Complexity and Tuning Constraints</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Regression Splines</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Comparing Nonlinear Regression Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">High-Dimensional Regression in Python</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Ridge Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Lasso Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/12.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Computational Exploration of Regularization in High-Dimensional Regression</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/ols-cv-independence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">OLS, Linear Invariance, and Conditional Independence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/linear-algebra-revision.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#data-selection-and-experimental-design" id="toc-data-selection-and-experimental-design" class="nav-link active" data-scroll-target="#data-selection-and-experimental-design"><span class="header-section-number">1</span> Data Selection and Experimental design</a>
+  <ul class="collapse">
+  <li><a href="#near-infrared-spectroscopy-of-gasoline-octane" id="toc-near-infrared-spectroscopy-of-gasoline-octane" class="nav-link" data-scroll-target="#near-infrared-spectroscopy-of-gasoline-octane"><span class="header-section-number">1.1</span> Near-Infrared Spectroscopy of Gasoline (Octane)</a></li>
+  <li><a href="#statistical-formulation" id="toc-statistical-formulation" class="nav-link" data-scroll-target="#statistical-formulation"><span class="header-section-number">1.2</span> Statistical formulation</a></li>
+  <li><a href="#experimental-protocol" id="toc-experimental-protocol" class="nav-link" data-scroll-target="#experimental-protocol"><span class="header-section-number">1.3</span> Experimental protocol</a></li>
+  </ul></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation"><span class="header-section-number">2</span> Data preparation</a>
+  <ul class="collapse">
+  <li><a href="#load-the-dataset" id="toc-load-the-dataset" class="nav-link" data-scroll-target="#load-the-dataset"><span class="header-section-number">2.1</span> Load the dataset</a></li>
+  <li><a href="#visualize-the-spectral-data" id="toc-visualize-the-spectral-data" class="nav-link" data-scroll-target="#visualize-the-spectral-data"><span class="header-section-number">2.2</span> Visualize the spectral data</a></li>
+  <li><a href="#establish-traintest-split" id="toc-establish-traintest-split" class="nav-link" data-scroll-target="#establish-traintest-split"><span class="header-section-number">2.3</span> Establish train/test split</a></li>
+  <li><a href="#investigate-the-rank-and-singular-values" id="toc-investigate-the-rank-and-singular-values" class="nav-link" data-scroll-target="#investigate-the-rank-and-singular-values"><span class="header-section-number">2.4</span> Investigate the rank and singular values</a></li>
+  </ul></li>
+  <li><a href="#frequentist-regularization-methods" id="toc-frequentist-regularization-methods" class="nav-link" data-scroll-target="#frequentist-regularization-methods"><span class="header-section-number">3</span> Frequentist regularization methods</a>
+  <ul class="collapse">
+  <li><a href="#ridge-regression-continuous-spectral-shrinkage" id="toc-ridge-regression-continuous-spectral-shrinkage" class="nav-link" data-scroll-target="#ridge-regression-continuous-spectral-shrinkage"><span class="header-section-number">3.1</span> Ridge regression: Continuous spectral shrinkage</a></li>
+  <li><a href="#lasso-regression-sparsity-and-variable-selection" id="toc-lasso-regression-sparsity-and-variable-selection" class="nav-link" data-scroll-target="#lasso-regression-sparsity-and-variable-selection"><span class="header-section-number">3.2</span> Lasso regression: Sparsity and variable selection</a></li>
+  <li><a href="#elastic-net-combining-sparsity-and-grouping" id="toc-elastic-net-combining-sparsity-and-grouping" class="nav-link" data-scroll-target="#elastic-net-combining-sparsity-and-grouping"><span class="header-section-number">3.3</span> Elastic Net: Combining sparsity and grouping</a></li>
+  <li><a href="#principal-component-regression-regularization-by-projection" id="toc-principal-component-regression-regularization-by-projection" class="nav-link" data-scroll-target="#principal-component-regression-regularization-by-projection"><span class="header-section-number">3.4</span> Principal Component Regression: Regularization by projection</a></li>
+  </ul></li>
+  <li><a href="#bayesian-regularization-using-pymc" id="toc-bayesian-regularization-using-pymc" class="nav-link" data-scroll-target="#bayesian-regularization-using-pymc"><span class="header-section-number">4</span> Bayesian regularization using PyMC</a>
+  <ul class="collapse">
+  <li><a href="#bayesian-lasso-the-laplace-prior" id="toc-bayesian-lasso-the-laplace-prior" class="nav-link" data-scroll-target="#bayesian-lasso-the-laplace-prior"><span class="header-section-number">4.1</span> Bayesian Lasso: The Laplace prior</a></li>
+  <li><a href="#bayesian-horseshoe-global-local-shrinkage" id="toc-bayesian-horseshoe-global-local-shrinkage" class="nav-link" data-scroll-target="#bayesian-horseshoe-global-local-shrinkage"><span class="header-section-number">4.2</span> Bayesian Horseshoe: Global-local shrinkage</a></li>
+  <li><a href="#bayesian-diagnostic-checks" id="toc-bayesian-diagnostic-checks" class="nav-link" data-scroll-target="#bayesian-diagnostic-checks"><span class="header-section-number">4.3</span> Bayesian diagnostic checks</a></li>
+  </ul></li>
+  <li><a href="#comparative-evalulation-and-further-computational-experiments" id="toc-comparative-evalulation-and-further-computational-experiments" class="nav-link" data-scroll-target="#comparative-evalulation-and-further-computational-experiments"><span class="header-section-number">5</span> Comparative evalulation and further computational experiments</a>
+  <ul class="collapse">
+  <li><a href="#posterior-predictive-distributions" id="toc-posterior-predictive-distributions" class="nav-link" data-scroll-target="#posterior-predictive-distributions"><span class="header-section-number">5.1</span> Posterior predictive distributions</a></li>
+  <li><a href="#common-test-set-evaluation" id="toc-common-test-set-evaluation" class="nav-link" data-scroll-target="#common-test-set-evaluation"><span class="header-section-number">5.2</span> Common test-set evaluation</a></li>
+  <li><a href="#regular-vs-alcohold-containing-samples" id="toc-regular-vs-alcohold-containing-samples" class="nav-link" data-scroll-target="#regular-vs-alcohold-containing-samples"><span class="header-section-number">5.3</span> Regular vs alcohold-containing samples</a></li>
+  <li><a href="#prediction-uncertainty" id="toc-prediction-uncertainty" class="nav-link" data-scroll-target="#prediction-uncertainty"><span class="header-section-number">5.4</span> Prediction uncertainty</a></li>
+  <li><a href="#compare-all-coefficient-estimates" id="toc-compare-all-coefficient-estimates" class="nav-link" data-scroll-target="#compare-all-coefficient-estimates"><span class="header-section-number">5.5</span> Compare all coefficient estimates</a></li>
+  <li><a href="#stability-of-lasso-variable-selection" id="toc-stability-of-lasso-variable-selection" class="nav-link" data-scroll-target="#stability-of-lasso-variable-selection"><span class="header-section-number">5.6</span> Stability of Lasso variable selection</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/12.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Computational Exploration of Regularization in High-Dimensional Regression</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Computational Exploration of Regularization in High-Dimensional Regression</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>The central objective of this exploration is to understand how different regularization methods behave when the number of predictors substantially exceeds the number of observations, especially when predictors are highly correlated and the data contain unusual observations.</p>
+<section id="data-selection-and-experimental-design" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="data-selection-and-experimental-design"><span class="header-section-number">1</span> Data Selection and Experimental design</h2>
+<section id="near-infrared-spectroscopy-of-gasoline-octane" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="near-infrared-spectroscopy-of-gasoline-octane"><span class="header-section-number">1.1</span> Near-Infrared Spectroscopy of Gasoline (Octane)</h3>
+<p>The selected dataset is the <a href="https://search.r-project.org/CRAN/refmans/rchemo/html/octane.html">Octane NIR Spectroscopy dataset</a>, described by Esbensen, Schoenkopf, and Midtgaard (1994). Each observation represents a gasoline sample measured using near-infrared spectroscopy. The objective is to predict its octane number from absorbance measurements recorded at different wavelengths.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://metrohm.scene7.com/is/image/metrohm/6680?qlt=85&amp;wid=480&amp;ts=1789024741953&amp;dpr=off.png" class="img-fluid figure-img"></p>
+<figcaption>Quality Control of Gasoline</figcaption>
+</figure>
+</div>
+<p>Unlike standard benchmark dataset, this dataset also has 6 samples contain added alcohol, creating a subgroup for studying the behavior of regularized estimators. The wavelengths range from 1102 to 1552 nanometers, with measurements every 2 nanometers. The continuous response is the octane number.</p>
+<p>This dataset is suitable because of four properties:</p>
+<ul>
+<li>With <span class="math inline">\(p=226\)</span> and <span class="math inline">\(n=39\)</span>, the OLS estimator is not uniquely determined without additional assumptions.</li>
+<li>Adjacent wavelengths measure nearby parts of a continuous spectrum, so the predictors are not independent.</li>
+<li>Although each observation has 226 predictors, a much smaller number of latent spectral patterns may explain most of the variation.</li>
+<li>The alcohol-containing samples allow us to examine whether shrinkage and variable selection provide reliable predictions when the observations differ chemically.</li>
+</ul>
+</section>
+<section id="statistical-formulation" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="statistical-formulation"><span class="header-section-number">1.2</span> Statistical formulation</h3>
+<p>Let <span class="math inline">\(X \in \R^{n\times p}\)</span>, <span class="math inline">\(y\in \R^{n}\)</span>, <span class="math inline">\(\beta\in \R^p\)</span>. Our regression model is</p>
+<p><span class="math display">\[
+y = \beta_0\mathbf{1} + X\beta + \epsilon, \quad \epsilon\sim\mathcal N(0, \sigma^2 I_n)
+\]</span></p>
+<p>In the exploration, <span class="math inline">\(n=39\)</span> and <span class="math inline">\(p=226\)</span>. The methods differs in their treatment of the unknown coefficient vector.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Regularization</th>
+<th>Primary property to investigate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ridge</td>
+<td><span class="math inline">\(L_2\)</span> penalty</td>
+<td>Continuous shrinkage and numerical stability</td>
+</tr>
+<tr class="even">
+<td>Lasso</td>
+<td><span class="math inline">\(L_1\)</span> penalty</td>
+<td>Exact sparsity and variable selection</td>
+</tr>
+<tr class="odd">
+<td>Elastic Net</td>
+<td><span class="math inline">\(L_1\)</span> + <span class="math inline">\(L_2\)</span> penalty</td>
+<td>Correlated-predictor grouping</td>
+</tr>
+<tr class="even">
+<td>PCR</td>
+<td>Principle component truncation</td>
+<td>Low-rank approximation</td>
+</tr>
+<tr class="odd">
+<td>Bayesian Lasso</td>
+<td>Laplace prior</td>
+<td>Posterior shrinkage and uncertainty</td>
+</tr>
+<tr class="even">
+<td>Bayesian Horseshoe</td>
+<td>Global-local shrinkage</td>
+<td>Strong shrinkage with heavy-tailed escaped</td>
+</tr>
+</tbody>
+</table>
+<p>We will also compare the coefficient patterns produced by the methods.</p>
+</section>
+<section id="experimental-protocol" class="level3" data-number="1.3">
+<h3 data-number="1.3" class="anchored" data-anchor-id="experimental-protocol"><span class="header-section-number">1.3</span> Experimental protocol</h3>
+<p>We will use a stratified 75%/25% train/test split, preserving the approximate proportion of alcohold-containing samples. All methods receive the same predictor matrix and training responses.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/experimental-protocol.svg" class="img-fluid figure-img"></p>
+<figcaption>Experimental protocol</figcaption>
+</figure>
+</div>
+<p>The frequentist methods will use the same four cross-validation folds for tuning. The Bayesian models will use priors specified before examining test outcomes, followed by posterior inference using PyMC.</p>
+</section>
+</section>
+<section id="data-preparation" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="data-preparation"><span class="header-section-number">2</span> Data preparation</h2>
+<section id="load-the-dataset" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="load-the-dataset"><span class="header-section-number">2.1</span> Load the dataset</h3>
+<div id="a4894c78" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> requests </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> rdata </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> <span class="dv">6400</span> </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/cran/rrcov/master/data/octane.rda"</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> Path(<span class="st">"octane.rda"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> path.exists():</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> requests.get(url, timeout<span class="op">=</span><span class="dv">60</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    response.raise_for_status()</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    path.write_bytes(response.content)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> rdata.read_rda(path)[<span class="st">"octane"</span>]</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># first column is the response; the others are spectra</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df.iloc[:, <span class="dv">0</span>].to_numpy(dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df.iloc[:, <span class="dv">1</span>:].to_numpy(dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>wavelengths <span class="op">=</span> np.arange(<span class="dv">1102</span>, <span class="dv">1553</span>, <span class="dv">2</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Predictor matrix:"</span>, X.shape)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Response vector:"</span>, y.shape)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Response range:"</span>, y.<span class="bu">min</span>(), <span class="st">"-"</span>, y.<span class="bu">max</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Predictor matrix: (39, 226)
+Response vector: (39,)
+Response range: 86.7 - 92.4</code></pre>
+</div>
+</div>
+<p>The dataset is loaded as a numerical matrix. The wavelength ordering is preserved, which is important because adjacent coefficients correspond to physically adjacent measurements. We will also retain the known alcohol-containing sample labels for the experimental design:</p>
+<div id="15631870" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>sample_ids <span class="op">=</span> np.arange(<span class="dv">1</span>, <span class="bu">len</span>(y) <span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>alcohol <span class="op">=</span> np.isin(sample_ids, [<span class="dv">25</span>, <span class="dv">26</span>, <span class="dv">36</span>, <span class="dv">37</span>, <span class="dv">38</span>, <span class="dv">39</span>])</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Regular sample:"</span>, (<span class="op">~</span>alcohol).<span class="bu">sum</span>())</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Alcohol-containing samples:"</span>, alcohol.<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Regular sample: 33
+Alcohol-containing samples: 6</code></pre>
+</div>
+</div>
+</section>
+<section id="visualize-the-spectral-data" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="visualize-the-spectral-data"><span class="header-section-number">2.2</span> Visualize the spectral data</h3>
+<p>We first examine whether the unusal samples differ visibly from the regular gasoline samples.</p>
+<div id="eca41fc4" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(y)):</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> alcohol[i]:</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        plt.plot(wavelengths, X[i], color<span class="op">=</span><span class="st">"darkorange"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, lw<span class="op">=</span><span class="fl">1.3</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        plt.plot(wavelengths, X[i], color<span class="op">=</span><span class="st">"steelblue"</span>, alpha<span class="op">=</span><span class="fl">0.25</span>, lw<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>plt.plot([], [], color<span class="op">=</span><span class="st">"steelblue"</span>, label<span class="op">=</span><span class="st">"Regular gasoline"</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>plt.plot([], [], color<span class="op">=</span><span class="st">"darkorange"</span>, label<span class="op">=</span><span class="st">"Added alcohol"</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Wavelength (nm)"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"NIR absorbance"</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Near-Infrared Spectra of Gasoline"</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="12_files/figure-html/cell-4-output-1.png" width="951" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="establish-traintest-split" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="establish-traintest-split"><span class="header-section-number">2.3</span> Establish train/test split</h3>
+<p>We use the same outer split for all siz methods and construct cross-validation folds within the training subset.</p>
+<div id="ee49370f" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split, StratifiedKFold</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> mean_squared_error, mean_absolute_error, r2_score</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>idx_train, idx_test <span class="op">=</span> train_test_split(np.arange(<span class="bu">len</span>(y)), test_size <span class="op">=</span> <span class="fl">0.25</span>, stratify<span class="op">=</span>alcohol, random_state<span class="op">=</span>SEED)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>X_train, X_test <span class="op">=</span> X[idx_train], X[idx_test]</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>y_train, y_test <span class="op">=</span> y[idx_train], y[idx_test]</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>alcohol_train <span class="op">=</span> alcohol[idx_train]</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>alcohol_test <span class="op">=</span> alcohol[idx_test]</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co"># standardize the response using training information only </span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>y_mean <span class="op">=</span> y_train.mean()</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>y_sd <span class="op">=</span> y_train.std(ddof<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>y_train_z <span class="op">=</span> (y_train <span class="op">-</span> y_mean) <span class="op">/</span> y_sd </span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co"># cv folds </span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>cv <span class="op">=</span> <span class="bu">list</span>(StratifiedKFold(n_splits<span class="op">=</span><span class="dv">4</span>, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span>SEED).split(X_train, alcohol_train))</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co"># final training-scaling, used for diagnostic and PyMC </span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler().fit(X_train)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>X_train_z <span class="op">=</span> scaler.transform(X_train)</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>X_test_z <span class="op">=</span> scaler.transform(X_test)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Train:"</span>, X_train.shape)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Test:"</span>, X_test.shape)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Alcohol samples in test:"</span>, alcohol_test.<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Train: (29, 226)
+Test: (10, 226)
+Alcohol samples in test: 2</code></pre>
+</div>
+</div>
+<p>The standardized quantities are</p>
+<p><span class="math display">\[
+z_{ij} = \frac{x_{ij} - \overline{x_j}}{s_j}, \quad y^* = \frac{y_i -\overline{y}}{s_y}
+\]</span></p>
+<p>This allows coefficient magnitudes to be interpreted on comparable scales. A coefficient represents the change in the standardized response associated with a one-standard-deviation increase in a predictor, holding the other predictors fixed.</p>
+<p>The frequentist models will use a <code>Pipeline</code> so that their scaling parameters are recomputed inside each cross-validation fold. This avoids leakage from validation observations into their preprocessing.</p>
+<p>For the Bayesian models, the displayed <code>X_train_z</code> and <code>y_train_z</code> will be used directly. Both were calculated using training data.</p>
+</section>
+<section id="investigate-the-rank-and-singular-values" class="level3" data-number="2.4">
+<h3 data-number="2.4" class="anchored" data-anchor-id="investigate-the-rank-and-singular-values"><span class="header-section-number">2.4</span> Investigate the rank and singular values</h3>
+<p>Before applying regularization, we should understand the numerical problem we are trying to solve. The standardized design matrix has at most <span class="math inline">\(n_\text{train} - 1\)</span> linearly independent columns because centering removes one degree of freedom.</p>
+<p>Thus,</p>
+<p><span class="math display">\[
+\rank(X^*_{\text{train}})\leq n_\text{train} - 1 \ll p.
+\]</span></p>
+<p>Consequently, the Gram matrix</p>
+<p><span class="math display">\[
+(X^*_\text{train})^{\top}X^*_\text{train}
+\]</span></p>
+<p>is singular, so its ordinary inverse does not exist.</p>
+<p>More importantly, even among the nonzero singular directions, some may have extremely small singular values. Those directions can amplify estimation noise. We can examine this using the singular value decomposition:</p>
+<p><span class="math display">\[
+X^{*}_\text{train} = UDV^\top
+\]</span></p>
+<div id="d8d7c40a" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>U, singular_values, Vt <span class="op">=</span> np.linalg.svd(X_train_z, full_matrices<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>rank <span class="op">=</span> np.linalg.matrix_rank(X_train_z)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># correlation between neighboring wavelengths </span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>corr <span class="op">=</span> np.corrcoef(X_train_z, rowvar<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>adjacent_corr <span class="op">=</span> np.<span class="bu">abs</span>(np.diag(corr, k<span class="op">=</span><span class="dv">1</span>))</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Matrix rank:"</span>, rank)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of predictors:"</span>, X_train_z.shape[<span class="dv">1</span>])</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Median adjacent |correlation|:"</span>, np.median(adjacent_corr))</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">5</span>))</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>ax.semilogy(np.arange(<span class="dv">1</span>, <span class="bu">len</span>(singular_values) <span class="op">+</span> <span class="dv">1</span>), singular_values, marker <span class="op">=</span> <span class="st">"o"</span>, markersize<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Singular value index"</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Singular value (log scale)"</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Singular Value Spectrum"</span>)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Matrix rank: 28
+Number of predictors: 226
+Median adjacent |correlation|: 0.999171969117818</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="12_files/figure-html/cell-6-output-2.png" width="757" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="frequentist-regularization-methods" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="frequentist-regularization-methods"><span class="header-section-number">3</span> Frequentist regularization methods</h2>
+<section id="ridge-regression-continuous-spectral-shrinkage" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="ridge-regression-continuous-spectral-shrinkage"><span class="header-section-number">3.1</span> Ridge regression: Continuous spectral shrinkage</h3>
+<p>Ridge regression replaces the OLS objective with</p>
+<p><span class="math display">\[
+\hat \beta = \arg\min_\beta \{\|y^* - X^* \beta\|_2^2 + \lambda\|\beta\|_2^2\}.
+\]</span></p>
+<p>The intercept remains unpenalized. The solution can be written as</p>
+<p><span class="math display">\[
+\hat \beta_R = ({X^*}^\top X^{*} + \lambda I_p)^{-1} {X^*}^\top y^*
+\]</span></p>
+<p>The additional of <span class="math inline">\(\lambda I_p\)</span> makes the matrix strictly positive definite whenever <span class="math inline">\(\lambda&gt;0\)</span>, even when <span class="math inline">\(p&gt;n\)</span>.</p>
+<p>We tune <span class="math inline">\(\lambda\)</span> by 4-CV.</p>
+<div id="871c5c47" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> GridSearchCV</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> Ridge </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>ridge_grid <span class="op">=</span> np.geomspace(<span class="fl">1e-4</span>, <span class="fl">1e4</span>, <span class="dv">60</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>ridge_search <span class="op">=</span> GridSearchCV(estimator<span class="op">=</span>Pipeline([(<span class="st">"scale"</span>, StandardScaler()), </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                                                (<span class="st">"regressor"</span>, Ridge(solver<span class="op">=</span><span class="st">"svd"</span>))]),</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                            param_grid<span class="op">=</span>{<span class="st">"regressor__alpha"</span>: ridge_grid},</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                            cv <span class="op">=</span> cv, </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                            scoring<span class="op">=</span><span class="st">"neg_mean_squared_error"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>ridge_search.fit(X_train, y_train_z)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>ridge_model <span class="op">=</span> ridge_search.best_estimator_</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>ridge_alpha <span class="op">=</span> ridge_search.best_params_[<span class="st">"regressor__alpha"</span>]</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>ridge_beta <span class="op">=</span> ridge_model.named_steps[<span class="st">"regressor"</span>].coef_</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Selected lambda:"</span>, ridge_alpha)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"L2 norm of coefficients:"</span>, np.linalg.norm(ridge_beta))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Selected lambda: 0.05150678076168122
+L2 norm of coefficients: 0.8787265401916532</code></pre>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Properties 1: Ridge can be computed in dual space</strong></p>
+</blockquote>
+<p>Where <span class="math inline">\(p\gg n\)</span>, an equivalent representation is</p>
+<p><span class="math display">\[
+\hat \beta_R = {X^*}^\top (X^*{X^*}^\top + \lambda I_n)^{-1}y^*
+\]</span></p>
+<p>Rather than solving a system involving a <span class="math inline">\(226\times 226\)</span>, we can solve one involving approximately <span class="math inline">\(29 \times 29\)</span> entries.</p>
+<div id="0169def8" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Z <span class="op">=</span> X_train_z </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>y_centered <span class="op">=</span> y_train_z <span class="op">-</span> y_train_z.mean()</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>K <span class="op">=</span> Z<span class="op">@</span>Z.T</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>ridge_beta_dual <span class="op">=</span> Z.T<span class="op">@</span>np.linalg.solve(K<span class="op">+</span> ridge_alpha <span class="op">*</span> np.eye(<span class="bu">len</span>(Z)), y_centered)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>difference <span class="op">=</span> np.linalg.norm(ridge_beta <span class="op">-</span> ridge_beta_dual)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Difference between implementations:"</span>, difference)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Difference between implementations: 1.4718241106776618e-12</code></pre>
+</div>
+</div>
+<p>The two coefficient vectors should agree up to floating-point error. Ridge solution can be obtained from a matrix whose dimension is determined by the number of observations rather than the number of features.</p>
+<blockquote class="blockquote">
+<p><strong>Property 2: Ridge applies smoth shrinkage to singular direction</strong></p>
+</blockquote>
+<p>Using the SVD,</p>
+<p><span class="math display">\[
+\hat \beta_R = V(D^2 + \lambda I)^{-1} D U^\top y
+\]</span></p>
+<p>The corresponding fitted response is</p>
+<p><span class="math display">\[
+\hat y_R = U \mathrm{diag} \left(\frac{d_j^2}{d_j^2 + \lambda}\right)U^\top y^*
+\]</span></p>
+<p>The quantity</p>
+<p><span class="math display">\[
+f_j^R = \frac{d_j^2}{d_j^2+ \lambda }
+\]</span></p>
+<p>is the ridge spectral shrinkage factor. For large <span class="math inline">\(d_j\)</span>, the factor is close to one. For small <span class="math inline">\(d_j\)</span>, the factor is close to zero.</p>
+<div id="64d7c4d3" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ridge_filter <span class="op">=</span> singular_values<span class="op">**</span><span class="dv">2</span> <span class="op">/</span> (singular_values<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> ridge_alpha)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>plt.plot(np.arange(<span class="dv">1</span>, <span class="bu">len</span>(ridge_filter) <span class="op">+</span> <span class="dv">1</span>), ridge_filter, marker<span class="op">=</span><span class="st">"o"</span>, markersize<span class="op">=</span><span class="dv">3</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Singular direction"</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="op">-</span><span class="fl">0.05</span>, <span class="fl">1.05</span>)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Ridge: Smooth Spectral Shrinkage"</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="12_files/figure-html/cell-9-output-1.png" width="760" height="374" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This visualization shows that ridge regularizes the contribution of the singular directions continuously rather than deleting individual predictors. As a consequence, the ridge coefficient vector is generally dense.</p>
+</section>
+<section id="lasso-regression-sparsity-and-variable-selection" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="lasso-regression-sparsity-and-variable-selection"><span class="header-section-number">3.2</span> Lasso regression: Sparsity and variable selection</h3>
+<p>Lasso introduces an <span class="math inline">\(L_1\)</span> constraint:</p>
+<p><span class="math display">\[
+\hat \beta_L = \arg\min_\beta \left\{\frac{1}{2n_\text{train}}\|y^* - X^*\beta\|_2^2 + \lambda\|\beta\|_1 \right\}
+\]</span></p>
+<p>Unlike Ridge, the <span class="math inline">\(L_1\)</span> penalty is not differentiableat zero. This allows a solution to contain coefficients that are exactly zero, making Lasso useful for variable selection.</p>
+<div id="f935426c" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> Lasso </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>lasso_grid <span class="op">=</span> np.geomspace(<span class="fl">1e-4</span>, <span class="fl">1.0</span>, <span class="dv">60</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>lasso_search <span class="op">=</span> GridSearchCV(estimator<span class="op">=</span>Pipeline([(<span class="st">"scale"</span>, StandardScaler()), </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                                                (<span class="st">"regressor"</span>, Lasso(max_iter<span class="op">=</span><span class="dv">10000</span>, tol<span class="op">=</span><span class="fl">1e-5</span>))]), </span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                                                param_grid<span class="op">=</span>{<span class="st">"regressor__alpha"</span>: lasso_grid}, </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                                                cv<span class="op">=</span>cv, </span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                                                scoring<span class="op">=</span><span class="st">"neg_mean_squared_error"</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>lasso_search.fit(X_train, y_train_z)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>lasso_model <span class="op">=</span> lasso_search.best_estimator_</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>lasso_alpha <span class="op">=</span> lasso_search.best_params_[<span class="st">"regressor__alpha"</span>]</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>lasso_beta <span class="op">=</span> lasso_model.named_steps[<span class="st">"regressor"</span>].coef_</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>lasso_selected <span class="op">=</span> np.<span class="bu">abs</span>(lasso_beta) <span class="op">&gt;</span> <span class="fl">1e-7</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Selected lambda:"</span>, lasso_alpha)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Nonzero coefficients:"</span>, lasso_selected.<span class="bu">sum</span>())</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Selected wavelengths:"</span>, wavelengths[lasso_selected])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Selected lambda: 0.012638482029342984
+Nonzero coefficients: 7
+Selected wavelengths: [1102 1168 1196 1198 1220 1298 1358]</code></pre>
+</div>
+</div>
+<p>Lasso is solved by coordinate descent, which updates individual coefficients and takes advantage of the soft-thresholding property. The <code>max_iter</code> parameter allows the optimization algorithm sufficient iterations when predictors are strongly correlated. The convergence tolerance controls the numerical accuracy of the result.</p>
+<blockquote class="blockquote">
+<p><strong>Property 1: Verify the KKT conditions numerically</strong></p>
+</blockquote>
+<p>One advantage of using this dataset is that we can verify an important mathematical property directly. For Lasso, the KKT conditions imply</p>
+<p><span class="math display">\[
+\frac{1}{n} {X_j^*}^\top (y^* - X^* \hat \beta) = \begin{cases}
+\lambda \mathrm{sign}(\hat \beta_j),&amp; \quad \hat \beta_j \neq 0 \\
+\text{a value in } [-\lambda, \lambda], &amp; \quad \hat \beta_j = 0
+\end{cases}
+\]</span></p>
+<p>We can calculate the corresponding correlations between the predictors and the residuals.</p>
+<div id="00fcbc9c" class="cell" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>residual <span class="op">=</span> y_train_z <span class="op">-</span> lasso_model.predict(X_train)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>score <span class="op">=</span> X_train_z.T <span class="op">@</span> residual <span class="op">/</span> <span class="bu">len</span>(y_train_z)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>active <span class="op">=</span> np.<span class="bu">abs</span>(lasso_beta) <span class="op">&gt;</span> <span class="fl">1e-7</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>active_error <span class="op">=</span> np.<span class="bu">max</span>(np.<span class="bu">abs</span>(score[active] <span class="op">-</span> lasso_alpha <span class="op">*</span> np.sign(lasso_beta[active]))) <span class="cf">if</span> active.<span class="bu">any</span>() <span class="cf">else</span> np.nan</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>inactive_violation <span class="op">=</span> np.<span class="bu">max</span>(np.maximum(np.<span class="bu">abs</span>(score[<span class="op">~</span>active]) <span class="op">-</span> lasso_alpha, <span class="dv">0</span>)) <span class="cf">if</span> (<span class="op">~</span>active).<span class="bu">any</span>() <span class="cf">else</span> <span class="fl">0.0</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Active-set KKT error:"</span>, active_error)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Inactive-set KKT violation:"</span>, inactive_violation)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Active-set KKT error: 5.1461933120722225e-06
+Inactive-set KKT violation: 0.0</code></pre>
+</div>
+</div>
+<p>Both quantities are small, within the numerical optimization tolerance. The result demonstrates why some coefficients are set exactly to zero. Their residual correlations are not large enough to overcome the penalty threshold.</p>
+<blockquote class="blockquote">
+<p><strong>Property 2: The regularization path</strong></p>
+</blockquote>
+<p>We can investigate how the coefficients enter and leave the model as the penalty changes.</p>
+<div id="3c202aae" class="cell" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> lasso_path </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>path_alphas, path_coefs, _ <span class="op">=</span> lasso_path(X_train_z, y_train_z, alphas <span class="op">=</span> np.geomspace(<span class="fl">1.0</span>, <span class="fl">1e-4</span>, <span class="dv">120</span>), max_iter <span class="op">=</span> <span class="dv">10000</span>, tol<span class="op">=</span><span class="fl">1e-5</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>nonzero_counts <span class="op">=</span> (np.<span class="bu">abs</span>(path_coefs) <span class="op">&gt;</span> <span class="fl">1e-7</span>).<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">4</span>))</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># regularization paths for prominent coefficients </span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>top_features <span class="op">=</span> np.argsort(np.<span class="bu">max</span>(np.<span class="bu">abs</span>(path_coefs), axis<span class="op">=</span><span class="dv">1</span>))[<span class="op">-</span><span class="dv">12</span>:]</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j <span class="kw">in</span> top_features: </span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">0</span>].plot(path_alphas, path_coefs[j], lw<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].axvline(lasso_alpha, ls<span class="op">=</span><span class="st">"--"</span>, color<span class="op">=</span><span class="st">"black"</span>)</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_xscale(<span class="st">"log"</span>)</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].invert_xaxis()</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_xlabel(<span class="st">"Lambda"</span>)</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_ylabel(<span class="st">"Coefficient"</span>)</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">"Lasso Coefficient Paths"</span>)</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="co"># sparsity along the path </span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].plot(path_alphas, nonzero_counts)</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].axvline(lasso_alpha, ls<span class="op">=</span><span class="st">"--"</span>, color<span class="op">=</span><span class="st">"black"</span>)</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xscale(<span class="st">"log"</span>)</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].invert_xaxis()</span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xlabel(<span class="st">"lambda"</span>)</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_ylabel(<span class="st">"Number of nonzero coefficients"</span>)</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">"Sparsity Along the Path"</span>)</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="12_files/figure-html/cell-12-output-1.png" width="1144" height="373" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As <span class="math inline">\(\alpha\)</span> increases, stronger regularization tends to produce fewer active predictors. However, individual coefficients do not change monotonically, and correlated predictors can enter or leave the active set as the penalty varies.</p>
+</section>
+<section id="elastic-net-combining-sparsity-and-grouping" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="elastic-net-combining-sparsity-and-grouping"><span class="header-section-number">3.3</span> Elastic Net: Combining sparsity and grouping</h3>
+<p>Elastic Net combines the two penalties:</p>
+<p><span class="math display">\[
+\hat \beta_{\text{EN}} = \arg\min_{\beta} \left\{\frac{1}{2n}\|y^* - X^* \beta\|_2^2 + \lambda \gamma \|\beta\|_1 + \frac{\lambda(1-\gamma)}{2}\|\beta\|_2^2\right\}
+\]</span></p>
+<p>Here, <span class="math inline">\(\gamma\in (0, 1)\)</span> controls the balance between the <span class="math inline">\(L_1\)</span> and <span class="math inline">\(L_2\)</span> penalties. When <span class="math inline">\(\gamma = 1\)</span>, Elastic Net reduces to Lasso. For smaller <span class="math inline">\(\gamma\)</span>, the quadratic penalty becomes more important, encouraging predictors to have more similar coefficient values. We tune both <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(\lambda\)</span>.</p>
+<div id="f0a3f9ec" class="cell" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> ElasticNet </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>enet_search <span class="op">=</span> GridSearchCV(estimator<span class="op">=</span>Pipeline([(<span class="st">"scale"</span>, StandardScaler()), </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                                                (<span class="st">"regressor"</span>, ElasticNet(max_iter<span class="op">=</span><span class="dv">10000</span>, tol<span class="op">=</span><span class="fl">1e-5</span>))]), </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>                        param_grid<span class="op">=</span>{<span class="st">"regressor__alpha"</span>: np.geomspace(<span class="fl">1e-4</span>, <span class="fl">5.0</span>, <span class="dv">55</span>), </span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>                                    <span class="st">"regressor__l1_ratio"</span>: [<span class="fl">0.2</span>, <span class="fl">0.5</span>, <span class="fl">0.8</span>, <span class="fl">0.95</span>]}, </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>                        cv<span class="op">=</span>cv,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>                        scoring<span class="op">=</span><span class="st">"neg_mean_squared_error"</span>)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>enet_search.fit(X_train, y_train_z)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>enet_model <span class="op">=</span> enet_search.best_estimator_</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>enet_alpha <span class="op">=</span> enet_search.best_params_[<span class="st">"regressor__alpha"</span>]</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>enet_ratio <span class="op">=</span> enet_search.best_params_[<span class="st">"regressor__l1_ratio"</span>]</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>enet_beta <span class="op">=</span> enet_model.named_steps[<span class="st">"regressor"</span>].coef_</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Selected lambda:"</span>, enet_alpha)</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Selected L1 ratio:"</span>, enet_ratio)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Nonzero coefficients:"</span>, np.<span class="bu">sum</span>(np.<span class="bu">abs</span>(enet_beta) <span class="op">&gt;</span> <span class="fl">1e-7</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Selected lambda: 0.027321400979146024
+Selected L1 ratio: 0.2
+Nonzero coefficients: 48</code></pre>
+</div>
+</div>
+<p>The parameter <code>alpha</code> and <code>l1_ratio</code> corresponds to <span class="math inline">\(\lambda\)</span> and <span class="math inline">\(\gamma\)</span>, respectively. The quadratic component improves the conditioning of the objective. When <span class="math inline">\(0&lt; \gamma&lt;1\)</span> and <span class="math inline">\(\lambda&gt;0\)</span>, the Elastic Net objective is strictly convex, giving a unique coefficient vector.</p>
+<blockquote class="blockquote">
+<p><strong>Property: Compare coefficient selection in correlated spectral regions</strong></p>
+</blockquote>
+<p>We plot Lasso and Elastic Net coefficients against their physical wavelengths.</p>
+<div id="7e0a6aef" class="cell" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="dv">6</span>), sharex <span class="op">=</span> <span class="va">True</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].stem(wavelengths, lasso_beta, markerfmt<span class="op">=</span><span class="st">'.'</span>, basefmt<span class="op">=</span><span class="st">" "</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">"Lasso Coefficients"</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_ylabel(<span class="st">"Coeffcient"</span>)</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].stem(wavelengths, enet_beta, markerfmt<span class="op">=</span><span class="st">'.'</span>, basefmt<span class="op">=</span><span class="st">" "</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">"Elastic Net Coefficients"</span>)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xlabel(<span class="st">"Wavelength (nm)"</span>)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_ylabel(<span class="st">"Coeffcient"</span>)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="12_files/figure-html/cell-14-output-1.png" width="1048" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="principal-component-regression-regularization-by-projection" class="level3" data-number="3.4">
+<h3 data-number="3.4" class="anchored" data-anchor-id="principal-component-regression-regularization-by-projection"><span class="header-section-number">3.4</span> Principal Component Regression: Regularization by projection</h3>
+<p>PCR takes a different approach. Rather than penalizing coefficients in the original feature space, it projects the predictor matrix onto a lower-dimensional subspace and performs OLS in that space.</p>
+<p>Using</p>
+<p><span class="math display">\[
+X^* = UDV^\top ,
+\]</span></p>
+<p>the first <span class="math inline">\(k\)</span> principal component scores are</p>
+<p><span class="math display">\[
+Z_k = X^* V_k = U_k D_k .
+\]</span></p>
+<p>PCR estimates</p>
+<p><span class="math display">\[
+\hat \theta_k = (Z_k^\top Z_k)^{-1} Z_k^\top y^*,
+\]</span></p>
+<p>and the coefficient vector in the original feature space is</p>
+<p><span class="math display">\[
+\hat\beta_{\text{PCR}} = V_k \hat \theta_k  
+\]</span></p>
+<p>The parameter <span class="math inline">\(k\)</span> is the regularization parameter: choosing fewer principle components imposes stronger dimensionality reduction.</p>
+<div id="f6214ae6" class="cell" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># maximum number of nondegenerate components</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="co"># permitted in every CV training fold </span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>min_fold_train <span class="op">=</span> <span class="bu">min</span>(<span class="bu">len</span>(tr) <span class="cf">for</span> tr, _ <span class="kw">in</span> cv)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>max_k <span class="op">=</span> min_fold_train <span class="op">-</span> <span class="dv">1</span> </span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>pcr_search <span class="op">=</span> GridSearchCV(estimator<span class="op">=</span>Pipeline([(<span class="st">"scale"</span>, StandardScaler()), </span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>                                                (<span class="st">"pca"</span>, PCA(svd_solver<span class="op">=</span><span class="st">"full"</span>)), </span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>                                                (<span class="st">"regressor"</span>, LinearRegression())]), </span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>                        param_grid<span class="op">=</span>{<span class="st">"pca__n_components"</span>: <span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">1</span>, max_k <span class="op">+</span> <span class="dv">1</span>))}, </span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>                        cv <span class="op">=</span> cv, </span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>                        scoring<span class="op">=</span><span class="st">"neg_mean_squared_error"</span>)</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>pcr_search.fit(X_train, y_train_z)</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>pcr_model <span class="op">=</span> pcr_search.best_estimator_</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>best_k <span class="op">=</span> pcr_search.best_params_[<span class="st">"pca__n_components"</span>]</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>pca_fitted <span class="op">=</span> pcr_model.named_steps[<span class="st">"pca"</span>]</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>linear_fitted <span class="op">=</span> pcr_model.named_steps[<span class="st">"regressor"</span>]</span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a><span class="co"># recover coefficients in the standardized feature space</span></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>pcr_beta <span class="op">=</span> pca_fitted.components_.T <span class="op">@</span> linear_fitted.coef_ </span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Selected number of components:"</span>, best_k)</span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Recovered coefficient vector shape:"</span>, pcr_beta.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Selected number of components: 10
+Recovered coefficient vector shape: (226,)</code></pre>
+</div>
+</div>
+<p>An important computational detail is that PCA is fitted separately within each cross-validation fold. Fitting PCA once before cross-validation would leak information about the validation predictors into the estimated principal directions.</p>
+<p>We also restrict <span class="math inline">\(k\)</span> according to the smallest cross-validation training fold, rather than the original dataset size. This prevent us from attempting more nondegenerate components than the fold can support.</p>
+<blockquote class="blockquote">
+<p><strong>Property 1: Variance explained versus predictive usefulness</strong></p>
+</blockquote>
+<p>The principal components are constructed to explain variation in <span class="math inline">\(X\)</span>.</p>
+<div id="1a540b51" class="cell" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>pca_full <span class="op">=</span> PCA(svd_solver<span class="op">=</span><span class="st">"full"</span>).fit(X_train_z)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>cumulative_variance <span class="op">=</span> np.cumsum(pca_full.explained_variance_ratio_)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>k_values <span class="op">=</span> np.array(pcr_search.cv_results_[<span class="st">"param_pca__n_components"</span>], dtype<span class="op">=</span><span class="bu">int</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>cv_rmse <span class="op">=</span> np.sqrt(<span class="op">-</span>pcr_search.cv_results_[<span class="st">"mean_test_score"</span>])</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">4</span>))</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].plot(np.arange(<span class="dv">1</span>, <span class="bu">len</span>(cumulative_variance) <span class="op">+</span> <span class="dv">1</span>), cumulative_variance)</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_xlabel(<span class="st">"Number of principal components"</span>)</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_ylabel(<span class="st">"Cumulative explained variance"</span>)</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">"Variance Explained by PCA"</span>)</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].plot(k_values, cv_rmse, marker<span class="op">=</span><span class="st">"o"</span>)</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].axvline(best_k, color<span class="op">=</span><span class="st">"black"</span>, ls<span class="op">=</span><span class="st">"--"</span>)</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xlabel(<span class="st">"Number of principal components"</span>)</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_ylabel(<span class="st">"Cross-validated RMSE"</span>)</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">"PCR Model Selection"</span>)</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="12_files/figure-html/cell-16-output-1.png" width="1143" height="374" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>Property 2: Ridge versus PCR as spectral filters</strong></p>
+</blockquote>
+<p>Although Ridge and PCR appear to be very different procedures, both can be understood as transformations of the singular values of the design matrix.</p>
+<p>For Ridge,</p>
+<p><span class="math display">\[
+f_j^R = \frac{d_j^2}{d_j^2 + \lambda}
+\]</span></p>
+<p>For PCR,</p>
+<p><span class="math display">\[
+f_j^{\text{PCR}} = \begin{cases}
+1, &amp; j\leq k, \\
+0, &amp; j &gt; k
+\end{cases}
+\]</span></p>
+<p>Ridge applies continuous shrinkage, whereas PCR retains or discards entire singular directions.</p>
+<div id="27fbda5f" class="cell" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>j <span class="op">=</span> np.arange(<span class="dv">1</span>, <span class="bu">len</span>(singular_values) <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>pcr_filter <span class="op">=</span> (j <span class="op">&lt;=</span> best_k).astype(<span class="bu">float</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>plt.plot(j, ridge_filter, marker<span class="op">=</span><span class="st">"o"</span>, markersize<span class="op">=</span><span class="dv">3</span>, label<span class="op">=</span><span class="st">"Ridge"</span>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>plt.step(j, pcr_filter, where<span class="op">=</span><span class="st">"mid"</span>, label<span class="op">=</span><span class="st">"PCR"</span>)</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Singular direction"</span>)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Spectral filter"</span>)</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="op">-</span><span class="fl">0.05</span>, <span class="fl">1.05</span>)</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Soft Shrinkage versus Hard Truncation"</span>)</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="12_files/figure-html/cell-17-output-1.png" width="759" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As we can see, PCR is a form of regularization, even though its final regression step uses OLS. The regularization is imposed through its restriction to a lower-dimensional subspace.</p>
+</section>
+</section>
+<section id="bayesian-regularization-using-pymc" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="bayesian-regularization-using-pymc"><span class="header-section-number">4</span> Bayesian regularization using PyMC</h2>
+<p>The previous methods minimize a penalized objective function. In a Bayesian setting, regularization introduced through the prior distribution on the regression coefficients.</p>
+<p>We retain the same Gaussian likelihood:</p>
+<p><span class="math display">\[
+y^*_i | \beta_0, \beta, \sigma \sim \mathcal N(\beta_0 + {x_i^*}^\top \beta, \sigma^2).
+\]</span></p>
+<p>However, rather than producing only a point estimate, Bayesian inference characterizes the posterior distribution</p>
+<p><span class="math display">\[
+p(\beta_0, \beta, \sigma \mid X^*, y^*)
+\]</span></p>
+<p>This allows us to study both the magnitude of coefficient shrinkage and the uncertainty associated with it.</p>
+<section id="bayesian-lasso-the-laplace-prior" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="bayesian-lasso-the-laplace-prior"><span class="header-section-number">4.1</span> Bayesian Lasso: The Laplace prior</h3>
+<p>A Bayesian analogue of Lasso places independent Laplace priors on the regression coefficients</p>
+<p><span class="math display">\[
+\beta_j \sim \mathrm{Laplace}(0, b), \quad j = 1, \ldots, p.
+\]</span></p>
+<p>Its density is</p>
+<p><span class="math display">\[
+p(\beta_j \mid b) = \frac{1}{2b}\exp\left(-\frac{|\beta_j|}{b}\right)
+\]</span></p>
+<p>Ignoring terms independent of <span class="math inline">\(\beta\)</span>, the negative log-posterior for fixed <span class="math inline">\(\sigma\)</span> and <span class="math inline">\(b\)</span> is</p>
+<p><span class="math display">\[
+-\log p(\beta\mid X^*, y^*, \sigma, b) = \frac{1}{2\sigma^2} \|y^* - X^*\beta \|_2^2 + \frac{1}{b}\|\beta\|_1 + \text{ constant}
+\]</span></p>
+<p>Multiplying by <span class="math inline">\(\sigma^2/n\)</span> gives the Lasso objective with the correspondence</p>
+<p><span class="math display">\[
+\lambda = \frac{\sigma^2}{nb}
+\]</span></p>
+<p>This relationship concerns the conditional posterior mode, or MAP estimator, and not the posterior mean.</p>
+<blockquote class="blockquote">
+<p><strong>A scale-mixture representation</strong></p>
+</blockquote>
+<p>Rather than directly sampling from a Laplace prior, we can express it as a normal-exponential mixture:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\omega_j &amp;\sim \mathrm{Exp}\left(\frac{1}{2b^2}\right) \\
+\beta_j \mid \omega_j &amp; \sim \mathcal N(0, \omega_j).
+\end{aligned}
+\]</span></p>
+<p>Integrating out <span class="math inline">\(\omega_j\)</span> gives the Laplace distribution. This representation allows us to introduce a non-centered parameterizaion:</p>
+<p><span class="math display">\[
+z_j \sim \mathcal N(0, 1), \quad \beta_j = z_j \sqrt{\omega_j}
+\]</span></p>
+<p>We will use <span class="math inline">\(b=0.15\)</span>.</p>
+<div id="32d93052" class="cell" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pymc <span class="im">as</span> pm </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> arviz <span class="im">as</span> az </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytensor.tensor <span class="im">as</span> pt </span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>n_train, p <span class="op">=</span> X_train_z.shape </span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>laplace_scale <span class="op">=</span> <span class="fl">0.15</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>{<span class="st">"wavelength"</span>: wavelengths}) <span class="im">as</span> bayesian_laplace:</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># unpenalized intercept </span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    intercept <span class="op">=</span> pm.Normal(<span class="st">"intercept"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># unknown observation noise </span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>    sigma <span class="op">=</span> pm.HalfNormal(<span class="st">"sigma"</span>, sigma<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Normal-exponential mixture </span></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>    omega <span class="op">=</span> pm.Exponential(<span class="st">"omega"</span>, lam<span class="op">=</span><span class="dv">1</span><span class="op">/</span>(<span class="dv">2</span><span class="op">*</span>laplace_scale<span class="op">**</span><span class="dv">2</span>), dims<span class="op">=</span><span class="st">"wavelength"</span>)</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> pm.Normal(<span class="st">"z"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="dv">1</span>, dims<span class="op">=</span><span class="st">"wavelength"</span>)</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> pm.Deterministic(<span class="st">"beta"</span>, z<span class="op">*</span>pt.sqrt(omega), dims <span class="op">=</span> <span class="st">"wavelength"</span>)</span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>    mu <span class="op">=</span> intercept <span class="op">+</span> pm.math.dot(X_train_z, beta)</span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>    pm.Normal(<span class="st">"y_obs"</span>, mu<span class="op">=</span>mu, sigma<span class="op">=</span>sigma, observed<span class="op">=</span>y_train_z)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We use a non-centered parametrization because sampling under the underlying standard-normal variables can make the posterior geometry easier to navigate.</p>
+<blockquote class="blockquote">
+<p><strong>Posterior sampling</strong></p>
+</blockquote>
+<div id="548a6104" class="cell" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> bayesian_laplace:</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>    laplace_trace <span class="op">=</span> pm.sample(draws<span class="op">=</span><span class="dv">600</span>, tune<span class="op">=</span><span class="dv">800</span>, chains<span class="op">=</span><span class="dv">2</span>, cores<span class="op">=</span><span class="dv">2</span>, target_accept<span class="op">=</span><span class="fl">0.95</span>, random_seed <span class="op">=</span> SEED)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"1ad07be1ec2e4c01a39dc8c77711eae8","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+</div>
+</div>
+<p>The No-U-Turn Sampler (NUTS) generates posterior draws by using gradients of the log-posterior distribution. <code>draws=600</code> and <code>chains=2</code> produce 1,200 retained draws in total. The 800 tuning iterations per chain are used for sampler adaptation and discarded.</p>
+<p>_<strong>Computational consideration.</strong> A PyMC model with 226 coefficients and another 226 latent variable is much more expensive than a single Lasso optimization. NUTS explores the posterior rather than locating one minimum. For faster sampling, PyMC also supports the <code>nutpie</code> sampler as an optional backend.</p>
+<blockquote class="blockquote">
+<p><strong>Property: Posterior shrinkage is not variable selection</strong></p>
+</blockquote>
+<p>We now compare the Bayesian posterior mean with the frequentist Lasso coefficients.</p>
+<div id="7e021539" class="cell" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>laplace_beta_mean <span class="op">=</span> laplace_trace.posterior[<span class="st">"beta"</span>].mean(dim<span class="op">=</span>(<span class="st">"chain"</span>, <span class="st">"draw"</span>)).values</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>ax.plot(wavelengths, lasso_beta, label<span class="op">=</span><span class="st">"Frequentist Lasso"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>ax.plot(wavelengths, laplace_beta_mean, label<span class="op">=</span><span class="st">"Bayesian Laplace (posterior mean)"</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"black"</span>, lw<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Wavelength (nm)"</span>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Standardize coefficient"</span>)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Lasso versus Bayesian Laplace"</span>)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="12_files/figure-html/cell-20-output-1.png" width="952" height="374" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Their penalty strengths have not been calibrated to be identical, and the Bayesian model estimates the noise scale rather than fixing it. Instead, we should examine how their coefficient structures differ. The frequentist Lasso produces exact zeros; the Bayesian posterior mean does not.</p>
+<p>To study meaningful effects, we can calculate</p>
+<p><span class="math display">\[
+P(|\beta_j| &gt; \delta \mid X^*, y^*)
+\]</span></p>
+<p>for a chosen effect-size threshold <span class="math inline">\(\delta\)</span>.</p>
+<div id="c15fe8c1" class="cell" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>laplace_draws <span class="op">=</span> laplace_trace.posterior[<span class="st">"beta"</span>].stack(sample<span class="op">=</span>(<span class="st">"chain"</span>, <span class="st">"draw"</span>)).transpose(<span class="st">"sample"</span>, <span class="st">"wavelength"</span>).values</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>threshold <span class="op">=</span> <span class="fl">0.10</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>laplace_prob <span class="op">=</span> (np.<span class="bu">abs</span>(laplace_draws) <span class="op">&gt;</span> threshold).mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>plt.plot(wavelengths, laplace_prob)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>plt.axhline(<span class="fl">0.5</span>, color<span class="op">=</span><span class="st">"black"</span>, ls<span class="op">=</span><span class="st">"--"</span>)</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Wavelength (nm)"</span>) </span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Posterior probability"</span>)</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Bayesian Laplace: Probability of a material coefficient"</span>)</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="12_files/figure-html/cell-21-output-1.png" width="952" height="374" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The threshold of 0.10 refers to standardized coefficients magnitude. It is a descriptive choice. High collinearity may make individual coefficients poorly identifed even when the overal prediction is reliable. Posterior probabilities for individual wavelengths should be interpreted with caution.</p>
+</section>
+<section id="bayesian-horseshoe-global-local-shrinkage" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="bayesian-horseshoe-global-local-shrinkage"><span class="header-section-number">4.2</span> Bayesian Horseshoe: Global-local shrinkage</h3>
+<p>The horseshoe prior introduces a different form of sparsity-inducing regularization. Rather than applying a common amount of shrinkage to all coefficients, it assigns each coefficient a local scale while also controlling the overall degree of shrinkage through a global parameter. The standard Horseshoe is</p>
+<p><span class="math display">\[
+\begin{aligned}
+\beta_j \mid \tau, \lambda_j &amp;\sim \mathcal N(0, \tau^2 \lambda_j^2), \\
+\lambda_j  &amp; \sim \mathcal C^+ (0,1),
+\end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(\mathcal C^+\)</span> denotes the half-Cauchy distribution.</p>
+<p>The global parameter <span class="math inline">\(\tau\)</span> shrinks the overall coefficient vector, while the local parameters <span class="math inline">\(\tau_j\)</span> allow some coefficients to escape strong shrinkage. For computational stability, we will use a <em>regularized Horseshoe</em> with a slab component. Its coefficient scale becomes</p>
+<p><span class="math display">\[
+\tilde{\lambda_j}^2 = \frac{c^2\lambda_j^2}{c^2 + \tau^2 \lambda_j^2}
+\]</span></p>
+<p>so that</p>
+<p><span class="math display">\[
+\beta_j \mid \tau \lambda_j, c  \sim \mathcal N(0, \tau^2 \tilde{\lambda_j}^2).
+\]</span></p>
+<p>The slab parameter <span class="math inline">\(c\)</span> limits the extent to which large local scales can produce extremely diffuse coefficient priors.</p>
+<blockquote class="blockquote">
+<p><strong>Calibrating global shrinkage</strong></p>
+</blockquote>
+<p>For a sparse regression problem, a useful prior scale is based on the expected number of substantially nonzero coefficients <span class="math inline">\(p_0\)</span>:</p>
+<p><span class="math display">\[
+\tau_0 = \frac{p_0}{p-p_0} \frac{\sigma}{\sqrt{n}}
+\]</span></p>
+<p>We begin with <span class="math inline">\(p_0=8\)</span> as an illustrative sparsity assumption, without claiming that gasoline spectroscopy depends on only eight distinct wavelengths.</p>
+<div id="5af950c0" class="cell" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>p0 <span class="op">=</span> <span class="dv">8</span> </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>global_scale <span class="op">=</span> (p0 <span class="op">/</span> (p<span class="op">-</span>p0)) <span class="op">/</span> np.sqrt(n_train)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pm.Model(coords<span class="op">=</span>{<span class="st">"wavelength"</span>: wavelengths}) <span class="im">as</span> horseshoe_model:</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    intercept <span class="op">=</span> pm.Normal(<span class="st">"intercept"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    sigma <span class="op">=</span> pm.HalfNormal(<span class="st">"sigma"</span>, sigma<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># global shrinkage </span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    tau <span class="op">=</span> pm.HalfStudentT(<span class="st">"tau"</span>, nu<span class="op">=</span><span class="dv">2</span>, sigma<span class="op">=</span>global_scale <span class="op">*</span> sigma)</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># local shrinkage </span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    local_scale <span class="op">=</span> pm.HalfCauchy(<span class="st">"local_scale"</span>, beta<span class="op">=</span><span class="dv">1</span>, dims<span class="op">=</span><span class="st">"wavelength"</span>)</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># regularized slab </span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>    c2 <span class="op">=</span> pm.InverseGamma(<span class="st">"c2"</span>, alpha<span class="op">=</span><span class="dv">2</span>, beta<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># non-centered coefficients </span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>    z <span class="op">=</span> pm.Normal(<span class="st">"z"</span>, mu<span class="op">=</span><span class="dv">0</span>, sigma<span class="op">=</span><span class="dv">1</span>, dims<span class="op">=</span><span class="st">"wavelength"</span>)</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>    local_variance <span class="op">=</span> tau<span class="op">**</span><span class="dv">2</span> <span class="op">*</span> local_scale<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>    beta_scale <span class="op">=</span> pt.sqrt(local_variance<span class="op">*</span>c2<span class="op">/</span> (c2 <span class="op">+</span> local_variance))</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> pm.Deterministic(<span class="st">"beta"</span>, z<span class="op">*</span>beta_scale, dims <span class="op">=</span> <span class="st">"wavelength"</span>)</span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>    mu <span class="op">=</span> intercept <span class="op">+</span> pm.math.dot(X_train_z, beta)</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>    pm.Normal(<span class="st">"y_obs"</span>, mu<span class="op">=</span>mu, sigma<span class="op">=</span>sigma, observed<span class="op">=</span>y_train_z)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>There are three computational design choices here. First, the global scale incorporates <span class="math inline">\(n\)</span> and <span class="math inline">\(p\)</span>, so its magnitude reflects the dimension of the problem. Second, the slab prevents the variance of weakly regularized coefficients from becoming arbitrarily large because a local scale is large. Third, we sample auxiliary standard-normal variables and transform them into regression coefficients. This non-centered representation often improves sampling compared with direct sampling a large vector of coupled coefficients.</p>
+<div id="d9d4df0d" class="cell" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> horseshoe_model: </span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    horseshoe_trace <span class="op">=</span> pm.sample(draws<span class="op">=</span><span class="dv">600</span>, tune<span class="op">=</span><span class="dv">1000</span>, chains<span class="op">=</span><span class="dv">2</span>, cores<span class="op">=</span><span class="dv">2</span>, target_accept<span class="op">=</span><span class="fl">0.97</span>, random_seed<span class="op">=</span>SEED)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"0c5620f0ea6047fa9c9237da5b4758d5","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre>
+</div>
+</div>
+<p>The higher acceptance target is to reduce numerical intergration errors associated with challenging posterior geometry, although it may increase compuation time.</p>
+<p>Note that a Horseshoe prior is appropriate when relatively few coefficients contain meaningful signals. Spectroscopy, however, may exhibit correlated, distributed effects. iF The Horseshoe performs poorly or produces unstable coefficient estimates, this may reflect a mismatch between the prior sparsity assumption and the structure of the scientific problem.</p>
+<blockquote class="blockquote">
+<p><strong>Property: Local shrinkage and posterior coefficient magnitudes</strong></p>
+</blockquote>
+<p>We can inspect whether the fitted model concentrates its effects into relatively few wavelenghts.</p>
+<div id="c51cc02a" class="cell" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>horseshoe_draws <span class="op">=</span> horseshoe_trace.posterior[<span class="st">"beta"</span>].stack(sample<span class="op">=</span>(<span class="st">"chain"</span>, <span class="st">"draw"</span>)).transpose(<span class="st">"sample"</span>, <span class="st">"wavelength"</span>).values</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>horseshoe_beta_mean <span class="op">=</span> horseshoe_draws.mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>horseshoe_prob <span class="op">=</span> (np.<span class="bu">abs</span>(horseshoe_draws) <span class="op">&gt;</span> threshold).mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="dv">6</span>), sharex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].plot(wavelengths, laplace_beta_mean, label<span class="op">=</span><span class="st">"Laplace"</span>)</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].plot(wavelengths, horseshoe_beta_mean, label<span class="op">=</span><span class="st">"Horseshoe"</span>)</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"black"</span>, lw<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_ylabel(<span class="st">"Posterior mean"</span>)</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].legend()</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].plot(wavelengths, laplace_prob, label<span class="op">=</span><span class="st">"Laplace"</span>)</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].plot(wavelengths, horseshoe_prob, label<span class="op">=</span><span class="st">"Horseshoe"</span>)</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xlabel(<span class="st">"Wavelength (nm)"</span>)</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_ylabel(<span class="st">"P(|beta| &gt; 0.10)"</span>)</span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].legend()</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="12_files/figure-html/cell-24-output-1.png" width="1049" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A Horseshoe posterior may show stronger concentration near zero while preserving larger effects for some coefficients.</p>
+</section>
+<section id="bayesian-diagnostic-checks" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="bayesian-diagnostic-checks"><span class="header-section-number">4.3</span> Bayesian diagnostic checks</h3>
+<p>Before comparing predictions, we must confirm that the Bayesian computations are sufficiently reliable.</p>
+<div id="fec99688" class="cell" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, trace <span class="kw">in</span> {<span class="st">"Bayesian Laplace"</span>: laplace_trace,</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"Horseshoe"</span>: horseshoe_trace}.items():</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    diagnostics <span class="op">=</span> az.summary(trace, var_names<span class="op">=</span>[<span class="st">"beta"</span>], kind<span class="op">=</span><span class="st">"diagnostics"</span>)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    divergences <span class="op">=</span> <span class="bu">int</span>(trace.sample_stats[<span class="st">"diverging"</span>].<span class="bu">sum</span>().item())</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Divergences:"</span>, divergences)</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Maximum R-hat:"</span>, diagnostics[<span class="st">"r_hat"</span>].<span class="bu">max</span>())</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Minimum bulk ESS:"</span>, diagnostics[<span class="st">"ess_bulk"</span>].<span class="bu">min</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Bayesian Laplace
+Divergences: 1
+Maximum R-hat: 1.0137938081377469
+Minimum bulk ESS: 1395.8680938176963
+
+Horseshoe
+Divergences: 0
+Maximum R-hat: 1.1221020223159872
+Minimum bulk ESS: 14.455420682053711</code></pre>
+</div>
+</div>
+<p>The main checks are <span class="math inline">\(\hat R\)</span>, effective sample size (ESS), and the number of divergent transitions. Ideally <span class="math inline">\(\hat R\)</span> should be close to 1, commonly below 1.01, with sufficiently large effective sample sizes for the parameters and quantities of interest. Divergences indicate potential problems exploring the posterior geometry.</p>
+<p>If convergence is inadequare, increasing the number of draws alone may not be sufficient. We may need to reconsider the prior scale, parameterization, sampler settings, or model assumptions.</p>
+</section>
+</section>
+<section id="comparative-evalulation-and-further-computational-experiments" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="comparative-evalulation-and-further-computational-experiments"><span class="header-section-number">5</span> Comparative evalulation and further computational experiments</h2>
+<p>We now have six fitted methods on the same dataset.</p>
+<section id="posterior-predictive-distributions" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="posterior-predictive-distributions"><span class="header-section-number">5.1</span> Posterior predictive distributions</h3>
+<p>For the Bayesian models, the predictive distribution incorporates both parameter uncertainty and residual noise:</p>
+<p><span class="math display">\[
+p(y_\text{new} \mid x_\text{new}, D) = \int p(y_\text{new}\mid x_\text{new}, \theta)p(\theta \mid D) d\theta
+\]</span></p>
+<p>Here <span class="math inline">\(\theta = (\beta_0, \beta, \sigma)\)</span>.</p>
+<p>We can calculate posterior predictive draws for the held-out observations from the saved posterior samples.</p>
+<div id="0f9c41ef" class="cell" data-execution_count="25">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bayesian_predict(trace, X_new_z, seed<span class="op">=</span><span class="dv">6400</span>): </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    posterior <span class="op">=</span> trace.posterior </span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    beta_draws <span class="op">=</span> posterior[<span class="st">"beta"</span>].stack(sample<span class="op">=</span>(<span class="st">"chain"</span>, <span class="st">"draw"</span>)).transpose(<span class="st">"sample"</span>, <span class="st">"wavelength"</span>).values</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    intercept_draws <span class="op">=</span> posterior[<span class="st">"intercept"</span>].stack(sample<span class="op">=</span>(<span class="st">"chain"</span>, <span class="st">"draw"</span>)).values</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    sigma_draws <span class="op">=</span> posterior[<span class="st">"sigma"</span>].stack(sample<span class="op">=</span>(<span class="st">"chain"</span>, <span class="st">"draw"</span>)).values </span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># expected response for each posterior draw</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    mu_draws <span class="op">=</span> intercept_draws[:, <span class="va">None</span>] <span class="op">+</span> beta_draws <span class="op">@</span> X_new_z.T </span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> np.random.default_rng(seed)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># include observation noise </span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    predictive_draws_z <span class="op">=</span> rng.normal(loc<span class="op">=</span>mu_draws, scale<span class="op">=</span>sigma_draws[:, <span class="va">None</span>])</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Average over posterior draws to obtain one prediction per observation.</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>    predicted_mean_z <span class="op">=</span> predictive_draws_z.mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>    lower_z, upper_z <span class="op">=</span> np.quantile(predictive_draws_z, [<span class="fl">0.05</span>, <span class="fl">0.95</span>], axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Return the predictions and intervals to the original octane-number scale.</span></span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>    predicted_mean <span class="op">=</span> y_mean <span class="op">+</span> y_sd <span class="op">*</span> predicted_mean_z</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>    lower <span class="op">=</span> y_mean <span class="op">+</span> y_sd <span class="op">*</span> lower_z</span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>    upper <span class="op">=</span> y_mean <span class="op">+</span> y_sd <span class="op">*</span> upper_z</span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> predicted_mean, lower, upper </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The multiplication <span class="math inline">\(B(X^*_{\text{test}})^\top\)</span> is efficient here, where each row of <span class="math inline">\(B\)</span> is one posterior draw of the complete coefficeint vector. All predictions are computed using matrix multiplication.</p>
+<div id="7f1aa128" class="cell" data-execution_count="26">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>lap_pred, lap_lo, lap_hi <span class="op">=</span> bayesian_predict(laplace_trace, X_test_z)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>hs_pred, hs_lo, hs_hi <span class="op">=</span> bayesian_predict(horseshoe_trace, X_test_z)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>These intervals are posterior predictive intervals for future observations.</p>
+</section>
+<section id="common-test-set-evaluation" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="common-test-set-evaluation"><span class="header-section-number">5.2</span> Common test-set evaluation</h3>
+<p>We use three standard measures:</p>
+<p><span class="math display">\[
+\begin{aligned}
+RMSE &amp;= \sqrt{\frac{1}{n_\text{test}} \sum_i (y_i - \hat y_i)^2}, \\
+MAE &amp;= \frac{1}{n_\text{test}}\sum_i |y_i \hat y_i| , \\
+R^2 &amp;= 1- \frac{\sum_{i} (y_i - \hat y_i)^2}{\sum_i (y_i - \overline y_\text{test})^2}
+\end{aligned}
+\]</span></p>
+<p>RMSE is sensitive to large prediction errors, which may be relevant for unusual samples. MAE provides a complementary measure that is less sensitive to individual large errors.</p>
+<div id="8398b56c" class="cell" data-execution_count="27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> inverse_y(pred_z):</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> y_mean <span class="op">+</span> y_sd <span class="op">*</span> np.asarray(pred_z)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>predictions <span class="op">=</span> {<span class="st">"Ridge"</span>: inverse_y(ridge_model.predict(X_test)), </span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Lasso"</span>: inverse_y(lasso_model.predict(X_test)), </span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Elastic Net"</span>: inverse_y(enet_model.predict(X_test)), </span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>                <span class="st">"PCR"</span>: inverse_y(pcr_model.predict(X_test)), </span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Bayesian Laplace"</span>: lap_pred, </span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Horseshoe"</span>: hs_pred}</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> [] </span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, pred <span class="kw">in</span> predictions.items():</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>    results.append({<span class="st">"Method"</span>: name, </span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"RMSE"</span>: np.sqrt(mean_squared_error(y_test, pred)), </span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"MAE"</span>: mean_absolute_error(y_test, pred), </span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"R2"</span>: r2_score(y_test, pred)})</span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>results_df <span class="op">=</span> pd.DataFrame(results).sort_values(<span class="st">"RMSE"</span>)</span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(results_df.<span class="bu">round</span>(<span class="dv">4</span>).to_string(index<span class="op">=</span><span class="va">False</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          Method   RMSE    MAE     R2
+Bayesian Laplace 0.1520 0.1286 0.9928
+           Ridge 0.1655 0.1458 0.9915
+             PCR 0.1850 0.1588 0.9893
+     Elastic Net 0.1954 0.1461 0.9881
+           Lasso 0.2019 0.1582 0.9873
+       Horseshoe 0.2077 0.1675 0.9865</code></pre>
+</div>
+</div>
+<p>This table will show which method achieves the best prediction on the selected holdout. However, because the test set contains only 10 observations, relatively small changes in the split may substantially alter the rankings.</p>
+</section>
+<section id="regular-vs-alcohold-containing-samples" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="regular-vs-alcohold-containing-samples"><span class="header-section-number">5.3</span> Regular vs alcohold-containing samples</h3>
+<p>A model may achieve good overall prediction while performing poorly on this chemically different subgroup. We can examine this without changing or refiting the models.</p>
+<div id="1d9d6736" class="cell" data-execution_count="28">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>group_results <span class="op">=</span> []</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>groups <span class="op">=</span> {<span class="st">"Regular"</span>: <span class="op">~</span>alcohol_test, </span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Added alcohol"</span>: alcohol_test}</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, pred <span class="kw">in</span> predictions.items():</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> group_name, mask <span class="kw">in</span> groups.items():</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> mask.<span class="bu">sum</span>() <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span> </span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>        error <span class="op">=</span> y_test[mask] <span class="op">-</span> pred[mask]</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>        group_results.append({<span class="st">"Method"</span>: name, </span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>                            <span class="st">"Group"</span>: group_name,</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>                            <span class="st">"n"</span>: mask.<span class="bu">sum</span>(), </span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>                            <span class="st">"RMSE"</span>: np.sqrt(np.mean(error<span class="op">**</span><span class="dv">2</span>)), </span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>                            <span class="st">"MAE"</span>: np.mean(np.<span class="bu">abs</span>(error))})</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>group_df <span class="op">=</span> pd.DataFrame(group_results)</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(group_df.pivot(index<span class="op">=</span><span class="st">"Method"</span>, columns<span class="op">=</span><span class="st">"Group"</span>, values<span class="op">=</span><span class="st">"RMSE"</span>).<span class="bu">round</span>(<span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Group             Added alcohol  Regular
+Method                                  
+Bayesian Laplace         0.0342   0.1691
+Elastic Net              0.0285   0.2180
+Horseshoe                0.0543   0.2306
+Lasso                    0.0958   0.2206
+PCR                      0.1284   0.1966
+Ridge                    0.0661   0.1821</code></pre>
+</div>
+</div>
+<p>This allows us to ask whether the different methods behave similarly across the two subgroups.</p>
+</section>
+<section id="prediction-uncertainty" class="level3" data-number="5.4">
+<h3 data-number="5.4" class="anchored" data-anchor-id="prediction-uncertainty"><span class="header-section-number">5.4</span> Prediction uncertainty</h3>
+<p>The Bayesian appraoches provide an additional comparison unvailable from ordinary point predictions alone. We can assess the emprical coverage of their 90% posterior predictive intervals.</p>
+<div id="f7f6057a" class="cell" data-execution_count="29">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>intervals <span class="op">=</span> {<span class="st">"Bayesian Laplace"</span>: (lap_lo, lap_hi), </span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Horseshoe"</span>: (hs_lo, hs_hi)}</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, (lower, upper) <span class="kw">in</span> intervals.items():</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    covered <span class="op">=</span> (y_test <span class="op">&gt;=</span> lower) <span class="op">&amp;</span> (y_test <span class="op">&lt;=</span> upper)</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    width <span class="op">=</span> upper <span class="op">-</span> lower </span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(name, <span class="st">" | Coverage:"</span>, <span class="bu">round</span>(covered.mean(), <span class="dv">3</span>), <span class="st">" | Mean width:"</span>, <span class="bu">round</span>(width.mean(), <span class="dv">3</span>))            </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Bayesian Laplace  | Coverage: 1.0  | Mean width: 0.917
+Horseshoe  | Coverage: 1.0  | Mean width: 1.013</code></pre>
+</div>
+</div>
+<p>We are intersted in the relationship between interval width and coverage.</p>
+<p>We can also visualize the predictions and intervals:</p>
+<div id="845a82aa" class="cell" data-execution_count="30">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>order <span class="op">=</span> np.argsort(y_test)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>positions <span class="op">=</span> np.arange(<span class="bu">len</span>(y_test))</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>plt.scatter(positions, y_test[order], color<span class="op">=</span><span class="st">"black"</span>, label<span class="op">=</span><span class="st">"Observed"</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> offset, name, mean, lo, hi <span class="kw">in</span> [(<span class="op">-</span><span class="fl">0.12</span>, <span class="st">"Laplace"</span>, lap_pred, lap_lo, lap_hi),</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>                                    (<span class="fl">0.12</span>, <span class="st">"Horseshoe"</span>, hs_pred, hs_lo, hs_hi)]:</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>    plt.errorbar(positions <span class="op">+</span> offset, mean[order], yerr<span class="op">=</span>[mean[order] <span class="op">-</span> lo[order], hi[order] <span class="op">-</span> mean[order]], fmt<span class="op">=</span><span class="st">"o"</span>, capsize<span class="op">=</span><span class="dv">3</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span>name)</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Held-out sample (sorted by octane)"</span>)</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Octane number"</span>)</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Bayesian Posterior Predictive Intervals"</span>)</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="12_files/figure-html/cell-31-output-1.png" width="951" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="compare-all-coefficient-estimates" class="level3" data-number="5.5">
+<h3 data-number="5.5" class="anchored" data-anchor-id="compare-all-coefficient-estimates"><span class="header-section-number">5.5</span> Compare all coefficient estimates</h3>
+<p>The six methods each produce a coefficient summary in the same standardize feature space/ For the frequentist methods, we use the posterior mean.</p>
+<div id="1a522e6a" class="cell" data-execution_count="31">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>coefficient_df <span class="op">=</span> pd.DataFrame({<span class="st">"Ridge"</span>: ridge_beta, </span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Lasso"</span>: lasso_beta, </span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Elastic Net"</span>: enet_beta, </span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"PCR"</span>: pcr_beta, </span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Bayesian Laplace"</span>: laplace_beta_mean, </span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Horseshoe"</span>: horseshoe_beta_mean}, index<span class="op">=</span>wavelengths)</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>coefficient_df.index.name <span class="op">=</span> <span class="st">"Wavelength"</span></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="co"># use a common color scale for all methods </span></span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>coef_matrix <span class="op">=</span> coefficient_df.T.to_numpy()</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>limit <span class="op">=</span> np.<span class="bu">max</span>(np.<span class="bu">abs</span>(coef_matrix))</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">5</span>))</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> ax.imshow(coef_matrix, aspect<span class="op">=</span><span class="st">"auto"</span>, cmap<span class="op">=</span><span class="st">"coolwarm"</span>, vmin<span class="op">=-</span>limit, vmax<span class="op">=</span>limit, extent<span class="op">=</span>[wavelengths[<span class="dv">0</span>], wavelengths[<span class="op">-</span><span class="dv">1</span>], <span class="bu">len</span>(coefficient_df.columns) <span class="op">-</span> <span class="fl">0.5</span>, <span class="op">-</span><span class="fl">0.5</span>])</span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>ax.set_yticks(np.arange(<span class="bu">len</span>(coefficient_df.columns)))</span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a>ax.set_yticklabels(coefficient_df.columns)</span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Wavelength (nm)"</span>)</span>
+<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Coefficient Patterns Across Regularization Methods"</span>)</span>
+<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-23"><a href="#cb45-23" aria-hidden="true" tabindex="-1"></a>plt.colorbar(im, ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">"Standardized coefficient"</span>)</span>
+<span id="cb45-24"><a href="#cb45-24" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb45-25"><a href="#cb45-25" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="12_files/figure-html/cell-32-output-1.png" width="1079" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="stability-of-lasso-variable-selection" class="level3" data-number="5.6">
+<h3 data-number="5.6" class="anchored" data-anchor-id="stability-of-lasso-variable-selection"><span class="header-section-number">5.6</span> Stability of Lasso variable selection</h3>
+<p>To demonstrate another important property of regularization, we can ask whether Lasso consistently selects the same wavelengths when the training observations change. A simple approach is bootstrap resampling.</p>
+<div id="dd61736c" class="cell" data-execution_count="32">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.base <span class="im">import</span> clone </span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(SEED)</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> <span class="dv">60</span> </span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>selection <span class="op">=</span> np.zeros((B, X_train.shape[<span class="dv">1</span>]), dtype<span class="op">=</span><span class="bu">bool</span>)</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> b <span class="kw">in</span> <span class="bu">range</span>(B): </span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>    boot_idx <span class="op">=</span> rng.choice(<span class="bu">len</span>(X_train), size <span class="op">=</span><span class="bu">len</span>(X_train), replace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>    model <span class="op">=</span> clone(lasso_model)</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>    model.fit(X_train[boot_idx], y_train_z[boot_idx])</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>    beta_boot <span class="op">=</span> model.named_steps[<span class="st">"regressor"</span>].coef_</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>    selection[b] <span class="op">=</span> np.<span class="bu">abs</span>(beta_boot) <span class="op">&gt;</span> <span class="fl">1e-7</span> </span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>selection_frequency <span class="op">=</span> selection.mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a>plt.plot(wavelengths, selection_frequency)</span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Wavelength (nm)"</span>)</span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Selection frequency"</span>)</span>
+<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="op">-</span><span class="fl">0.05</span>, <span class="fl">1.05</span>)</span>
+<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Boostrap Stability of Lasso Selection"</span>)</span>
+<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="12_files/figure-html/cell-33-output-1.png" width="951" height="374" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+(() => {
+  "use strict";
+
+  const boxSelector = ".theorem, .example, .callout";
+  const displayMathSelector = 'mjx-container[display="true"]';
+  let fitFrame = 0;
+  let fittingStarted = false;
+
+  function fitDisplayMath(displayMath) {
+    // Measure at the normal MathJax size every time so equations can grow
+    // back after their container becomes wider.
+    displayMath.style.removeProperty("font-size");
+    displayMath.removeAttribute("data-math-fit-scale");
+
+    const wrapper = displayMath.closest(".math.display") || displayMath.parentElement;
+    // Quarto may configure MathJax's SVG or CHTML renderer. Both express
+    // their natural width relative to the container's font size.
+    const renderedMath = displayMath.querySelector("mjx-math, svg");
+
+    if (!wrapper || !renderedMath) {
+      return;
+    }
+
+    const wrapperStyle = window.getComputedStyle(wrapper);
+    const horizontalPadding =
+      Number.parseFloat(wrapperStyle.paddingLeft) +
+      Number.parseFloat(wrapperStyle.paddingRight);
+    const availableWidth = wrapper.clientWidth - horizontalPadding;
+    const naturalWidth = renderedMath.getBoundingClientRect().width;
+
+    if (availableWidth <= 0 || naturalWidth <= availableWidth) {
+      return;
+    }
+
+    // Leave a small margin so sub-pixel rounding does not create a scrollbar.
+    const scale = (availableWidth / naturalWidth) * 0.98;
+    displayMath.style.fontSize = `${scale * 100}%`;
+    displayMath.dataset.mathFitScale = scale.toFixed(3);
+  }
+
+  function fitAllBoxMath() {
+    document.querySelectorAll(boxSelector).forEach((box) => {
+      box.querySelectorAll(displayMathSelector).forEach(fitDisplayMath);
+    });
+  }
+
+  function scheduleFit() {
+    window.cancelAnimationFrame(fitFrame);
+    fitFrame = window.requestAnimationFrame(() => {
+      // Use a second frame so layout reflects the reset to normal size.
+      window.requestAnimationFrame(fitAllBoxMath);
+    });
+  }
+
+  async function startFitting() {
+    if (fittingStarted) {
+      return;
+    }
+    fittingStarted = true;
+
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
+    scheduleFit();
+
+    if ("ResizeObserver" in window) {
+      const resizeObserver = new ResizeObserver(scheduleFit);
+      document.querySelectorAll(boxSelector).forEach((box) => resizeObserver.observe(box));
+    } else {
+      window.addEventListener("resize", scheduleFit, {passive: true});
+    }
+
+    // Also handle equations inserted later by notebook or Quarto components.
+    const mutationObserver = new MutationObserver((mutations) => {
+      if (
+        mutations.some((mutation) =>
+          [...mutation.addedNodes].some(
+            (node) =>
+              node.nodeType === Node.ELEMENT_NODE &&
+              (node.matches?.(displayMathSelector) || node.querySelector?.(displayMathSelector))
+          )
+        )
+      ) {
+        scheduleFit();
+      }
+    });
+
+    mutationObserver.observe(document.body, {childList: true, subtree: true});
+  }
+
+  const mathJaxReady = window.MathJax?.startup?.promise;
+
+  if (mathJaxReady && typeof mathJaxReady.then === "function") {
+    // Plotly outputs can load their own MathJax renderer and cause the shared
+    // startup promise to reject even though the page equations were rendered.
+    // Fit in either case.
+    mathJaxReady.then(startFitting, startFitting);
+  }
+
+  // Always keep the ordinary page-load event as a fallback. Some embedded
+  // widgets replace window.MathJax and leave an earlier startup promise pending.
+  if (document.readyState === "complete") {
+    startFitting();
+  } else {
+    window.addEventListener("load", startFitting, {once: true});
+  }
+})();
+</script>
+<script type="application/vnd.jupyter.widget-state+json">
+{"state":{"04b8bdb78a8543f486629ef4fb828e36":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"0c5620f0ea6047fa9c9237da5b4758d5":{"model_module":"@jupyter-widgets/output","model_module_version":"1.0.0","model_name":"OutputModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/output","_model_module_version":"1.0.0","_model_name":"OutputModel","_view_count":null,"_view_module":"@jupyter-widgets/output","_view_module_version":"1.0.0","_view_name":"OutputView","layout":"IPY_MODEL_04b8bdb78a8543f486629ef4fb828e36","msg_id":"","outputs":[{"data":{"text/html":"<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">                                                                                                                   \n <span style=\"font-weight: bold\">                      </span> <span style=\"font-weight: bold\">           </span> <span style=\"font-weight: bold\">           </span> <span style=\"font-weight: bold\">           </span> <span style=\"font-weight: bold\"> Grad      </span> <span style=\"font-weight: bold\">                    </span> <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\">          </span> \n <span style=\"font-weight: bold\"> Progress             </span> <span style=\"font-weight: bold\"> Draw      </span> <span style=\"font-weight: bold\"> Divergen… </span> <span style=\"font-weight: bold\"> Step size </span> <span style=\"font-weight: bold\"> evals     </span> <span style=\"font-weight: bold\"> Speed              </span> <span style=\"font-weight: bold\"> Elapsed  </span> <span style=\"font-weight: bold\"> Remaini… </span> \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━━━━━</span> <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━</span>   600         0           0.011       511         117.11 draws/s       0:00:13    0:00:00   \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━━━━━</span> <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━</span>   600         0           0.011       511         117.19 draws/s       0:00:13    0:00:00   \n                                                                                                                   \n</pre>\n","text/plain":"                                                                                                                   \n \u001b[1m                      \u001b[0m \u001b[1m           \u001b[0m \u001b[1m           \u001b[0m \u001b[1m           \u001b[0m \u001b[1m \u001b[0m\u001b[1mGrad     \u001b[0m\u001b[1m \u001b[0m \u001b[1m                    \u001b[0m \u001b[1m          \u001b[0m \u001b[1m          \u001b[0m \n \u001b[1m \u001b[0m\u001b[1mProgress            \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDraw     \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDivergen…\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mStep size\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mevals    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSpeed             \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mElapsed \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRemaini…\u001b[0m\u001b[1m \u001b[0m \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  ━━━━━━━━━━━━ ━━━━━━━   600         0           0.011       511         117.11 draws/s       0:00:13    0:00:00   \n  ━━━━━━━━━━━━ ━━━━━━━   600         0           0.011       511         117.19 draws/s       0:00:13    0:00:00   \n                                                                                                                   \n"},"metadata":{},"output_type":"display_data"}],"tabbable":null,"tooltip":null}},"1ad07be1ec2e4c01a39dc8c77711eae8":{"model_module":"@jupyter-widgets/output","model_module_version":"1.0.0","model_name":"OutputModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/output","_model_module_version":"1.0.0","_model_name":"OutputModel","_view_count":null,"_view_module":"@jupyter-widgets/output","_view_module_version":"1.0.0","_view_name":"OutputView","layout":"IPY_MODEL_2482de190959412e8b59524d60ac8fa7","msg_id":"","outputs":[{"data":{"text/html":"<pre style=\"white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace\">                                                                                                                   \n <span style=\"font-weight: bold\">                      </span> <span style=\"font-weight: bold\">           </span> <span style=\"font-weight: bold\">           </span> <span style=\"font-weight: bold\">           </span> <span style=\"font-weight: bold\"> Grad      </span> <span style=\"font-weight: bold\">                    </span> <span style=\"font-weight: bold\">          </span> <span style=\"font-weight: bold\">          </span> \n <span style=\"font-weight: bold\"> Progress             </span> <span style=\"font-weight: bold\"> Draw      </span> <span style=\"font-weight: bold\"> Divergen… </span> <span style=\"font-weight: bold\"> Step size </span> <span style=\"font-weight: bold\"> evals     </span> <span style=\"font-weight: bold\"> Speed              </span> <span style=\"font-weight: bold\"> Elapsed  </span> <span style=\"font-weight: bold\"> Remaini… </span> \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━━━━</span> <span style=\"color: #1f77b4; text-decoration-color: #1f77b4\">━━━━━━━━</span>   600         0           0.004       1023        71.46 draws/s        0:00:19    0:00:00   \n  <span style=\"color: #d62728; text-decoration-color: #d62728\">━━━━━━━━━━━</span> <span style=\"color: #d62728; text-decoration-color: #d62728\">━━━━━━━━</span>   600         1           0.005       1023        71.53 draws/s        0:00:19    0:00:00   \n                                                                                                                   \n</pre>\n","text/plain":"                                                                                                                   \n \u001b[1m                      \u001b[0m \u001b[1m           \u001b[0m \u001b[1m           \u001b[0m \u001b[1m           \u001b[0m \u001b[1m \u001b[0m\u001b[1mGrad     \u001b[0m\u001b[1m \u001b[0m \u001b[1m                    \u001b[0m \u001b[1m          \u001b[0m \u001b[1m          \u001b[0m \n \u001b[1m \u001b[0m\u001b[1mProgress            \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDraw     \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mDivergen…\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mStep size\u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mevals    \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mSpeed             \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mElapsed \u001b[0m\u001b[1m \u001b[0m \u001b[1m \u001b[0m\u001b[1mRemaini…\u001b[0m\u001b[1m \u001b[0m \n ───────────────────────────────────────────────────────────────────────────────────────────────────────────────── \n  ━━━━━━━━━━━ ━━━━━━━━   600         0           0.004       1023        71.46 draws/s        0:00:19    0:00:00   \n  ━━━━━━━━━━━ ━━━━━━━━   600         1           0.005       1023        71.53 draws/s        0:00:19    0:00:00   \n                                                                                                                   \n"},"metadata":{},"output_type":"display_data"}],"tabbable":null,"tooltip":null}},"2482de190959412e8b59524d60ac8fa7":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}}},"version_major":2,"version_minor":0}
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../weeks/10.html" class="pagination-link" aria-label="Lasso Regression">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Lasso Regression</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../references.html" class="pagination-link" aria-label="References">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
