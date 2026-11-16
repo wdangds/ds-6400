@@ -10,9 +10,11 @@ dependencies:
   - numpy
   - pandas
   - matplotlib
+  - seaborn
   - scipy
   - scikit-learn
   - statsmodels
+  - patsy
   - cloudpickle
   - plotly
   - pymc

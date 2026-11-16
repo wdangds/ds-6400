@@ -1,0 +1,1900 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>12&nbsp; Introduction to Survival Analysis and Parametric Survival Models – DS 6400 Weekly Writing</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../weeks/16.html" rel="next">
+<link href="../weeks/12.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5ccb035bea26c1e21f80f44cf7c27909.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+window.MathJax = {
+  loader: {
+    load: ["[tex]/mathtools"]
+  },
+  tex: {
+    packages: {"[+]": ["mathtools"]},
+    macros: {
+      R: "\\mathbb{R}",
+      N: "\\mathbb{N}",
+      Z: "\\mathbb{Z}",
+      Q: "\\mathbb{Q}",
+      C: "\\mathbb{C}",
+      E: "\\mathbb{E}",
+      Var: "\\operatorname{Var}",
+      Cov: "\\operatorname{Cov}",
+      Corr: "\\operatorname{Corr}",
+      argmin: "\\operatorname*{arg\\,min}",
+      argmax: "\\operatorname*{arg\\,max}",
+      ind: "\\mathbb{1}",
+      Err: "\\operatorname{Err}",
+      err: "\\operatorname{err}",
+      var: "\\operatorname{var}",
+      indep: "\\perp\\!\\!\\!\\perp",
+      PD: "\\operatorname{PD}",
+      ALE: "\\operatorname{ALE}",
+      mg: "\\operatorname{mg}",
+      av: "\\operatorname{av}",
+      PE: "\\operatorname{PE}",
+      mr: "\\operatorname{mr}",
+      rmg: "\\operatorname{rmg}",
+      sd: "\\operatorname{sd}",
+      P: "\\mathbb{P}", 
+      rank: "\\operatorname{rank}",
+      dim: "\\operatorname{dim}",
+      V: "\\mathcal{V}",
+      W: "\\mathcal{W}",
+      U: "\\mathcal{U}",
+    }
+  }
+};
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/14.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to Survival Analysis and Parametric Survival Models</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">DS 6400 Weekly Writing</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Weekly Writing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Apparent Error to Modern Error: Efron’s Optimism and Evaluation of Predictive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">40 years of Predictive Performance Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Are the Forests really Random?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Comparison Under Complexity and Tuning Constraints</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Regression Splines</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Comparing Nonlinear Regression Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">High-Dimensional Regression in Python</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Ridge Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Lasso Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Computational Exploration of Regularization in High-Dimensional Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/14.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to Survival Analysis and Parametric Survival Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Interactions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/ols-cv-independence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">OLS, Linear Invariance, and Conditional Independence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/linear-algebra-revision.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#statistical-distributions-parametric-and-nonparametric-approaches" id="toc-statistical-distributions-parametric-and-nonparametric-approaches" class="nav-link active" data-scroll-target="#statistical-distributions-parametric-and-nonparametric-approaches"><span class="header-section-number">1</span> Statistical distributions: Parametric and nonparametric approaches</a>
+  <ul class="collapse">
+  <li><a href="#statistical-inference-as-the-estimation-of-a-distribution" id="toc-statistical-inference-as-the-estimation-of-a-distribution" class="nav-link" data-scroll-target="#statistical-inference-as-the-estimation-of-a-distribution"><span class="header-section-number">1.1</span> Statistical inference as the estimation of a distribution</a></li>
+  <li><a href="#parametric-estimation" id="toc-parametric-estimation" class="nav-link" data-scroll-target="#parametric-estimation"><span class="header-section-number">1.2</span> Parametric estimation</a></li>
+  <li><a href="#nonparametric-estimation" id="toc-nonparametric-estimation" class="nav-link" data-scroll-target="#nonparametric-estimation"><span class="header-section-number">1.3</span> Nonparametric estimation</a></li>
+  </ul></li>
+  <li><a href="#mathematical-foundations-of-survival-analysis" id="toc-mathematical-foundations-of-survival-analysis" class="nav-link" data-scroll-target="#mathematical-foundations-of-survival-analysis"><span class="header-section-number">2</span> Mathematical foundations of survival analysis</a>
+  <ul class="collapse">
+  <li><a href="#from-ordinary-observations-to-survival-times" id="toc-from-ordinary-observations-to-survival-times" class="nav-link" data-scroll-target="#from-ordinary-observations-to-survival-times"><span class="header-section-number">2.1</span> From ordinary observations to survival times</a></li>
+  <li><a href="#the-survival-function" id="toc-the-survival-function" class="nav-link" data-scroll-target="#the-survival-function"><span class="header-section-number">2.2</span> The survival function</a></li>
+  <li><a href="#the-hazard-function" id="toc-the-hazard-function" class="nav-link" data-scroll-target="#the-hazard-function"><span class="header-section-number">2.3</span> The hazard function</a></li>
+  <li><a href="#the-cummulative-hazard-the-survival-hazard-relationship" id="toc-the-cummulative-hazard-the-survival-hazard-relationship" class="nav-link" data-scroll-target="#the-cummulative-hazard-the-survival-hazard-relationship"><span class="header-section-number">2.4</span> The cummulative hazard the survival-hazard relationship</a></li>
+  <li><a href="#mean-survival-time-and-survival-quantiles" id="toc-mean-survival-time-and-survival-quantiles" class="nav-link" data-scroll-target="#mean-survival-time-and-survival-quantiles"><span class="header-section-number">2.5</span> Mean survival time and survival quantiles</a></li>
+  <li><a href="#the-fundamental-problem-of-censoring" id="toc-the-fundamental-problem-of-censoring" class="nav-link" data-scroll-target="#the-fundamental-problem-of-censoring"><span class="header-section-number">2.6</span> The fundamental problem of censoring</a></li>
+  <li><a href="#likelihood-for-censored-survival-observations" id="toc-likelihood-for-censored-survival-observations" class="nav-link" data-scroll-target="#likelihood-for-censored-survival-observations"><span class="header-section-number">2.7</span> Likelihood for censored survival observations</a></li>
+  </ul></li>
+  <li><a href="#nonparametric-survival-estimation-the-kaplan-meier-estimator" id="toc-nonparametric-survival-estimation-the-kaplan-meier-estimator" class="nav-link" data-scroll-target="#nonparametric-survival-estimation-the-kaplan-meier-estimator"><span class="header-section-number">3</span> Nonparametric survival estimation: The Kaplan-Meier estimator</a>
+  <ul class="collapse">
+  <li><a href="#why-the-empirical-distribution-is-insufficient" id="toc-why-the-empirical-distribution-is-insufficient" class="nav-link" data-scroll-target="#why-the-empirical-distribution-is-insufficient"><span class="header-section-number">3.1</span> Why the empirical distribution is insufficient</a></li>
+  <li><a href="#construction-of-the-product-limit-estimator" id="toc-construction-of-the-product-limit-estimator" class="nav-link" data-scroll-target="#construction-of-the-product-limit-estimator"><span class="header-section-number">3.2</span> Construction of the product-limit estimator</a></li>
+  <li><a href="#maximum-likelihood-interpretation" id="toc-maximum-likelihood-interpretation" class="nav-link" data-scroll-target="#maximum-likelihood-interpretation"><span class="header-section-number">3.3</span> Maximum likelihood interpretation</a></li>
+  <li><a href="#sec-example" id="toc-sec-example" class="nav-link" data-scroll-target="#sec-example"><span class="header-section-number">3.4</span> A numerical example</a></li>
+  <li><a href="#statistical-properties-of-the-product-limit-estimator" id="toc-statistical-properties-of-the-product-limit-estimator" class="nav-link" data-scroll-target="#statistical-properties-of-the-product-limit-estimator"><span class="header-section-number">3.5</span> Statistical properties of the product-limit estimator</a></li>
+  <li><a href="#mean-survival-and-the-effects-of-incomplete-follow-up" id="toc-mean-survival-and-the-effects-of-incomplete-follow-up" class="nav-link" data-scroll-target="#mean-survival-and-the-effects-of-incomplete-follow-up"><span class="header-section-number">3.6</span> Mean survival and the effects of incomplete follow-up</a></li>
+  <li><a href="#alternative-nonparametric-estimates" id="toc-alternative-nonparametric-estimates" class="nav-link" data-scroll-target="#alternative-nonparametric-estimates"><span class="header-section-number">3.7</span> Alternative nonparametric estimates</a></li>
+  </ul></li>
+  <li><a href="#parametric-survival-distributions" id="toc-parametric-survival-distributions" class="nav-link" data-scroll-target="#parametric-survival-distributions"><span class="header-section-number">4</span> Parametric survival distributions</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/14.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to Survival Analysis and Parametric Survival Models</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to Survival Analysis and Parametric Survival Models</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Survival analysis is concerned with the statistic description of the time until an event occurs. The central difficulty is that the event of interest may not be observed for every individual. Unlike ordinary statistical estimation, where a sample is generally assumed to contain complete observations, survival analysis must extract information from observations that may be incomplete. This problem motivates the development of nonparametric survival estimation and, parametric distributions that describe survival probabilities through a small number of interpretable parameters.</p>
+<p>Historically, these two approaches developed complementary roles. <span class="citation" data-cites="weibullStatisticalDistributionFunction1951">Weibull (<a href="../references.html#ref-weibullStatisticalDistributionFunction1951" role="doc-biblioref">1951</a>)</span> demonstrated how a simple parametric distribution could characterize failure phenomena across different populations. <span class="citation" data-cites="kaplanNonparametricEstimationIncomplete1958">Kaplan and Meier (<a href="../references.html#ref-kaplanNonparametricEstimationIncomplete1958" role="doc-biblioref">1958</a>)</span> established a nonparametric estimator capable of recovering a survival distribution from incomplete observations without specifiying its functional form. Later, <span class="citation" data-cites="aitkinFittingExponentialWeibull1980">Aitkin and Clayton (<a href="../references.html#ref-aitkinFittingExponentialWeibull1980" role="doc-biblioref">1980</a>)</span> demonstrated how exponential, Weibull, and extreme-value distributions could be incorporated into regression models for censored survival data.</p>
+<section id="statistical-distributions-parametric-and-nonparametric-approaches" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="statistical-distributions-parametric-and-nonparametric-approaches"><span class="header-section-number">1</span> Statistical distributions: Parametric and nonparametric approaches</h2>
+<section id="statistical-inference-as-the-estimation-of-a-distribution" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="statistical-inference-as-the-estimation-of-a-distribution"><span class="header-section-number">1.1</span> Statistical inference as the estimation of a distribution</h3>
+<p>Suppose that <span class="math inline">\(X\)</span> is a random variable describing a measurable characteristic of a population. Its cumulative distribution function is defined by</p>
+<p><span class="math display">\[
+F(x) = \P(X\leq x)
+\]</span></p>
+<p>The distribution function characterizes the probability law of <span class="math inline">\(X\)</span>. If the distribution is continuous, it admits a probability density function</p>
+<p><span class="math display">\[
+f(x) = \frac{dF(x)}{dx},
+\]</span></p>
+<p>abd probabilities over intervals can be obtained through integration:</p>
+<p><span class="math display">\[
+\P(a&lt; X&lt; b) = F(b) - F(a) = \int_a^b f(x) dx .
+\]</span></p>
+<p>In statistical inference, however, the underlying distribution is generally unknown. Instead, we observe a random sample</p>
+<p><span class="math display">\[
+X_1, X_2, \ldots, X_n \overset{iid}{\sim} F
+\]</span></p>
+<p>and attempt to construct an estimate of <span class="math inline">\(F\)</span> from the information contained in these observations. This problem can be viewed as selecting an admissible distribution from a class of candidate distributions. The distinction between parametric and nonparametric estimation aries from <strong>how restrictive this admissible class is</strong>.</p>
+</section>
+<section id="parametric-estimation" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="parametric-estimation"><span class="header-section-number">1.2</span> Parametric estimation</h3>
+<p>A statistical model is called <em>parametric</em> when the admissible distribution are described by a finite-dimensional parameter vector:</p>
+<p><span class="math display">\[
+\mathcal F = \{F(x, \theta): \theta \in \Theta \in \R^p\}
+\]</span></p>
+<p>where <span class="math inline">\(p\)</span> is fixed and does not increase with the sample size. For example, suppose that the observations follow a normal distribution</p>
+<p><span class="math display">\[
+X_i \sim \mathcal N(\mu, \sigma^2).
+\]</span></p>
+<p>Instead of estimating an arbitrary distribution function, we assume that its shape belongs to the normal family</p>
+<p><span class="math display">\[
+F(x; \mu, \sigma) = \Phi\left(\frac{x- \mu}{\sigma}\right).
+\]</span></p>
+<p>The estimation problem therefore reduces to estimating the two parameters <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma^2\)</span>. Under independent observations, the likelihood is</p>
+<p><span class="math display">\[
+L(\theta) = \prod_{i=1}^n f(X_i; \theta),
+\]</span></p>
+<p>and the <em>maximum likelihood estimator</em> (MLE) is</p>
+<p><span class="math display">\[
+\hat \theta = \arg\max_{\theta \in \Theta} L(\theta)
+\]</span></p>
+<p>Once <span class="math inline">\(\hat \theta\)</span> is obtained, the entire fitted distribution follows from</p>
+<p><span class="math display">\[
+\hat F(x) = F(x; \hat \theta)
+\]</span></p>
+<p>The primary advantage of parametric estimation is that a potentially complicated distribution is represented through a small number of parameters. When the assumed family is appropriate, estimation can be statistically efficient, inference can be relatively simple, and the resulting model can provide estimates beyond the observed range.</p>
+<p>These benefits depend on the validity of the assumed distributional structure. If the true distribution is different from the selected family, even an accurately estimated parameter vector may produce misleading probabilities.</p>
+</section>
+<section id="nonparametric-estimation" class="level3" data-number="1.3">
+<h3 data-number="1.3" class="anchored" data-anchor-id="nonparametric-estimation"><span class="header-section-number">1.3</span> Nonparametric estimation</h3>
+<p>A nonparametric estimator avoids specifying a particular finite-dimensional distributional family. Instead, the admissible class is sufficiently broad to include arbitrary distribution functions.</p>
+<p>When all observations are complete, the nonparametric estimate of <span class="math inline">\(F\)</span> is the empirical distribution function</p>
+<p><span class="math display">\[
+\hat F_n(x) = \frac{1}{n} \sum_{i=1}^n \mathbf{1}\{X_i \leq x\} .
+\]</span></p>
+<p>Here, <span class="math inline">\(\mathbf{1} \{\cdot \}\)</span> denotes the indicator function. For any fixed <span class="math inline">\(x\)</span>,</p>
+<p><span class="math display">\[
+\E[\hat F_n(x)] = \frac{1}{n} \sum_{i=1}^n \P(X_i \leq x) = F(x)
+\]</span></p>
+<p>and because the indicators are indepedent Bernoully random variables,</p>
+<p><span class="math display">\[
+\Var[\hat F_n(x)] = \frac{F(x)[1-F(x)]}{n}
+\]</span></p>
+<div id="prp-pointwise-consistency-of-the-empirical-distirbution-function" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 1 (Pointwise consistency of the empirical distribution function)</strong></span> For every fixed <span class="math inline">\(x\)</span>,</p>
+<p><span class="math display">\[
+\hat F_n(x) \overset{p} \to F(x)
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Since the variance of <span class="math inline">\(\hat F_n(x)\)</span> tends to zero and the estimator is unbiased, Chebyshev’s inequality gives</p>
+<p><span class="math display">\[
+\P\left(|\hat F_n(x) - F(x)| &gt; \epsilon \right) \leq \frac{F(x)[1-F(x)]}{n\epsilon^2} \to 0 .
+\]</span></p>
+<p>Thus, the empirical distribution consistently estimates the population distribution at every fixed point.</p>
+</div>
+<p>A stronger result, the <a href="https://en.wikipedia.org/wiki/Glivenko–Cantelli_theorem">Glivenko-Cantelli theorem</a>, establishes uniform convergence</p>
+<p><span class="math display">\[
+\sup_x [\hat F_n(x) - F(x)] \overset{a.s}{\longrightarrow} 0.
+\]</span></p>
+<p>This uniform convergence statement is a standard extension of the empirical-distirbution theory.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Characteristic</th>
+<th>Parametric</th>
+<th>Nonparametric</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Distribution assumption</td>
+<td>Prespecified family</td>
+<td>No prespecified family</td>
+</tr>
+<tr class="even">
+<td>Object being estimated</td>
+<td>Finite-dimensional <span class="math inline">\(\theta\)</span></td>
+<td>Entire distribution <span class="math inline">\(F\)</span></td>
+</tr>
+<tr class="odd">
+<td>Typical estimator</td>
+<td>Maximum likelihood estimate of <span class="math inline">\(\theta\)</span></td>
+<td>Empirical distribution</td>
+</tr>
+<tr class="even">
+<td>Extrapolation</td>
+<td>Possible under model assumptions</td>
+<td>Generally unsupported outside observed data</td>
+</tr>
+<tr class="odd">
+<td>Main concern</td>
+<td>Model misspecification</td>
+<td>Variability and limited tail information</td>
+</tr>
+</tbody>
+</table>
+<p>A nonparametric estimate can suggest or assess an appropriate parametric family, while a paramtetric model can provide a more economical representation when its assumptions are supported by the observations.</p>
+</section>
+</section>
+<section id="mathematical-foundations-of-survival-analysis" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="mathematical-foundations-of-survival-analysis"><span class="header-section-number">2</span> Mathematical foundations of survival analysis</h2>
+<section id="from-ordinary-observations-to-survival-times" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="from-ordinary-observations-to-survival-times"><span class="header-section-number">2.1</span> From ordinary observations to survival times</h3>
+<p>Let <span class="math inline">\(T\)</span> be a nonnegative random variable representing the time from a defined origin until an event of interest occurs:</p>
+<p><span class="math display">\[
+T\geq 0
+\]</span></p>
+<div id="exm-define-t" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1</strong></span> <span class="math inline">\(T\)</span> could represent death after diagnosis, relapse following treatment, failure of a mechanical component, or the termination of an operating system.</p>
+<p>For example, suppose patients are followed after receving a treatment. Rather than asking only how many patients experienced the event, we may wish to determine how the probability of remaining event-free changes as follow-up time increases.</p>
+</div>
+<p>Two populations could have the same final proportion of observed events but different distributions of the event times. A comparison based on final event counts would fail to distinguish them.</p>
+<p>Survival analysis retains the timing information.</p>
+</section>
+<section id="the-survival-function" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="the-survival-function"><span class="header-section-number">2.2</span> The survival function</h3>
+<div id="def-survival-function" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Survival function)</strong></span> The survival function of <span class="math inline">\(T\)</span> is</p>
+<p><span class="math display">\[
+S(t) = \P(T&gt; t) = 1- F(t)
+\]</span></p>
+<p>It represents the probability that an individual survives beyond time <span class="math inline">\(t\)</span>.</p>
+</div>
+<p>For a continuous, nonnegative event time with <span class="math inline">\(\P(T&gt; 0)= 1\)</span>, the survival function satisfies</p>
+<p><span class="math display">\[
+S(0) = 1, \quad 0 &lt; S(t) &lt; 1
+\]</span></p>
+<p>and is nonincreasing in <span class="math inline">\(t\)</span>. For a proper event-time distribution with eventual failure,</p>
+<p><span class="math display">\[
+\lim_{t\to \infty} S(t) = 0
+\]</span></p>
+<p>Since <span class="math inline">\(F(t) = 1-S(t)\)</span>, the density can be recovered from the survival function</p>
+<p><span class="math display">\[
+f(t) = - \frac{dS(t)}{dt}.
+\]</span></p>
+<p>Consequently, when a density exists,</p>
+<p><span class="math display">\[
+S(t) = \int_{t}^\infty f(u) du
+\]</span></p>
+<p>The survival function therefore contains the same distributional information as the density or cummulative distribution function, but we express it in a form that represents the probability of remaining event-free.</p>
+</section>
+<section id="the-hazard-function" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="the-hazard-function"><span class="header-section-number">2.3</span> The hazard function</h3>
+<p>Although the survival function describes describes the probability of surviving beyond a given time, another question is:</p>
+<blockquote class="blockquote">
+<p>Among individuals who have already survided to time <span class="math inline">\(t\)</span>, how likely is the event to occur immediately afterward?</p>
+</blockquote>
+<p>This motivates the hazard function.</p>
+<div id="def-hazard-function" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 2 (Hazard function)</strong></span> For a continuous survival time, the hazard is</p>
+<p><span class="math display">\[
+h(t) = \lim_{\Delta t \to 0^+} \frac{\P(t\leq T &lt; t+ \Delta t \mid T \geq t)}{\Delta t}
+\]</span></p>
+<p>provided that the limit exists.</p>
+</div>
+<p>Using conditional probability,</p>
+<p><span class="math display">\[
+\P(t\leq T &lt; t+ \Delta t \mid T\geq t) = \frac{F(t+\Delta t) - F(t)}{S(t)}
+\]</span></p>
+<p>for a continnuous distribution. Dividing by <span class="math inline">\(\Delta t\)</span> and taking the limit gives</p>
+<p><span class="math display">\[
+h(t) = \frac{f(t)}{S(t)}
+\]</span></p>
+<p>The hazard measures the instanteneous rate of event occurence among individuals still at risk at time <span class="math inline">\(t\)</span>.</p>
+<p>It is important to distinguish a hazard from an ordinary probability. A hazard has units of inverse time and is not required to lie between zero and one. For sufficiently small <span class="math inline">\(\Delta t\)</span>,</p>
+<p><span class="math display">\[
+\P(t \leq T &lt; t + \Delta t \mid T \geq t) \approx h(t) \Delta t
+\]</span></p>
+<p>Thus, the hazard describes a local conditional rate, whereas the survival function describes an accumulated probability over time.</p>
+</section>
+<section id="the-cummulative-hazard-the-survival-hazard-relationship" class="level3" data-number="2.4">
+<h3 data-number="2.4" class="anchored" data-anchor-id="the-cummulative-hazard-the-survival-hazard-relationship"><span class="header-section-number">2.4</span> The cummulative hazard the survival-hazard relationship</h3>
+<div id="def-cummulative-hazard" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 3 (Cummulative hazard)</strong></span> The cummulative hazard function is</p>
+<p><span class="math display">\[
+H(t) = \int_0^t h(u) du.
+\]</span></p>
+</div>
+<p>The relationship among the survival function, density, hazard, and cumulative hazard is fundamental to the remainder of survival.</p>
+<div id="thm-survival-hazard-identity" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1 (Survival hazard identity)</strong></span> Suppose that <span class="math inline">\(T\)</span> has an absolutely continuous distribution, <span class="math inline">\(S(0) = 1\)</span> and <span class="math inline">\(S(t)&gt;0\)</span> over the interval considered. Then</p>
+<p><span class="math display">\[
+S(t) = \exp[-H(t)] = \exp\left[-\int_0^t h(u) du\right]
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>From the definition of the hazard,</p>
+<p><span class="math display">\[
+h(t) = \frac{f(t)}{S(t)} = -\frac{S'(t)}{S(t)}.
+\]</span></p>
+<p>Hence</p>
+<p><span class="math display">\[
+\frac{d}{dt} \log S(t) = -h(t) .
+\]</span></p>
+<p>Because <span class="math inline">\(S(0) = 1\)</span>, we obtain</p>
+<p><span class="math display">\[
+\log S(t) = -H(t)  ,
+\]</span></p>
+<p>and therefore <span class="math inline">\(S(t) = e^{-H(t)}\)</span></p>
+</div>
+<style>
+.survival-figure {
+  max-width: 850px;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+  color: #222;
+}
+
+.survival-figure .figure-heading {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 9px;
+}
+
+.survival-flow {
+  border: 1px solid #e5e5e5;
+  border-radius: 13px;
+  background: #fdfdfd;
+  padding: 25px 14px 16px;
+  text-align: center;
+}
+
+.survival-flow .flow-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.survival-flow .flow-arrow {
+  color: #666;
+  font-size: 18px;
+  line-height: 1;
+  margin: 16px 0 11px;
+}
+
+.survival-flow .flow-branches {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.survival-flow .flow-box {
+  border: 1px solid #e5e5e5;
+  border-radius: 9px;
+  background: #fdfdfd;
+  padding: 15px 12px;
+  min-height: 87px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.survival-flow .flow-label {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.survival-flow .flow-math {
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.survival-flow .flow-hazard {
+  margin: 15px auto 0;
+}
+
+.survival-flow .flow-last {
+  max-width: 310px;
+  margin: 0 auto;
+  min-height: 84px;
+}
+
+@media (max-width: 500px) {
+  .survival-flow .flow-branches {
+    grid-template-columns: 1fr;
+  }
+  .survival-flow .flow-math {
+    font-size: 15px;
+  }
+}
+</style>
+<div class="survival-figure">
+<div class="figure-heading">
+<p>Relationship between the principal survival quantities</p>
+</div>
+<div class="survival-flow">
+<div class="flow-title">
+<p>Event-time distribution <span class="math inline">\(F(t)\)</span></p>
+</div>
+<div class="flow-arrow">
+<p>↓</p>
+</div>
+<div class="flow-branches">
+<div class="flow-box">
+<div class="flow-label">
+<p>Survival</p>
+</div>
+<div class="flow-math">
+<p><span class="math inline">\(S(t) = 1 - F(t)\)</span></p>
+</div>
+</div>
+<div class="flow-box">
+<div class="flow-label">
+<p>Density</p>
+</div>
+<div class="flow-math">
+<p><span class="math inline">\(f(t) = F'(t)\)</span></p>
+</div>
+</div>
+</div>
+<div class="flow-arrow">
+<p>↓</p>
+</div>
+<div class="flow-hazard">
+<div class="flow-label">
+<p>Hazard</p>
+</div>
+<div class="flow-math">
+<p><span class="math inline">\(h(t) = \frac{f(t)}{S(t)}\)</span></p>
+</div>
+</div>
+<div class="flow-arrow">
+<p>↓</p>
+</div>
+<div class="flow-box flow-last">
+<div class="flow-label">
+<p>Cumulative hazard</p>
+</div>
+<div class="flow-math">
+<p><span class="math inline">\(H(t) = \int_0^t h(u)\,du = -\log S(t)\)</span></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="mean-survival-time-and-survival-quantiles" class="level3" data-number="2.5">
+<h3 data-number="2.5" class="anchored" data-anchor-id="mean-survival-time-and-survival-quantiles"><span class="header-section-number">2.5</span> Mean survival time and survival quantiles</h3>
+<p>A further advatage of the survival function is that moments and quantiles can be recovered directly from it.</p>
+<div id="thm-tail-integral-identity" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 2 (Tail integral identity)</strong></span> For a nonnegative random variable <span class="math inline">\(T\)</span>,</p>
+<p><span class="math display">\[
+\E[T] = \int_0^\infty S(t) dt,
+\]</span></p>
+<p>where the integral and expectation may be infinite.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>For every realization <span class="math inline">\(T \geq 0\)</span>,</p>
+<p><span class="math display">\[
+T = \int_0^\infty \mathbf{1}\{T&gt;t\} dt .
+\]</span></p>
+<p>Taking expectations and applying <a href="https://en.wikipedia.org/wiki/Tonelli%27s_theorem_(functional_analysis)">Tonelli’s theorem</a>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\E[T] &amp;= \E\left[\int_0^\infty \mathbf{1}\{T&gt; t\} dt\right] \\
+&amp;= \int_0^\infty \E[\mathbf{1}\{T&gt; t\}] dt  = \int_0^\infty \P(T&gt;t) dt \\
+&amp;= \int_0^\infty S(t) dt
+\end{aligned}
+\]</span></p>
+</div>
+<p>More generally, for <span class="math inline">\(r&gt;0\)</span>,</p>
+<p><span class="math display">\[
+\E[T^r] = r \int_0^\infty t^{r-1} S(t) dt ,
+\]</span></p>
+<p>whenever the moment exists.</p>
+<p>These identities give a geometric interpretation of survival moments. The mean survival time is the total area under the survival curve.</p>
+<p>The median survival time is defined by the 50th percentile of the event-time distribution. For a continuous strictly decreasing survival function</p>
+<p><span class="math display">\[
+S(t_{0.5}) = 0.5
+\]</span></p>
+<p>More generally, the <span class="math inline">\(p\)</span>-th event-time quantile is</p>
+<p><span class="math display">\[
+Q(p) = \inf \{t: F(t) \geq p\} = \inf\{t: S(t) \leq 1-p\}
+\]</span></p>
+<p>Unlike the mean, which depends on the entire tail of the distribution, the median depends only on the point at which the survival probability falls to one-half.</p>
+</section>
+<section id="the-fundamental-problem-of-censoring" class="level3" data-number="2.6">
+<h3 data-number="2.6" class="anchored" data-anchor-id="the-fundamental-problem-of-censoring"><span class="header-section-number">2.6</span> The fundamental problem of censoring</h3>
+<p>The previous definitions describe a complete event-time distribution. In practice, however, it may be impossible to observe <span class="math inline">\(T_i\)</span> for every individual.</p>
+<div id="exm-problem-censoring" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2</strong></span> Consider a study that ends after twelves months. A patient whose event occurs at month six provides a complete event time. A patient who remains event-free at the end of the study does not provide an exact event time, but we still know that the event time exceeds twelve months.</p>
+</div>
+<p>Discarding the second individual would ignore valuable information.</p>
+<div id="def-right-censoring" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 4 (Right censoring)</strong></span> Let <span class="math inline">\(T_i\)</span> be the event time and <span class="math inline">\(C_i\)</span> the censoring time. The observed data are</p>
+<p><span class="math display">\[
+Y_i = \min(T_i, C_i), \quad \delta_i = \mathbf{1}\{T_i \leq C_i \}
+\]</span></p>
+</div>
+<p>Thus,</p>
+<p><span class="math display">\[
+\delta_i = \begin{cases}
+1, &amp; \text{the event is observed}, \\
+0, &amp; \text{the observation is right-censored}.
+\end{cases}
+\]</span></p>
+<p>For a censored individual, the exact value of <span class="math inline">\(T_i\)</span> is unknown, but the observation establishes that <span class="math inline">\(T_i &gt; Y_i\)</span>.</p>
+<div id="exm-four-patients" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3</strong></span> &nbsp;</p>
+<style>
+.patient-figure {
+  max-width: 850px;
+  margin: 24px auto;
+  font-family: Arial, sans-serif;
+}
+
+.patient-figure .figure-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.patient-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.patient-figure .patient-label {
+  font-size: 28px;
+  fill: #171717;
+}
+
+.patient-figure .axis-label {
+  font-size: 24px;
+  fill: #171717;
+  text-anchor: middle;
+}
+
+.patient-figure .legend-label {
+  font-size: 15px;
+  fill: #777;
+}
+
+.patient-figure .timeline {
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.patient-figure .event-line,
+.patient-figure .event-marker {
+  stroke: #d18a5d;
+  fill: #d18a5d;
+}
+
+.patient-figure .censor-line,
+.patient-figure .censor-marker {
+  stroke: #558bb9;
+}
+
+.patient-figure .censor-marker {
+  stroke-width: 6;
+  stroke-linecap: square;
+}
+
+.patient-figure .reference-line {
+  stroke: #d8d8d8;
+  stroke-width: 2.5;
+  stroke-dasharray: 7 10;
+}
+</style>
+<div class="patient-figure">
+
+  <div class="figure-title">
+    Four patients followed for 12 months
+  </div>
+
+  <svg viewbox="0 0 844 483" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four patient survival timelines with observed events and right censoring">
+
+    <!-- Outer rounded container -->
+    <rect x="1" y="1" width="842" height="481" rx="14" fill="#fdfdfd" stroke="#e7e7e7"></rect>
+
+    <!-- Study entry label -->
+    <text x="214" y="43" font-size="27" fill="#171717">
+      Study entry
+    </text>
+
+    <!-- Vertical reference lines: months 6 and 12 -->
+    <g class="reference-line">
+      <line x1="488" y1="47" x2="488" y2="357"></line>
+      <line x1="761" y1="47" x2="761" y2="357"></line>
+    </g>
+
+    <!-- Patient names -->
+    <g class="patient-label">
+      <text x="15" y="102">Patient A</text>
+      <text x="15" y="179">Patient B</text>
+      <text x="15" y="256">Patient C</text>
+      <text x="15" y="333">Patient D</text>
+    </g>
+
+    <!-- Patient A: event at month 4 -->
+    <line x1="214" y1="92" x2="396" y2="92" class="timeline event-line"></line>
+    <circle cx="396" cy="92" r="13" class="event-marker"></circle>
+
+    <!-- Patient B: censored at month 8 -->
+    <line x1="214" y1="169" x2="579" y2="169" class="timeline censor-line"></line>
+    <g class="censor-marker">
+      <line x1="569" y1="155" x2="589" y2="183"></line>
+      <line x1="589" y1="155" x2="569" y2="183"></line>
+    </g>
+
+    <!-- Patient C: event at month 10 -->
+    <line x1="214" y1="246" x2="670" y2="246" class="timeline event-line"></line>
+    <circle cx="670" cy="246" r="13" class="event-marker"></circle>
+
+    <!-- Patient D: censored at month 12 -->
+    <line x1="214" y1="323" x2="761" y2="323" class="timeline censor-line"></line>
+    <g class="censor-marker">
+      <line x1="751" y1="309" x2="771" y2="337"></line>
+      <line x1="771" y1="309" x2="751" y2="337"></line>
+    </g>
+
+    <!-- Time axis labels -->
+    <g class="axis-label">
+      <text x="214" y="407">0</text>
+      <text x="351" y="407">3</text>
+      <text x="488" y="407">6</text>
+      <text x="625" y="407">9</text>
+      <text x="761" y="407">12</text>
+    </g>
+
+    <!-- Legend: Observed event -->
+    <circle cx="20" cy="455" r="5.5" fill="#d18a5d"></circle>
+    <text x="34" y="461" class="legend-label">
+      Observed event
+    </text>
+
+    <!-- Legend: Right-censored -->
+    <g stroke="#558bb9" stroke-width="1.5">
+      <line x1="162" y1="451" x2="170" y2="459"></line>
+      <line x1="170" y1="451" x2="162" y2="459"></line>
+    </g>
+    <text x="182" y="461" class="legend-label">
+      Right-censored
+    </text>
+
+  </svg>
+
+</div>
+<p>For Patient B, who leaves the study at month eight without experiencing the event, the observation does not establish that <span class="math inline">\(T_B=8\)</span>. Rather, it tells us that <span class="math inline">\(T_B &gt; 8\)</span>. Similarly, Patient D is event-free through month twelve, but could experience the event at any later time.</p>
+</div>
+<p><span class="citation" data-cites="kaplanNonparametricEstimationIncomplete1958">Kaplan and Meier (<a href="../references.html#ref-kaplanNonparametricEstimationIncomplete1958" role="doc-biblioref">1958</a>)</span> formulated this problem through the minimum of an event time and an observation limit, calling the two observation outcomes <em>deaths</em> and <em>losses</em>. A <em>death</em> represent any event of interest, while a <em>loss</em> represents an observation whose endpoint cannot be determined.</p>
+<p>Other forms of incomplete event-time data also arise. Under left censoring, an event is known to have occured before a particular time; under interval censoring, it is known to lie within an interval. Left truncation is different: individuals enter the observed sample only if they survive long enough to become observable.</p>
+</section>
+<section id="likelihood-for-censored-survival-observations" class="level3" data-number="2.7">
+<h3 data-number="2.7" class="anchored" data-anchor-id="likelihood-for-censored-survival-observations"><span class="header-section-number">2.7</span> Likelihood for censored survival observations</h3>
+<p>Ordinary maximum likelihood estimation assumes that each observation contributes a density value <span class="math inline">\(f(T_i; \Theta)\)</span>. Censored survival data require a different likelihood contribution.</p>
+<p>Suppose that event times and censoring times are independent, with separately parameterized distributions. More generally, this independence may be assumed conditionally on observed covariates.</p>
+<p>When <span class="math inline">\(\delta_i = 1\)</span>, the observation contributes information about the density of the event time:</p>
+<p><span class="math display">\[
+f(Y_i; \theta).
+\]</span></p>
+<p>When <span class="math inline">\(\delta_i = 0\)</span>, the observation contributes information about the probability of surviving beyond the censoring time</p>
+<p><span class="math display">\[
+S(Y_i;\theta).
+\]</span></p>
+<p>After separating factors associated with the censoring mechanism, the likelihood for the event-time parameters is therefore</p>
+<p><span class="math display">\[
+L(\theta) \propto \prod_{i=1}^n [f(Y_i;\theta)]^{\delta_i} [S(Y_i;\theta)]^{1-\delta_i}.
+\]</span></p>
+<p>Substituting <span class="math inline">\(f(t) = h(t) S(t)\)</span> gives</p>
+<p><span class="math display">\[
+L(\theta) \propto \prod_{i=1}^{n} [h(Y_i; \theta)]^{\delta_i} S(Y_i;\theta)
+\]</span></p>
+<p>Using <span class="math inline">\(S(t) = e^{-H(t)}\)</span>, we obtain the representation</p>
+<p><span class="math display">\[
+L(\theta) \propto \prod_{i=1}^n [h(Y_i;\theta)]^{\delta_i} e^{-H(Y_i; \theta)}
+\]</span></p>
+<p>Taking logarithms, we obtain</p>
+<p><span class="math display">\[
+\boxed{\ell(\theta) = \sum_{i=1}^n [\delta_i \log h(Y_i; \theta) - H(Y_i; \theta)]}
+\]</span></p>
+<p>This expression is the foundation of likelihood-based paramtetric survival modeling, and it is also the starting point for the regression formulation developed by <span class="citation" data-cites="aitkinFittingExponentialWeibull1980">Aitkin and Clayton (<a href="../references.html#ref-aitkinFittingExponentialWeibull1980" role="doc-biblioref">1980</a>)</span>.</p>
+<p>Every individual contributes accumulated hazard through <span class="math inline">\(H(Y_i)\)</span>, while only individuals whose events are observed contribute the log-hazard term.</p>
+</section>
+</section>
+<section id="nonparametric-survival-estimation-the-kaplan-meier-estimator" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="nonparametric-survival-estimation-the-kaplan-meier-estimator"><span class="header-section-number">3</span> Nonparametric survival estimation: The Kaplan-Meier estimator</h2>
+<section id="why-the-empirical-distribution-is-insufficient" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="why-the-empirical-distribution-is-insufficient"><span class="header-section-number">3.1</span> Why the empirical distribution is insufficient</h3>
+<p>With complete observations, the empirical survival function follows directly from the empirical distribution:</p>
+<p><span class="math display">\[
+\hat S_n(t) = 1-\hat F_n(t) = \frac{1}{n} \sum_{i=1}^n \mathbf{1}\{T_i &gt; t\}
+\]</span></p>
+<p>This estimator is the proportion of observed individuals whose event times exceed <span class="math inline">\(t\)</span>. However, under right censoring, we observe only <span class="math inline">\(Y_i = \min(T_i, C_i)\)</span>.</p>
+<p>A naive estimator such as</p>
+<p><span class="math display">\[
+\frac{1}{n} \sum_{i=1}^n \mathbf{1}\{Y_i &gt; t\}
+\]</span></p>
+<p>would estimate <span class="math inline">\(\P(T&gt; t, C&gt; t)\)</span>, rather than <span class="math inline">\(\P(T&gt; t)\)</span>. Under independence,</p>
+<p><span class="math display">\[
+\P(Y&gt; t) = S_T(t) S_C(t),
+\]</span></p>
+<p>which is smaller than the desired survival probability. So the censoring changes the distribution of the observe times. <span class="citation" data-cites="kaplanNonparametricEstimationIncomplete1958">Kaplan and Meier (<a href="../references.html#ref-kaplanNonparametricEstimationIncomplete1958" role="doc-biblioref">1958</a>)</span> addressed this difficulty by constructing the survival probability as a product of conditional survival probabilities. Instead of attempting to estimate <span class="math inline">\(S(t)\)</span> directly from the total sample, their approach estiamtes how much the surviving population remains after each observed event time.</p>
+</section>
+<section id="construction-of-the-product-limit-estimator" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="construction-of-the-product-limit-estimator"><span class="header-section-number">3.2</span> Construction of the product-limit estimator</h3>
+<p>Let</p>
+<p><span class="math display">\[
+0 &lt; t_{(1)} &lt; t_{(2)} &lt; \cdots &lt; t_{(m)}
+\]</span></p>
+<p>denote the distinct observed event times.</p>
+<p>At each event time <span class="math inline">\(t_{(j)}\)</span>, we define <span class="math inline">\(r_j\)</span> as the number of individuals at risk immediately before <span class="math inline">\(t_{(j)}\)</span>, and <span class="math inline">\(d_j\)</span> as the number of events occurring at the <span class="math inline">\(t_{(j)}\)</span>. An individual is considered at risk if they have entered the study and have neither experienced the event nor been censored before that time.</p>
+<p>The conditional probability of surviving the event time can be estimated by</p>
+<p><span class="math display">\[
+\hat p_j = 1-\frac{d_j}{r_j}.
+\]</span></p>
+<p>Using the multiplication rule for conditional probabilities,</p>
+<p><span class="math display">\[
+S(t) = \P(T&gt; t) = \prod_{t_{(j)} \leq t} \P(T&gt; t_{(j)} \mid T \geq t_{(j)}),
+\]</span></p>
+<p>where the event times partition the possible failures. Replacing each conditional probability by its empirical estimate gives the product-limit estimator.</p>
+<div id="def-kaplan-meier-estimator" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 5 (Kaplan-Meire estimator)</strong></span> <span class="math display">\[
+\hat S_{KM}(t) = \prod_{t_{(j)} \leq t} \left(1- \frac{d_j}{r_j}\right)
+\]</span></p>
+</div>
+<p>By convention, the empty product is one, so the estimator begins at <span class="math inline">\(1\)</span> before the first event. The result is a right-continuous step function. Its value decreases at observed event times and remains unchanged at censoring times.</p>
+</section>
+<section id="maximum-likelihood-interpretation" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="maximum-likelihood-interpretation"><span class="header-section-number">3.3</span> Maximum likelihood interpretation</h3>
+<div id="thm-product-limit-maximum-likelihood-estimator" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 3 (Product-limit maximum likelihood estimator)</strong></span> Under independent, noninformative right censoring, the nonparametric maximum likelihood estimate of the survival distribution, at identifiable event times, is</p>
+<p><span class="math display">\[
+\hat S(t) = \prod_{t_{(j)}}\left(1- \frac{d_j}{r_j}\right)
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Let</p>
+<p><span class="math display">\[
+q_j = \P(T= t_{(j)} \mid T\geq t_{(j)})
+\]</span></p>
+<p>represent the conditional event probability at the <span class="math inline">\(j\)</span>-th observed event time, where an arbitrary candidate distribution may assign probability mass to that time.</p>
+<p>The corresponding conditional survival probability is <span class="math inline">\(1-q_j\)</span>. After separating the factors associated with censoring, the relevant nonparametric likelihood can be written as</p>
+<p><span class="math display">\[
+L(q_1, \ldots, q_m) \propto \prod_{j=1}^m q_j^{d_j} (1-q_j)^{r_j - d_j}.
+\]</span></p>
+<p>Taking logarithms,</p>
+<p><span class="math display">\[
+\ell = \sum_{j=1}^m [d_j \log q_j + (r_j - d_j)\log (1-q_j)].
+\]</span></p>
+<p>Differentiating with respect to <span class="math inline">\(q_j\)</span>:</p>
+<p><span class="math display">\[
+\frac{\partial \ell}{\partial q_j} = \frac{d_j}{q_j} - \frac{r_j - d_j}{1 - q_j}
+\]</span></p>
+<p>Setting the derivative equal to zero</p>
+<p><span class="math display">\[
+d_j(1- q_j) = (r_j - d_j) q_j,
+\]</span></p>
+<p>and consequently,</p>
+<p><span class="math display">\[
+\hat q_j = \frac{d_j}{r_j}
+\]</span></p>
+<p>The second derivative is nonpositive</p>
+<p><span class="math display">\[
+\frac{\partial^2 \ell}{\partial q_j^2} = -\frac{d_j}{q_j^2} - \frac{r_j - d_j}{(1-q_j)^2}
+\]</span></p>
+<p>so the stationary point is a maximum whenever it is interior. Boundary cases give the corresponding boundary maximizers. Because the survival distribution is the product of the conditional survival probabilities,</p>
+<p><span class="math display">\[
+\hat S(t) = \prod_{t_{(j)}\leq t} (1-\hat q_t) = \prod_{t_{(j)} \leq t} \left(1- \frac{d_j}{r_j}\right)
+\]</span></p>
+</div>
+<p>This derivation captures the argument of <span class="citation" data-cites="kaplanNonparametricEstimationIncomplete1958">Kaplan and Meier (<a href="../references.html#ref-kaplanNonparametricEstimationIncomplete1958" role="doc-biblioref">1958</a>)</span>’s original maximum likelihood treatment. It also explains why the estimator can be obtained without assuming that survival times.</p>
+<p>An important qualification concerns the final observed time. If the final observation is concerned and the estimated survival probability remains positive, the distribution beyond that time is not uniquely determined by the likelihood. There is no statistical basis for forcing the survival curve to zero at the end of observation.</p>
+</section>
+<section id="sec-example" class="level3" data-number="3.4">
+<h3 data-number="3.4" class="anchored" data-anchor-id="sec-example"><span class="header-section-number">3.4</span> A numerical example</h3>
+<p>Consider eight individuals followed over time. Four events are observed, while four individuals are censored. The observations are adapted from <span class="citation" data-cites="kaplanNonparametricEstimationIncomplete1958">Kaplan and Meier (<a href="../references.html#ref-kaplanNonparametricEstimationIncomplete1958" role="doc-biblioref">1958</a>)</span>:</p>
+<ul>
+<li>Event times: 0.8, 3.1, 5.4, 9.2</li>
+<li>Censoring times: 1.0, 2.7, 7.0, 12.1</li>
+</ul>
+<p>The estimator is</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Event time <span class="math inline">\(t_{(j)}\)</span></th>
+<th>At risk <span class="math inline">\(r_j\)</span></th>
+<th>Event <span class="math inline">\(d_j\)</span></th>
+<th>Conditional survival</th>
+<th><span class="math inline">\(\hat S(t_{(j)})\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0.8</td>
+<td>8</td>
+<td>1</td>
+<td>7/8</td>
+<td>0.875</td>
+</tr>
+<tr class="even">
+<td>3.1</td>
+<td>5</td>
+<td>1</td>
+<td>4/5</td>
+<td>0.7</td>
+</tr>
+<tr class="odd">
+<td>5.4</td>
+<td>4</td>
+<td>1</td>
+<td>3/4</td>
+<td>0.525</td>
+</tr>
+<tr class="even">
+<td>9.2</td>
+<td>2</td>
+<td>1</td>
+<td>1/2</td>
+<td>0.2625</td>
+</tr>
+</tbody>
+</table>
+<p>For example, at <span class="math inline">\(t=3.1\)</span>,</p>
+<p><span class="math display">\[
+\hat S(3.1) = \left(1- \frac{1}{8}\right)\left(1-\frac{1}{5}\right) = \frac{7}{8}\frac{4}{5} = 0.7
+\]</span></p>
+<p>The two observations censored at times 1.0 and 2.7 explain why the risk set decreases from eight individuals initially to five immediately before the event at time 3.1</p>
+<p>At <span class="math inline">\(t=5.4\)</span>,</p>
+<p><span class="math display">\[
+\hat{S}(5.4) = \frac{7}{8}\frac{4}{5}\frac{3}{4} = 0.525
+\]</span></p>
+<p>This calculation illustrates a fundamental property: <em>a censored observation contributes to the risk set up to its censoring time, rather than being treated as either an observed failure or an individual who survives indefintely</em>.</p>
+<div id="69900fab" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 1 = observed event, 0 = right centered </span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>times <span class="op">=</span> np.array([<span class="fl">0.8</span>, <span class="fl">1.0</span>, <span class="fl">2.7</span>, <span class="fl">3.1</span>, <span class="fl">5.4</span>, <span class="fl">7.0</span>, <span class="fl">9.2</span>, <span class="fl">12.1</span>])</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>event <span class="op">=</span> np.array([<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>])</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>event_times <span class="op">=</span> np.unique(times[event<span class="op">==</span><span class="dv">1</span>])</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>survival <span class="op">=</span> [<span class="fl">1.0</span>]</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> event_times: </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    risk <span class="op">=</span> np.<span class="bu">sum</span>(times<span class="op">&gt;=</span>t)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    deaths <span class="op">=</span> np.<span class="bu">sum</span>((times <span class="op">==</span> t) <span class="op">&amp;</span> (event <span class="op">==</span> <span class="dv">1</span>)) </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    survival.append(survival[<span class="op">-</span><span class="dv">1</span>] <span class="op">*</span> (<span class="dv">1</span><span class="op">-</span>deaths<span class="op">/</span>risk))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the survival step function </span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.r_[<span class="dv">0</span>, event_times, times.<span class="bu">max</span>()]</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.r_[survival, survival[<span class="op">-</span><span class="dv">1</span>]]</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">4</span>))</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>plt.step(x, y, where<span class="op">=</span><span class="st">"post"</span>, label<span class="op">=</span><span class="st">"Kaplan-Meier"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># mask censored observation </span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>censored <span class="op">=</span> times[event<span class="op">==</span><span class="dv">0</span>]</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>censor_y <span class="op">=</span> [survival[np.<span class="bu">sum</span>(event_times <span class="op">&lt;=</span> t)] <span class="cf">for</span> t <span class="kw">in</span> censored] </span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>plt.scatter(censored, censor_y, marker<span class="op">=</span><span class="st">"+"</span>, s<span class="op">=</span><span class="dv">90</span>, label<span class="op">=</span><span class="st">"Censored observations"</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Time"</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Estimated survival probability"</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Kaplan-Meir survival estimate"</span>)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="dv">0</span>, <span class="fl">1.05</span>)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>plt.xlim(<span class="dv">0</span>, times.<span class="bu">max</span>())</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>plt.grid(alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="14_files/figure-html/cell-2-output-1.png" width="668" height="377" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The curve is constant between event times because the estimator does not assume a smooth underlying survival distribution. It decreases only when new event information is observed.</p>
+</section>
+<section id="statistical-properties-of-the-product-limit-estimator" class="level3" data-number="3.5">
+<h3 data-number="3.5" class="anchored" data-anchor-id="statistical-properties-of-the-product-limit-estimator"><span class="header-section-number">3.5</span> Statistical properties of the product-limit estimator</h3>
+<p>The first important property is that Kaplan-Meier estimator reduces to the ordinary empirical survival function when censoring is absent.</p>
+<div id="prp-3-1" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 2</strong></span> If all <span class="math inline">\(n\)</span> observations are complete and their event times are distinct, then</p>
+<p><span class="math display">\[
+\hat S_{\text{KM}}(t) = \frac{\#\{i: T_i &gt; t\}}{n}
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>If <span class="math inline">\(k\)</span> events have occured by time <span class="math inline">\(t\)</span>, each event decreases the risk set by one. Therefore,</p>
+<p><span class="math display">\[
+\hat S(t) = \frac{n-1}{n} \frac{n-2}{n-1} \ldots \frac{n-k}{n-k+1} = \frac{n-k}{n}
+\]</span></p>
+<p>which is the empirical proportion of surviving individuals.</p>
+</div>
+<p>Thus, the product-limit estimator is a generalization of the empirical survival function to incomplete observations.</p>
+<p>The second property concerns transformations of the time scale.</p>
+<div id="prp-3-2" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 3 (Invariance under increasing transformation)</strong></span> Let <span class="math inline">\(g\)</span> be strictly increasing and define <span class="math inline">\(U = g(t)\)</span>. If both the event times and the corresponding censoring times are transformed by <span class="math inline">\(g\)</span>, then</p>
+<p><span class="math display">\[
+\hat S_U(g(t)) = \hat S_T(t)
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>A strictly increasing transformation preserves the ordering of event and censoring times. Consequently, the risk sets <span class="math inline">\(r_j\)</span> and event counts <span class="math inline">\(d_j\)</span> remain unchanged. The product-limit factors are identical, and the estimator is transformed only along its horizontal axis.</p>
+</div>
+<p>This property is useful because the same survival information can be represented on the original time scale or on a logarithmic time scale without changing the estimated conditional survival probabilities.</p>
+<section id="consistency" class="level4" data-number="3.5.1">
+<h4 data-number="3.5.1" class="anchored" data-anchor-id="consistency"><span class="header-section-number">3.5.1</span> Consistency</h4>
+<p>Under suitable regularity assumption, independent noninformative censoring, and sufficient follow-up information, the Kaplan-Meier estimator is consistent.</p>
+<div id="thm-3-2" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 4 (Pointwise consistency)</strong></span> At an identifiable time <span class="math inline">\(t\)</span>, where <span class="math inline">\(S(t)\)</span> is estimable and the relevant risk sets grow sufficiently large as the sample size increases,</p>
+<p><span class="math display">\[
+\hat S_\text{KM}(t) \overset{p}{\longrightarrow} S(t)
+\]</span></p>
+</div>
+<p>A short proof can be understood by considering a fixed collection of event-time interccals. Within each interval, the estimated conditional survival proportion converges to its population counterpart by the law of large number. Since multiplication is continuous, the product of these estimates converges to the corresponding population survival probability. A full proof must address the increasing number of event times and the possibility that some risk sets become empty. <span class="citation" data-cites="kaplanNonparametricEstimationIncomplete1958">Kaplan and Meier (<a href="../references.html#ref-kaplanNonparametricEstimationIncomplete1958" role="doc-biblioref">1958</a>)</span> examined these issues in their discussion of consistency.</p>
+</section>
+<section id="variance-and-greenwoods-formula" class="level4" data-number="3.5.2">
+<h4 data-number="3.5.2" class="anchored" data-anchor-id="variance-and-greenwoods-formula"><span class="header-section-number">3.5.2</span> Variance and Greenwood’s formula</h4>
+<p>Because the Kaplan-Meier estimator is a product of estimated conditional probabilites, its sampling variability accumulates over event times. The large-sample variance estimator is</p>
+<p><span class="math display">\[
+\widehat{\Var}[\hat S(t)] = \hat S(t)^2 \sum_{t_{(j)} \leq t} \frac{d_j}{r_j(r_j - d_j)}.
+\]</span></p>
+<p>This expression is called <a href="https://www.stat.berkeley.edu/~census/greenwd.pdf">Greenwood’s formula</a>.</p>
+<div id="prp-3-3" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 4 (Greenwood variance approximation)</strong></span> When the risk sets are sufficiently large and the relevant denominators are positive,</p>
+<p><span class="math display">\[
+\Var[\log \hat S(t)] \approx \sum_{t_{(j)} \leq t } \frac{d_j}{r_j(r_j - d_j)}
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Write</p>
+<p><span class="math display">\[
+\hat S(t) = \prod_{j} (1-\hat q_j), \quad \hat q_j = \frac{d_j}{r_j}
+\]</span></p>
+<p>Then</p>
+<p><span class="math display">\[
+\log\hat S(t) = \sum_j \log(1-\hat q_j).
+\]</span></p>
+<p>Using the conditional binomial approximation,</p>
+<p><span class="math display">\[
+\Var(\hat q_j) \approx \frac{q_j(1-q_j)}{r_j}
+\]</span></p>
+<p>The <a href="https://en.wikipedia.org/wiki/Delta_method">delta method</a> gives</p>
+<p><span class="math display">\[
+\Var[\log(1-\hat q_j)]\approx \frac{q_j}{r_j(1-q_j)}
+\]</span></p>
+<p>Substituting <span class="math inline">\(\hat q_j = d_j / r_j\)</span>, and summing the conditions gives</p>
+<p><span class="math display">\[
+\widehat\Var [\log \hat S(t)] \approx \sum_j \frac{d_j}{r_j(r_j - d_j)}
+\]</span></p>
+<p>A second application of the delta method to the exponential transformation gives Greenwood’s variance estimator.</p>
+</div>
+<p>For the eight-individual in example <a href="#sec-example" class="quarto-xref"><span>Section 12.3.4</span></a> at time t=5.4,</p>
+<p><span class="math display">\[
+\widehat \Var [\hat S(5.4)] = (0.525)^2 \left(\frac{1}{8(7)} + \frac{1}{5(4)} + \frac{1}{4(3)}\right)
+\]</span></p>
+<p>Thus, the approximate standard error is</p>
+<p><span class="math display">\[
+\widehat{\text{SE}}[\hat S(5.4)] \approx \sqrt{0.0417} \approx 0.204
+\]</span></p>
+<p>The relatively large standard error reflects the small sample and the loss of information through censoring. For pratical confidence intervals, transformations of the survival estimate, such as the complementary log-log transformation, are often preferable to a simple normal interval on the original survival-probability scale.</p>
+</section>
+</section>
+<section id="mean-survival-and-the-effects-of-incomplete-follow-up" class="level3" data-number="3.6">
+<h3 data-number="3.6" class="anchored" data-anchor-id="mean-survival-and-the-effects-of-incomplete-follow-up"><span class="header-section-number">3.6</span> Mean survival and the effects of incomplete follow-up</h3>
+<p>Since</p>
+<p><span class="math display">\[
+\E[T] = \int_0^\infty S(t) dt,
+\]</span></p>
+<p>it is more common to estimate the mean lifetime using</p>
+<p><span class="math display">\[
+\E[T] = \int_0^\infty \hat S_{KM}(t) dt
+\]</span></p>
+<p>However, this intergral presents an important difficulty when the largest observation is censored and the survival estimate remains positive. The right-hand tails is not identified from the availabel information. so the unrestricted mean cannot be estimated without additional assumptions.</p>
+<p>A more appropriate summary is often the <em>restricted mean survival time</em> through a predetermined horizon <span class="math inline">\(\tau\)</span>:</p>
+<p><span class="math display">\[
+\widehat{\text{RMST}}(\tau) = \int_0^\tau \hat S_{\text{KM}}(t) dt
+\]</span></p>
+<p>This is the estimated mean duration of event-free survival accumulated within the first <span class="math inline">\(\tau\)</span> units of time. It avoids extrapolation beyond the selected horizon, provided that the observation process supports estimation over that interval.</p>
+</section>
+<section id="alternative-nonparametric-estimates" class="level3" data-number="3.7">
+<h3 data-number="3.7" class="anchored" data-anchor-id="alternative-nonparametric-estimates"><span class="header-section-number">3.7</span> Alternative nonparametric estimates</h3>
+<p>Kaplan and Meier also discussed two related alternatives: reduced-sample estimation and actuarial estimation.</p>
+<p>The <em>reduced-sample estimator</em> estimates <span class="math inline">\(S(t)\)</span> using only those individuals whose observation limits would permit follow-up through time <span class="math inline">\(t\)</span>. If <span class="math inline">\(N^*(t)\)</span> such individuals are available, and <span class="math inline">\(n^*(t)\)</span> of them survive beyond <span class="math inline">\(t\)</span>, then</p>
+<p><span class="math display">\[
+\hat S_{RS}(t) = \frac{n^*(t)}{N^*(t)}
+\]</span></p>
+<p>This estimator requires information about potential observation limits, including limits for individuals whose event occur earlier. Such information is not always available, especially when censoring aries from unpredictable.</p>
+<p>Under the relevant independence assumptions, the reduced sample is a random sample, so the estimator is binomial. However, it may discard substantial information and can be less efficient than the product-limit estimator. Interestingly, the reduced-sample estimator need not be monotone in <span class="math inline">\(t\)</span>, because the composition of its sample changes with the observation horizon.</p>
+<p><em>Actuarial estimation</em> instead divides time into intervals and estimates conditional survival probabilities from grouped event and censoring counts. A frequently used approximation for an interval beginning with <span class="math inline">\(r_j\)</span> individuals, containing <span class="math inline">\(d_j\)</span> events and <span class="math inline">\(c_j\)</span> censorings, is</p>
+<p><span class="math display">\[
+\hat p_j \approx 1- \frac{d_j}{r_j - c_j/2}
+\]</span></p>
+<p>This expression assumes, approximately, that censoring is spread uniformly through the interval, so that censored individuals contribute about half an interval of exposure. When exact event and censoring times are known, Kaplan-Meier estimation avoids this grouping approximation. When only aggregated data are available, actuarial methods can remain useful.</p>
+</section>
+</section>
+<section id="parametric-survival-distributions" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="parametric-survival-distributions"><span class="header-section-number">4</span> Parametric survival distributions</h2>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-aitkinFittingExponentialWeibull1980" class="csl-entry" role="listitem">
+Aitkin, Murray, and David Clayton. 1980. <span>“The Fitting of Exponential, Weibull and Extreme Value Distributions to Complex Censored Survival Data Using <span>GLIM</span>.”</span> <em>Applied Statistics</em> 29 (2): 156. <a href="https://doi.org/10.2307/2986301">https://doi.org/10.2307/2986301</a>.
+</div>
+<div id="ref-kaplanNonparametricEstimationIncomplete1958" class="csl-entry" role="listitem">
+Kaplan, E. L., and Paul Meier. 1958. <span>“Nonparametric Estimation from Incomplete Observations.”</span> <em>Journal of the American Statistical Association</em> 53 (282): 457–81. <a href="https://doi.org/10.1080/01621459.1958.10501452">https://doi.org/10.1080/01621459.1958.10501452</a>.
+</div>
+<div id="ref-weibullStatisticalDistributionFunction1951" class="csl-entry" role="listitem">
+Weibull, Waloddi. 1951. <span>“A Statistical Distribution Function of Wide Applicability.”</span> <em>Journal of Applied Mechanics</em> 18 (3): 293–97. <a href="https://doi.org/10.1115/1.4010337">https://doi.org/10.1115/1.4010337</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script>
+(() => {
+  "use strict";
+
+  const boxSelector = ".theorem, .example, .callout";
+  const displayMathSelector = 'mjx-container[display="true"]';
+  let fitFrame = 0;
+  let fittingStarted = false;
+
+  function fitDisplayMath(displayMath) {
+    // Measure at the normal MathJax size every time so equations can grow
+    // back after their container becomes wider.
+    displayMath.style.removeProperty("font-size");
+    displayMath.removeAttribute("data-math-fit-scale");
+
+    const wrapper = displayMath.closest(".math.display") || displayMath.parentElement;
+    // Quarto may configure MathJax's SVG or CHTML renderer. Both express
+    // their natural width relative to the container's font size.
+    const renderedMath = displayMath.querySelector("mjx-math, svg");
+
+    if (!wrapper || !renderedMath) {
+      return;
+    }
+
+    const wrapperStyle = window.getComputedStyle(wrapper);
+    const horizontalPadding =
+      Number.parseFloat(wrapperStyle.paddingLeft) +
+      Number.parseFloat(wrapperStyle.paddingRight);
+    const availableWidth = wrapper.clientWidth - horizontalPadding;
+    const naturalWidth = renderedMath.getBoundingClientRect().width;
+
+    if (availableWidth <= 0 || naturalWidth <= availableWidth) {
+      return;
+    }
+
+    // Leave a small margin so sub-pixel rounding does not create a scrollbar.
+    const scale = (availableWidth / naturalWidth) * 0.98;
+    displayMath.style.fontSize = `${scale * 100}%`;
+    displayMath.dataset.mathFitScale = scale.toFixed(3);
+  }
+
+  function fitAllBoxMath() {
+    document.querySelectorAll(boxSelector).forEach((box) => {
+      box.querySelectorAll(displayMathSelector).forEach(fitDisplayMath);
+    });
+  }
+
+  function scheduleFit() {
+    window.cancelAnimationFrame(fitFrame);
+    fitFrame = window.requestAnimationFrame(() => {
+      // Use a second frame so layout reflects the reset to normal size.
+      window.requestAnimationFrame(fitAllBoxMath);
+    });
+  }
+
+  async function startFitting() {
+    if (fittingStarted) {
+      return;
+    }
+    fittingStarted = true;
+
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
+    scheduleFit();
+
+    if ("ResizeObserver" in window) {
+      const resizeObserver = new ResizeObserver(scheduleFit);
+      document.querySelectorAll(boxSelector).forEach((box) => resizeObserver.observe(box));
+    } else {
+      window.addEventListener("resize", scheduleFit, {passive: true});
+    }
+
+    // Also handle equations inserted later by notebook or Quarto components.
+    const mutationObserver = new MutationObserver((mutations) => {
+      if (
+        mutations.some((mutation) =>
+          [...mutation.addedNodes].some(
+            (node) =>
+              node.nodeType === Node.ELEMENT_NODE &&
+              (node.matches?.(displayMathSelector) || node.querySelector?.(displayMathSelector))
+          )
+        )
+      ) {
+        scheduleFit();
+      }
+    });
+
+    mutationObserver.observe(document.body, {childList: true, subtree: true});
+  }
+
+  const mathJaxReady = window.MathJax?.startup?.promise;
+
+  if (mathJaxReady && typeof mathJaxReady.then === "function") {
+    // Plotly outputs can load their own MathJax renderer and cause the shared
+    // startup promise to reject even though the page equations were rendered.
+    // Fit in either case.
+    mathJaxReady.then(startFitting, startFitting);
+  }
+
+  // Always keep the ordinary page-load event as a fallback. Some embedded
+  // widgets replace window.MathJax and leave an earlier startup promise pending.
+  if (document.readyState === "complete") {
+    startFitting();
+  } else {
+    window.addEventListener("load", startFitting, {once: true});
+  }
+})();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../weeks/12.html" class="pagination-link" aria-label="Computational Exploration of Regularization in High-Dimensional Regression">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Computational Exploration of Regularization in High-Dimensional Regression</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../weeks/16.html" class="pagination-link" aria-label="Interactions">
+        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Interactions</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

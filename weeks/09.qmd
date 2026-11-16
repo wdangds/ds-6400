@@ -1159,6 +1159,8 @@ The behavior of the two components of the mean square error can be established t
 
 ::: {#thm-monotonic-decrease-of-the-total-variance}
 
+## Monotonic decrease of the total variance 
+
 The total variance 
 
 $$
@@ -1206,8 +1208,170 @@ If a sequence of positive definite designs has a smallest eigenvalue approaching
 
 ::: {.proof}
 
-Taking the limit $k\to 0^+$ in the derivative obtained in @thm-monotonic-decrease-of-the-total-variance 
+Taking the limit $k\to 0^+$ in the derivative obtained in @thm-monotonic-decrease-of-the-total-variance gives 
+
+$$
+\lim_{k\to 0^+}\gamma_1'(k) = -2 \sigma^2 \sum_{j=1}^p \frac{\lambda_j}{\lambda_j^3} = -2\sigma^2\sum_{j=1}^{p} \frac{1}{\lambda_j^2}
+$$
+
+If any $\lambda_j \to O^+$, its reciprocal sqaure diverges, and the sum tends to infinity. Consequently, the negative derivative tends to negative infinity. 
+:::
+
+This corrolary explains the sensitivity of least squares in ill-conditioned problems. When the smallest eigenvalues is very small, even a modest increase in $k$ can produce a large initial reduction in variance. 
+
+Now consider the squared bias. 
+
+::: {#thm-monotonic-increase-of-the-squared-bias}
+
+## Monotonic increase of the squared bias 
+
+The squared bias 
+
+$$
+\gamma_2(k) = k^2 \sum_{j=1}^p \frac{a_j^2}{(\lambda_j + k)^2}
+$$
+
+is continuous and nondecreasing for $k\geq 0$. It is strictly increasing for $k>0$ when $\beta\neq 0$. 
 
 :::
 
+::: {.proof}
+
+For each $j$, we define 
+
+$$
+f_j(k) = \frac{k^2 \alpha_j^2}{(\lambda_j + k)^2}
+$$
+
+Since $\lambda_j>0$, every $f_j(k)$ is continuous for $k\geq 0$. Differentiating 
+
+$$
+f'(k) = \alpha_j^2 \left[\frac{2k}{(\lambda_j+k)^2} - \frac{2k^2}{(\lambda_j+ k)^3}\right] = \frac{2k\lambda_j \alpha_j^2}{(\lambda_j + k)^3}. 
+$$
+
+Therefore, 
+
+$$
+\gamma_2'(k) = 2k\sum_{j=1}^p \frac{\lambda_j \alpha_j^2}{(\lambda_j + k)^3} \geq 0 
+$$
+
+If $k>0$ and $\beta\neq 0$, at least one $\alpha_k \neq 0$, so the derivative is strictly positive. Thus, $\gamma_2(k)$ is nondecreasing and is strictly increasing in the stated case.
+
+:::
+
+The theorem confirms the cost of regularization. Increasing the ridge parameter causes the expected coefficient vector to move farther from the true parameter vector in squared Euclidean distance. Nevertheless, the squared bias increases at a different initial rate from the decrease in variance. 
+
+::: {#cor-initial-slope-of-squared-bias}
+
+## Initial slope of squared bias 
+
+The derivative of the squared bias approaches zero as $k\to 0^+$:
+
+$$
+\lim_{k\to O^+} \gamma_2'(k) = 0 
+$$
+
+:::
+
+::: {.proof}
+
+From @thm-monotonic-increase-of-the-squared-bias, 
+
+$$
+\gamma_2'(k) = 2k\sum_{j=1}^p \frac{\lambda_j \alpha_j^2}{(\lambda_j + k)^3}
+$$
+
+Every term inside the sum has a finite limit as $k\to 0^+$. Since the entire expression is multiplied by $k$, the limit is zero.
+
+:::
+
+Conparing the derivatives of $\gamma_1(k)$ and $\gamma_2(k)$ at the origin reveals a crucial asymmetry:
+
+$$
+\gamma'_1(0^+) = -2\sigma^2 \sum_{j=1}^1 \frac{1}{\lambda_j^2} < 0
+$$
+
+but 
+
+$$
+\gamma_2' (0^+) = 0. 
+$$
+
+At the least squares solution, an infinitestimal increase in $k$ reduces variance at a nonzero first-order rate, while squared bias initially grows only at a second-order rate. More explicitly, for sufficientl small $k$, 
+
+$$
+\gamma_1(k) = \gamma_1(0) - 2\sigma^2 k \sum_{j=1}^p \frac{1}{\lambda_j^2} + \mathcal{O}(k^2)
+$$
+
+whereas
+
+$$
+\gamma_2(k) = k^2 \sum_{j=1}^p \frac{\alpha_j^2}{\lambda_j^2} + \mathcal O(k^3). 
+$$
+
+Thus, the leading change in total variance is proportional to $k$, while the leading contribution to squared bias is proportional to $k^2$. For small positive $k$, the variance reduction therefore dominates the bias increase. 
+
+Two further limiting properties complete the picture. 
+
+::: {#cor-limiting-squared-bias}
+
+## Limiting squared bias 
+
+As $k\to \infty$, 
+
+$$
+\lim_{k\to\infty} \gamma_2(k) = \beta' \beta
+$$
+
+:::
+
+::: {.proof}
+
+Write 
+
+$$
+\gamma_2(k) = \sum_{j=1}^p \alpha_j^2\left(\frac{k}{\lambda_j + k}\right)^2
+$$
+
+For each fixed $\lambda_j$, 
+
+$$
+\lim_{k\to \infty} \left(\frac{k}{k+\lambda_j}\right)^2 = 1
+$$
+
+Hence 
+
+$$
+\lim_{k \to \infty} \gamma_2(k) = \sum_{j=1}^p \alpha_j^2
+$$
+
+Because $P$ is orthogonal, 
+
+$$
+\alpha'\alpha = \beta' \beta 
+$$
+
+Therefore, 
+
+$$
+\lim_{k\to \infty} \gamma_2(k) = \beta' \beta 
+$$
+
+:::
+
+Similarly, 
+
+$$
+\lim_{k \to \infty} \gamma_1(k) = 0 
+$$
+
+It follows that 
+
+$$
+\lim_{k\to \infty}\E[L^2 (k)] = \beta'\beta 
+$$
+
+This is consistent with the fact that $\hat \beta^*(k) \to 0$. An estimator that always returns zero has zero sampling variance, but its squared error from the true coeffcient vector is $\beta' \beta$.
+
+Therefore, excessive regularization may produce an estimator with very small variance but considerable bias. 
 
