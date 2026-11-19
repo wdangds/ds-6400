@@ -1600,8 +1600,38 @@ $$
 :::
 
 ::: {.proof}
-WIP
+For group lasso, under full orthonormality, set $z_j = X_j^\top Y = \beta_j^{LS}$. Using the original loss normalization, 
+
+$$
+\hat \beta_j = \left(1-\frac{\lambda \sqrt{p_j}}{\|z_j\|_2}\right)_{+} z_j
+$$
+
+Differentiating with respect to $z_j$, 
+
+$$
+\frac{\partial \hat \beta_j}{\partial z_j} = \left(1- \frac{\lambda \sqrt{p_j}}{\|z_j\|_2}\right) I + \lambda \sqrt{p_j} \frac{z_j z_j^\top }{\|z_j\|_2^3}
+$$
+
+Taking the trace (and doing some algebra), 
+
+$$
+\begin{aligned}
+\mathrm{tr}\left(\frac{\partial \hat \beta_j}{\partial z_j}\right) &= p_j\left(1- \frac{\lambda \sqrt{p_j}}{\|z_j\|_2}\right) +  \frac{\lambda \sqrt{p_j}}{\|z_j\|_2}\\
+&= 1 + (p_j - 1) \frac{\|\hat \beta_j\|_2}{\|z_j\|_2}
+\end{aligned}
+$$
+
+Inactive group contribute zero to the divergence almost everywhere. Because $X^\top X = I$, the trace of the derivative of $X\hat \beta$ with respect to $Y$ equals the sum of these groupwise traces. Stein's identity connects the expected divergence to the covariance definition of degrees of freedom:
+
+$$
+\mathrm{df}_{\mu, \sigma^2} = \E\left[\mathrm{tr}\left(\frac{\partial (\hat \mu)}{\partial Y}\right)\right]
+$$
+
+Substitution gives the result.
+
 :::
+
+
 
 Outside the fully orthonormal setting, the paper treats the formulas as approximations. In simulations, the approximate $C_p$ criterion performed comparably to 5-fold CV, with a smaller computational cost. 
 
