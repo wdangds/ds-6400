@@ -1175,3 +1175,32 @@ This expression assumes, approximately, that censoring is spread uniformly throu
 
 ## Parametric survival distributions 
 
+### From the cummulative hazard to a parametric distribution
+
+The survival-hazard identity derived earlier states that 
+
+$$
+S(t) = e^{-H(t)}
+$$
+
+where $H(t)$ is a nonnegative, nondecreasing functions satisfying $H(0) =0$ for an absolutely continuous survival distribution beginning at time zero. 
+
+Equivalently, 
+
+$$
+F(t) = 1-e^{-H(t)}
+$$
+
+This representation suggests a general approach to constructing parametric survival distributions: rather than specifying the probaiblity density directly, we can specify a convenient function for cumulative hazard.
+
+If $H(t;\theta)$ satisfies the appropriate conditions, then 
+
+$$
+S(t;\theta) = e^{-H(t; \theta)}
+$$
+
+defines a survival model, and the corresponding density is 
+
+$$
+f
+$$

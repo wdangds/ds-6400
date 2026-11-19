@@ -1,0 +1,2228 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>15&nbsp; Group Lasso – DS 6400 Weekly Writing</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../references.html" rel="next">
+<link href="../weeks/17.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5ccb035bea26c1e21f80f44cf7c27909.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+window.MathJax = {
+  loader: {
+    load: ["[tex]/mathtools"]
+  },
+  tex: {
+    packages: {"[+]": ["mathtools"]},
+    macros: {
+      R: "\\mathbb{R}",
+      N: "\\mathbb{N}",
+      Z: "\\mathbb{Z}",
+      Q: "\\mathbb{Q}",
+      C: "\\mathbb{C}",
+      E: "\\mathbb{E}",
+      Var: "\\operatorname{Var}",
+      Cov: "\\operatorname{Cov}",
+      Corr: "\\operatorname{Corr}",
+      argmin: "\\operatorname*{arg\\,min}",
+      argmax: "\\operatorname*{arg\\,max}",
+      ind: "\\mathbb{1}",
+      Err: "\\operatorname{Err}",
+      err: "\\operatorname{err}",
+      var: "\\operatorname{var}",
+      indep: "\\perp\\!\\!\\!\\perp",
+      PD: "\\operatorname{PD}",
+      ALE: "\\operatorname{ALE}",
+      mg: "\\operatorname{mg}",
+      av: "\\operatorname{av}",
+      PE: "\\operatorname{PE}",
+      mr: "\\operatorname{mr}",
+      rmg: "\\operatorname{rmg}",
+      sd: "\\operatorname{sd}",
+      P: "\\mathbb{P}", 
+      rank: "\\operatorname{rank}",
+      dim: "\\operatorname{dim}",
+      V: "\\mathcal{V}",
+      W: "\\mathcal{W}",
+      U: "\\mathcal{U}",
+    }
+  }
+};
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/18.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Group Lasso</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">DS 6400 Weekly Writing</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Weekly Writing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Apparent Error to Modern Error: Efron’s Optimism and Evaluation of Predictive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">40 years of Predictive Performance Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Are the Forests really Random?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Comparison Under Complexity and Tuning Constraints</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Regression Splines</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Comparing Nonlinear Regression Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">High-Dimensional Regression in Python</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Ridge Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Lasso Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Computational Exploration of Regularization in High-Dimensional Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to Survival Analysis and Parametric Survival Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Interactions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Interactions: Foundations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/18.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Group Lasso</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/ols-cv-independence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">OLS, Linear Invariance, and Conditional Independence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/linear-algebra-revision.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#from-individual-variable-selection-to-grouped-regression" id="toc-from-individual-variable-selection-to-grouped-regression" class="nav-link active" data-scroll-target="#from-individual-variable-selection-to-grouped-regression"><span class="header-section-number">1</span> From individual variable selection to grouped regression</a>
+  <ul class="collapse">
+  <li><a href="#regression-models-with-grouped-predictors" id="toc-regression-models-with-grouped-predictors" class="nav-link" data-scroll-target="#regression-models-with-grouped-predictors"><span class="header-section-number">1.1</span> Regression models with grouped predictors</a></li>
+  <li><a href="#the-group-lasso-estimator" id="toc-the-group-lasso-estimator" class="nav-link" data-scroll-target="#the-group-lasso-estimator"><span class="header-section-number">1.2</span> The group-lasso estimator</a></li>
+  <li><a href="#why-the-group-weights-matter" id="toc-why-the-group-weights-matter" class="nav-link" data-scroll-target="#why-the-group-weights-matter"><span class="header-section-number">1.3</span> Why the group weights matter?</a></li>
+  <li><a href="#why-grouped-variables" id="toc-why-grouped-variables" class="nav-link" data-scroll-target="#why-grouped-variables"><span class="header-section-number">1.4</span> Why grouped variables?</a></li>
+  <li><a href="#geometric-interpretation-of-the-penalty" id="toc-geometric-interpretation-of-the-penalty" class="nav-link" data-scroll-target="#geometric-interpretation-of-the-penalty"><span class="header-section-number">1.5</span> Geometric interpretation of the penalty</a></li>
+  <li><a href="#orthonormalization-and-invariance-of-group-representation" id="toc-orthonormalization-and-invariance-of-group-representation" class="nav-link" data-scroll-target="#orthonormalization-and-invariance-of-group-representation"><span class="header-section-number">1.6</span> Orthonormalization and invariance of group representation</a></li>
+  </ul></li>
+  <li><a href="#optimality-conditions-group-thresholding-and-descent-algorithm" id="toc-optimality-conditions-group-thresholding-and-descent-algorithm" class="nav-link" data-scroll-target="#optimality-conditions-group-thresholding-and-descent-algorithm"><span class="header-section-number">2</span> Optimality conditions, group thresholding, and descent algorithm</a>
+  <ul class="collapse">
+  <li><a href="#the-karush-kuhn-tucker-conditions" id="toc-the-karush-kuhn-tucker-conditions" class="nav-link" data-scroll-target="#the-karush-kuhn-tucker-conditions"><span class="header-section-number">2.1</span> The Karush-Kuhn-Tucker conditions</a></li>
+  <li><a href="#deriving-multivariate-soft-thresholding" id="toc-deriving-multivariate-soft-thresholding" class="nav-link" data-scroll-target="#deriving-multivariate-soft-thresholding"><span class="header-section-number">2.2</span> Deriving multivariate soft-thresholding</a></li>
+  <li><a href="#groupwise-coordinate-descent" id="toc-groupwise-coordinate-descent" class="nav-link" data-scroll-target="#groupwise-coordinate-descent"><span class="header-section-number">2.3</span> Groupwise coordinate descent</a></li>
+  <li><a href="#understanding-the-regularization-path" id="toc-understanding-the-regularization-path" class="nav-link" data-scroll-target="#understanding-the-regularization-path"><span class="header-section-number">2.4</span> Understanding the regularization path</a></li>
+  <li><a href="#a-synthetic-example" id="toc-a-synthetic-example" class="nav-link" data-scroll-target="#a-synthetic-example"><span class="header-section-number">2.5</span> A synthetic example</a></li>
+  </ul></li>
+  <li><a href="#solution-paths-group-lars-and-model-selection" id="toc-solution-paths-group-lars-and-model-selection" class="nav-link" data-scroll-target="#solution-paths-group-lars-and-model-selection"><span class="header-section-number">3</span> Solution paths, group LARS, and model selection</a>
+  <ul class="collapse">
+  <li><a href="#why-group-lasso-paths-are-not-piecewise-linear" id="toc-why-group-lasso-paths-are-not-piecewise-linear" class="nav-link" data-scroll-target="#why-group-lasso-paths-are-not-piecewise-linear"><span class="header-section-number">3.1</span> Why group-lasso paths are not piecewise linear</a></li>
+  <li><a href="#group-least-angle-regression" id="toc-group-least-angle-regression" class="nav-link" data-scroll-target="#group-least-angle-regression"><span class="header-section-number">3.2</span> Group least angle regression</a></li>
+  <li><a href="#group-non-negative-garrotte" id="toc-group-non-negative-garrotte" class="nav-link" data-scroll-target="#group-non-negative-garrotte"><span class="header-section-number">3.3</span> Group non-negative garrotte</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/18.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Group Lasso</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Group Lasso</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>The <a href="../weeks/10.html">lasso</a> provides frameworks for simultaneous estimation and variable selection by introducing an <span class="math inline">\(L_1\)</span> penalty into the least-squares objective. Its central property is sufficiently penalized regression coefficients become exactly zero. However, this approach treats each coefficient as an independent object of selection, an assumption that may be inappropriate when several coefficients collectively represent a single explanatory variable, factor, or functional component.</p>
+<p>Consider a continuous predictor represented through a spline basis. Although its effect may require several coefficients, our scientific question is not to determine which spline coefficients should remain in the model. Rather, we want to determine whether the predictor itself contributes to the response. Similarly, when a categorical predictor is represented through several indicator variables, selecting only some indicators may not correspond to a meaningful decision about the categorical factor.</p>
+<p><img src="figs/Group-Level-Predictor-Selection.png" class="img-fluid"></p>
+<p>This distinction motivates <strong>group lasso</strong>, a regularization method that preserves the sparsity-inducing behavior of the lasso while shifting the unit of selection from individual coefficients to groups of coefficients. The mathematical developement below integrates three complementary contributions: the group-selection formulation and its relationship to group least angle regression and the non-negative garrotte (<span class="citation" data-cites="yuanModelSelectionEstimation2006">Yuan and Lin (<a href="../references.html#ref-yuanModelSelectionEstimation2006" role="doc-biblioref">2006</a>)</span>) efficient descent algorithms for group lasso and noncovex group penalties (<span class="citation" data-cites="brehenyGroupDescentAlgorithms2015">Breheny and Huang (<a href="../references.html#ref-brehenyGroupDescentAlgorithms2015" role="doc-biblioref">2015</a>)</span>), and groupwise majorization-descent for general loss functions and design matrices (<span class="citation" data-cites="yangFastUnifiedAlgorithm2015">Yang and Zou (<a href="../references.html#ref-yangFastUnifiedAlgorithm2015" role="doc-biblioref">2015</a>)</span>).</p>
+<section id="from-individual-variable-selection-to-grouped-regression" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="from-individual-variable-selection-to-grouped-regression"><span class="header-section-number">1</span> From individual variable selection to grouped regression</h2>
+<section id="regression-models-with-grouped-predictors" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="regression-models-with-grouped-predictors"><span class="header-section-number">1.1</span> Regression models with grouped predictors</h3>
+<p>Consider the linear regression model</p>
+<p><span class="math display">\[
+Y = \sum_{j=1}^J X_j \beta_j + \epsilon, \quad \epsilon\sim \mathcal N_n(0, \sigma^2I_n)
+\]</span></p>
+<p>where <span class="math inline">\(Y\in \R^n\)</span> is the response vector, <span class="math inline">\(X_j\in \R^{n\times p_j}\)</span> contains the predictors belonging to group <span class="math inline">\(j\)</span>, and <span class="math inline">\(\beta_j\in \R^{p_j}\)</span> is its coefficient vector. The full design matrix is</p>
+<p><span class="math display">\[
+X=(X_1, \ldots, X_J), \quad \beta=(\beta_1^\top, \ldots, \beta_j^\top)^\top,
+\]</span></p>
+<p>with <span class="math inline">\(p=\sum_{j=1}^J\)</span> total coeffcients. We assume the groups are non-overlapping, as in the papers.</p>
+<p>For simplicity, assume the response and predictor columns have been centered, so the intercept can be ommited. When an intercept is included, it is normally left unpenalized.</p>
+<p>We have discussed about the OLS and Lasso in <a href="../weeks/10.html">previous chapter</a>. The lasso modifies the estimation problem to</p>
+<p><span class="math display">\[
+\hat \beta_\text{lasso} = \arg\min_{\beta}\left\{\frac{1}{2n} \|Y-X\beta\|_2^2 + \lambda \sum_{j=1}^J \sum_{k=1}^{p_j} |\beta_{jk}| \right\}
+\]</span></p>
+<p>The penalty is applied independently to every <span class="math inline">\(\beta_{jk}\)</span>. Consequently, the model may retain one basis coefficient while setting the remaining coefficients of the same factor to zero. That is appropriate when the individual coefficients are themselves meaningful targets for selection; otherwise, group-based penalties might be more suitable.</p>
+</section>
+<section id="the-group-lasso-estimator" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="the-group-lasso-estimator"><span class="header-section-number">1.2</span> The group-lasso estimator</h3>
+<p>To address this problem, we replace the sum of aboslute coefficient values with a sum of group norms.</p>
+<div id="def-group-lasso" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Group lasso)</strong></span> For a partition of the predictors into <span class="math inline">\(J\)</span> groups, the group-lasso estimator is</p>
+<p><span id="eq-group-lasso"><span class="math display">\[
+\hat \beta_{\text{GL}} (\lambda) = \arg\min_{\beta} \left\{\frac{1}{2n} \|Y-X\beta\|_2^2 + \lambda \sum_{j=1}^J w_j \|\beta_j\|_2\right\}
+\tag{1}\]</span></span></p>
+<p>where <span class="math inline">\(w_j&gt;0\)</span> is a group-specific penalty weight and <span class="math inline">\(\lambda\geq 0\)</span> controls regularization.</p>
+</div>
+<p>The <span class="citation" data-cites="yuanModelSelectionEstimation2006">Yuan and Lin (<a href="../references.html#ref-yuanModelSelectionEstimation2006" role="doc-biblioref">2006</a>)</span> formulation is slightly more general. For positive-definite matrices <span class="math inline">\(K_j\)</span>, define</p>
+<p><span class="math display">\[
+\|\beta_j\|_{K_j} = \sqrt{\beta_j^\top K_j \beta_j}
+\]</span></p>
+<p>Then group lasso can be written as</p>
+<p><span id="eq-group-lasso-general"><span class="math display">\[
+\hat \beta = \arg\min_\beta \left\{\frac{1}{2n} \left\|Y - \sum_{j=1}^J X_J \beta_j\right\|_2^2 + \lambda \sum_{j=1}^J \|\beta_j\|_{K_j}\right\}
+\tag{2}\]</span></span></p>
+<p>Yuan and Lin use <span class="math inline">\(K_j = p_jI_{p_j}\)</span>, producing the penalty <span class="math inline">\(\lambda\sum_j \sqrt{p_j}|\beta_j|_2\)</span>.</p>
+<div id="exm-group-lasso" class="theorem example">
+<p><span class="theorem-title"><strong>Example 1</strong></span> Suppose our dataset contains four observations.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th><span class="math inline">\(x_i\)</span></th>
+<th><span class="math inline">\(g_i\)</span></th>
+<th><span class="math inline">\(Y_i\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>A</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>B</td>
+<td>10</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>C</td>
+<td>12</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>A</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<p>The regression design matrix (exluding the intercept) is</p>
+<p><span class="math display">\[
+X = \begin{pmatrix}
+1 &amp; 0 &amp; 0 \\
+2 &amp; 1 &amp; 0 \\
+3 &amp; 0 &amp; 1 \\
+4 &amp; 0 &amp; 0
+\end{pmatrix} = \underbrace{\begin{pmatrix}
+1 \\ 2 \\ 3 \\ 4
+\end{pmatrix}}_{X_1} \underbrace{\begin{pmatrix}0 &amp; 1 \\ 1 &amp; 0 \\ 0 &amp; 1 \\ 0 &amp; 0 \end{pmatrix}}_{X_2}
+\]</span></p>
+<p>Consequently, the model can be rewritten as</p>
+<p><span class="math display">\[
+Y = \beta_0\mathbf{1} + X_1 \beta_1 + X_2 \beta_2 + \epsilon, \quad X_1 \in \R^{4\times 1}, X_2 \in \R^{4\times 2}
+\]</span></p>
+<p>Therefore, the group-lasso objective becomes</p>
+<p><span class="math display">\[
+\min_{\beta_0, \beta_1, \beta_2, \beta_3} \left\{ \frac{1}{2\times 4} \sum_{i=1}^4 (Y_i - \hat Y_i)^2 + \lambda \left[w_1 |\beta_1| + w_2 \sqrt{\beta_2^2 + \beta_3^2}\right]\right\}
+\]</span></p>
+<p>Suppose we are evaluating the candidate coefficients</p>
+<p><span class="math display">\[
+\beta_0 = 2, \beta_1 = 2, \beta_2 = 3, \beta_3 = 4.
+\]</span></p>
+<p>Then the group norms are</p>
+<p><span class="math display">\[
+\|\beta_1\|_{K_1} = |2| = 2, \quad \|\beta_2\|_{K_2} = \sqrt{3^2 + 4^2} = 5
+\]</span></p>
+<p>Now consider <span class="citation" data-cites="yuanModelSelectionEstimation2006">Yuan and Lin (<a href="../references.html#ref-yuanModelSelectionEstimation2006" role="doc-biblioref">2006</a>)</span> definition:</p>
+<p><span class="math display">\[
+\|\beta_j\|_{K_j} = \sqrt{\beta_j^\top K_j \beta_j}
+\]</span></p>
+<p>The matrix <span class="math inline">\(K_j\)</span> defines how the magnitude of a group is measured. For our second group <span class="math inline">\(\beta_2 = \begin{pmatrix} 3 \\ 4 \end{pmatrix}\)</span>, Yuan and Lin chose <span class="math inline">\(K_j = p_jI_{p_j}\)</span>. Since group 2 contains two coefficients, <span class="math inline">\(p_2=2\)</span>, so</p>
+<p><span class="math display">\[
+\|\beta_2\|_{K_2} = \sqrt{\begin{pmatrix} 3 &amp; 4 \end{pmatrix} \begin{pmatrix} 2 &amp; 0 \\ 0 &amp; 2 \end{pmatrix} \begin{pmatrix} 3 \\ 4 \end{pmatrix}} = \sqrt{2(3^2 + 4^2)} = \sqrt{2 \cdot 25} = 5\sqrt{2}
+\]</span></p>
+<p>In general,</p>
+<p><span class="math display">\[
+\|\beta_j\|_{K_j} = \sqrt{p_j} \|\beta_j\|_2 \quad \text{when } K_j = p_j I_{p_j}
+\]</span></p>
+</div>
+<p><a href="#eq-group-lasso" class="quarto-xref">Equation&nbsp;<span>1</span></a> uses a normalized loss, whereas <a href="#eq-group-lasso-general" class="quarto-xref">Equation&nbsp;<span>2</span></a> follows the <span class="citation" data-cites="yuanModelSelectionEstimation2006">Yuan and Lin (<a href="../references.html#ref-yuanModelSelectionEstimation2006" role="doc-biblioref">2006</a>)</span> unnormalized loss. They represent equivalent optimization formulations after the appropriate rescaling of <span class="math inline">\(\lambda\)</span>.</p>
+</section>
+<section id="why-the-group-weights-matter" class="level3" data-number="1.3">
+<h3 data-number="1.3" class="anchored" data-anchor-id="why-the-group-weights-matter"><span class="header-section-number">1.3</span> Why the group weights matter?</h3>
+<p>Suppose two groups have different dimensions, with <span class="math inline">\(p_1\)</span> = 2 and <span class="math inline">\(p_2\)</span> = 8. For independent standardized predictors under a null model, a group containing eight predictor will exhibit a larger residual correlation norm than a group containing only two predictors. If both groups received an identical penalty weight, larger groups could enjoy an advantage during selection.</p>
+<p>Using <span class="math inline">\(w_j = \sqrt{p_j}\)</span> ensures that each group is penalized based on its size, making the penalty more fair and balanced across groups of different dimensions. In particular, when the block is orthonormal and the response contains Gaussian noise, the squared norm of its residual correlations has an expectation proportional to <span class="math inline">\(p_j\)</span>.</p>
+</section>
+<section id="why-grouped-variables" class="level3" data-number="1.4">
+<h3 data-number="1.4" class="anchored" data-anchor-id="why-grouped-variables"><span class="header-section-number">1.4</span> Why grouped variables?</h3>
+<section id="categorical-predictors" class="level4" data-number="1.4.1">
+<h4 data-number="1.4.1" class="anchored" data-anchor-id="categorical-predictors"><span class="header-section-number">1.4.1</span> Categorical predictors</h4>
+<p>Suppose <span class="math inline">\(G\)</span> has four levels: A, B, C, and D. Using A as the reference level, a regression model might contain</p>
+<p><span class="math display">\[
+\E[Y | G] = \beta_0 + \beta_B I(G=B) + \beta_C I(G=C) + \beta_D I(G=D).
+\]</span></p>
+<p>The coefficients form one group <span class="math inline">\(\beta_G = \begin{pmatrix} \beta_B &amp; \beta_C &amp; \beta_D \end{pmatrix}^\top\)</span>. A group-lasso penalty acts on</p>
+<p><span class="math display">\[
+\lambda \sqrt{3} \sqrt{\beta_B^2 + \beta_C^2 + \beta_D^2}
+\]</span></p>
+<p>If <span class="math inline">\(\hat \beta_G = \mathbf{0}\)</span>, the fitted means for all four levels are equal. The factor has been excluded from the model. When the group is retained, the model can estimate differences between the categories without imposing individual coefficient sparsity.</p>
+</section>
+<section id="nonlinear-regression-with-splines" class="level4" data-number="1.4.2">
+<h4 data-number="1.4.2" class="anchored" data-anchor-id="nonlinear-regression-with-splines"><span class="header-section-number">1.4.2</span> Nonlinear regression with splines</h4>
+<p>Suppose a continuous predictor <span class="math inline">\(x\)</span> has an unknown nonlinear effect approximated by a spline basis</p>
+<p><span class="math display">\[
+f(x) = \sum_{k=1}^q \beta_k b_k(x).
+\]</span></p>
+<p>For observations <span class="math inline">\(x_1, \ldots, x_n\)</span>, the associated design matrix is</p>
+<p><span class="math display">\[
+X_j = \begin{pmatrix} b_1(x_1) &amp; b_2(x_1) &amp; \cdots &amp; b_q(x_1) \\ b_1(x_2) &amp; b_2(x_2) &amp; \cdots &amp; b_q(x_2) \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ b_1(x_n) &amp; b_2(x_n) &amp; \cdots &amp; b_q(x_n) \end{pmatrix}
+\]</span></p>
+<p>Instead of selecting <span class="math inline">\(b_1, \ldots, b_q\)</span>, group lasso decides whether the entire function <span class="math inline">\(f\)</span> should contribute to the model. For an additive regression model,</p>
+<p><span class="math display">\[
+\E[Y\mid x_1, \ldots, x_J] = \beta_0 + \sum_{j=1}^J f_j(x_j)
+\]</span></p>
+<p>we can penalize</p>
+<p><span class="math display">\[
+\lambda \sum_{j=1}^J \sqrt{p_j} \|\beta_j\|_2
+\]</span></p>
+<p>After the appropriate centering and basis standardization, setting <span class="math inline">\(\beta_j = \mathbf{0}\)</span> removes the functional component <span class="math inline">\(f_j\)</span>. This provides a direct bridge between nonlinear basis regression and variable selection.</p>
+</section>
+</section>
+<section id="geometric-interpretation-of-the-penalty" class="level3" data-number="1.5">
+<h3 data-number="1.5" class="anchored" data-anchor-id="geometric-interpretation-of-the-penalty"><span class="header-section-number">1.5</span> Geometric interpretation of the penalty</h3>
+<p>The group-lasso optimization problem has a constrained counterpart,</p>
+<p><span class="math display">\[
+\min_{\beta} \frac{1}{2n} \|y - X\beta\|_2^2 \quad \text{subject to} \quad \sum_{j=1}^J w_j \|\beta_j\|_2 \leq t
+\]</span></p>
+<p>where <span class="math inline">\(t\geq 0\)</span> controls the size of the feasible set. For appropriate choices of <span class="math inline">\(t\)</span> and <span class="math inline">\(\lambda\)</span>, the constrained and penalized formulations have the same solutions. Smaller <span class="math inline">\(t\)</span> correponds to stronger regularization.</p>
+<p>As with ordinary lasso, sparsity aries when the least-squared loss is minimized on a nonsmooth portion of the constraint boundary. The difference is where the nonsmoothness occurs. Ordinary lasso has nonsmoothness at individual coefficient zero, while group lasso has nonsmoothness when an entire group norm vanishes.</p>
+<div id="c47f8260" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.patches <span class="im">import</span> Rectangle, Circle</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># For X.T @ X / n = I, set z = X.T @ y / n.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>lam <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> <span class="fl">1.0</span>                     </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>z_star <span class="op">=</span> np.array([<span class="fl">0.8</span>, <span class="fl">0.8</span>])</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="fl">5.3</span>))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>fig.subplots_adjust(left<span class="op">=</span><span class="fl">0.08</span>, right<span class="op">=</span><span class="fl">0.98</span>, bottom<span class="op">=</span><span class="fl">0.13</span>, top<span class="op">=</span><span class="fl">0.79</span>, wspace<span class="op">=</span><span class="fl">0.28</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"Lasso and group lasso: exact zero regions"</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>             fontsize<span class="op">=</span><span class="dv">16</span>, fontweight<span class="op">=</span><span class="st">"bold"</span>, y<span class="op">=</span><span class="fl">0.98</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axs:</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    ax.<span class="bu">set</span>(aspect<span class="op">=</span><span class="st">"equal"</span>, xlim<span class="op">=</span>(<span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span>), ylim<span class="op">=</span>(<span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>           xlabel<span class="op">=</span><span class="vs">r"</span><span class="dv">$</span><span class="vs">z_1=X_1</span><span class="dv">^</span><span class="ch">\t</span><span class="vs">op y/n</span><span class="dv">$</span><span class="vs">"</span>, ylabel<span class="op">=</span><span class="vs">r"</span><span class="dv">$</span><span class="vs">z_2=X_2</span><span class="dv">^</span><span class="ch">\t</span><span class="vs">op y/n</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    ax.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"#444444"</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    ax.axvline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">"#444444"</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    ax.set_xticks([<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>])</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    ax.set_yticks([<span class="op">-</span><span class="dv">2</span>, <span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>])</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    ax.grid(alpha<span class="op">=</span><span class="fl">0.12</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    ax.scatter(<span class="op">*</span>z_star, marker<span class="op">=</span><span class="st">"*"</span>, s<span class="op">=</span><span class="dv">180</span>, color<span class="op">=</span><span class="st">"#bd3743"</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>               edgecolors<span class="op">=</span><span class="st">"white"</span>, linewidth<span class="op">=</span><span class="fl">0.7</span>, zorder<span class="op">=</span><span class="dv">6</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    ax.annotate(<span class="vs">r"</span><span class="dv">$</span><span class="vs">z</span><span class="dv">^</span><span class="op">*</span><span class="vs">=</span><span class="kw">(</span><span class="vs">0</span><span class="dv">.</span><span class="vs">8,0</span><span class="dv">.</span><span class="vs">8</span><span class="kw">)</span><span class="dv">$</span><span class="vs">"</span>, xy<span class="op">=</span>z_star, xytext<span class="op">=</span>(<span class="fl">1.02</span>, <span class="fl">1.4</span>),</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>                fontsize<span class="op">=</span><span class="dv">10</span>, color<span class="op">=</span><span class="st">"#a72c36"</span>,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>                arrowprops<span class="op">=</span><span class="bu">dict</span>(arrowstyle<span class="op">=</span><span class="st">"-"</span>, color<span class="op">=</span><span class="st">"#a72c36"</span>))</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Lasso: both coefficients zero iff max(|z1|, |z2|) &lt;= lambda.</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>].axvspan(<span class="op">-</span>lam, lam, color<span class="op">=</span><span class="st">"#f1bf89"</span>, alpha<span class="op">=</span><span class="fl">0.22</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>].axhspan(<span class="op">-</span>lam, lam, color<span class="op">=</span><span class="st">"#f1bf89"</span>, alpha<span class="op">=</span><span class="fl">0.22</span>)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>].add_patch(Rectangle(</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    (<span class="op">-</span>lam, <span class="op">-</span>lam), <span class="dv">2</span><span class="op">*</span>lam, <span class="dv">2</span><span class="op">*</span>lam,</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    facecolor<span class="op">=</span><span class="st">"#4b8bc1"</span>, edgecolor<span class="op">=</span><span class="st">"#125b92"</span>, alpha<span class="op">=</span><span class="fl">0.47</span>, lw<span class="op">=</span><span class="fl">2.5</span>, zorder<span class="op">=</span><span class="dv">3</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>].text(<span class="dv">0</span>, <span class="op">-</span><span class="fl">0.3</span>, <span class="vs">r"</span><span class="dv">$</span><span class="er">\</span><span class="vs">hat</span><span class="dv">\b</span><span class="vs">eta_1=</span><span class="er">\</span><span class="vs">hat</span><span class="dv">\b</span><span class="vs">eta_2=0</span><span class="dv">$</span><span class="vs">"</span>,</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>            ha<span class="op">=</span><span class="st">"center"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, color<span class="op">=</span><span class="st">"#15466b"</span>)</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">0</span>].set_title(<span class="st">"Lasso: full zero region is a square</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>                 <span class="vs">r"</span><span class="dv">$</span><span class="ch">\|</span><span class="vs">z</span><span class="ch">\|</span><span class="vs">_</span><span class="er">\</span><span class="vs">infty</span><span class="er">\</span><span class="vs">leq</span><span class="er">\</span><span class="vs">lambda</span><span class="dv">$</span><span class="vs">"</span>,</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>                 fontsize<span class="op">=</span><span class="dv">12</span>, pad<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Group lasso: both coefficients zero iff sqrt(z1^2+z2^2) &lt;= lambda*w.</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>].add_patch(Circle(</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    (<span class="dv">0</span>, <span class="dv">0</span>), radius<span class="op">=</span>lam<span class="op">*</span>w,</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    facecolor<span class="op">=</span><span class="st">"#73bbad"</span>, edgecolor<span class="op">=</span><span class="st">"#096d62"</span>, alpha<span class="op">=</span><span class="fl">0.49</span>, lw<span class="op">=</span><span class="fl">2.5</span>, zorder<span class="op">=</span><span class="dv">3</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>].text(<span class="dv">0</span>, <span class="op">-</span><span class="fl">0.3</span>, <span class="vs">r"</span><span class="dv">$</span><span class="er">\</span><span class="vs">hat{</span><span class="dv">\b</span><span class="vs">oldsymbol{</span><span class="dv">\b</span><span class="vs">eta}}=</span><span class="dv">\m</span><span class="vs">athbf</span><span class="op">{0}</span><span class="dv">$</span><span class="vs">"</span>,</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>            ha<span class="op">=</span><span class="st">"center"</span>, fontsize<span class="op">=</span><span class="dv">12</span>, color<span class="op">=</span><span class="st">"#0b645b"</span>)</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>axs[<span class="dv">1</span>].set_title(<span class="st">"Group lasso: full zero region is a disk</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>                 <span class="vs">r"</span><span class="dv">$</span><span class="ch">\|</span><span class="vs">z</span><span class="ch">\|</span><span class="vs">_2</span><span class="er">\</span><span class="vs">leq</span><span class="er">\</span><span class="vs">lambda w</span><span class="dv">$</span><span class="vs">"</span>,</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>                 fontsize<span class="op">=</span><span class="dv">12</span>, pad<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="18_files/figure-html/cell-2-output-1.png" width="950" height="497" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="exm-lasso-vs-group-lasso" class="theorem example">
+<p><span class="theorem-title"><strong>Example 2</strong></span> At <span class="math inline">\(\lambda\)</span> = 1.2, consider the unpenalized vector <span class="math inline">\(z=(1, 1)^\top\)</span>. For ordinary lasso, both cooridnates are smaller than <span class="math inline">\(\lambda\)</span>, so the solution is</p>
+<p><span class="math display">\[
+\hat{\beta}_\text{lasso} = (0, 0)^\top
+\]</span></p>
+<p>For group lasso, <span class="math inline">\(\|z\|_2 = \sqrt{2}&gt;1.2\)</span>, so the group survives even though neither coefficient exceeds the threshold:</p>
+<p><span class="math display">\[
+\hat{\beta}_\text{GL} = \left(1- \frac{1.2}{\sqrt{2}}\right) \begin{pmatrix} 1 \\ 1 \end{pmatrix} \approx \begin{pmatrix} 0.151 \\ 0.151 \end{pmatrix}
+\]</span></p>
+<p>We will discuss how we achieve this estimation of <span class="math inline">\(\hat \beta_{\text{GL}}\)</span> later.</p>
+</div>
+</section>
+<section id="orthonormalization-and-invariance-of-group-representation" class="level3" data-number="1.6">
+<h3 data-number="1.6" class="anchored" data-anchor-id="orthonormalization-and-invariance-of-group-representation"><span class="header-section-number">1.6</span> Orthonormalization and invariance of group representation</h3>
+<p>There is another issuse that arise in ordinary lasso: a group of coefficients may represent the same underlying factor in many different ways. For example, a categorical variable may be expressed using reference contrasts, sum-to-zero contrasts, or another system of basis vectors. Likewise, the same spline function space may be represented by different bases. Ideally, whether a factor is selected should not depend on an arbitrary choice of coordinates.</p>
+<p><span class="citation" data-cites="yuanModelSelectionEstimation2006">Yuan and Lin (<a href="../references.html#ref-yuanModelSelectionEstimation2006" role="doc-biblioref">2006</a>)</span> begin with groupwise orthonormalized design matrices</p>
+<p><span class="math display">\[
+X_j^\top X_j = I_{p_j}
+\]</span></p>
+<p><span class="citation" data-cites="brehenyGroupDescentAlgorithms2015">Breheny and Huang (<a href="../references.html#ref-brehenyGroupDescentAlgorithms2015" role="doc-biblioref">2015</a>)</span> work with the normalized version,</p>
+<p><span id="eq-normalized-version"><span class="math display">\[
+\frac{1}{n} X_j^\top X_j = I_{p_j}
+\tag{3}\]</span></span></p>
+<p>These conditions concern columns <em>within a group</em>. To obtain <a href="#eq-normalized-version" class="quarto-xref">Equation&nbsp;<span>3</span></a>, consider the eigendecomposition</p>
+<p><span class="math display">\[
+\frac{1}{n} X_j^\top X_j = Q_j \Lambda_j Q_j^\top.
+\]</span></p>
+<p>For a full-rank group, define</p>
+<p><span class="math display">\[
+\tilde{X_j} = X_j Q_j \Lambda_j^{-1/2}.
+\]</span></p>
+<p>Then</p>
+<p><span class="math display">\[
+\begin{aligned}
+\frac1n\widetilde X_j^\top\widetilde X_j
+&amp;=
+\Lambda_j^{-1/2}Q_j^\top
+\left(\frac1nX_j^\top X_j\right)
+Q_j\Lambda_j^{-1/2}\\
+&amp;=
+\Lambda_j^{-1/2}\Lambda_j\Lambda_j^{-1/2}\\
+&amp;=I.
+\end{aligned}
+\]</span></p>
+<p>The corresponding coefficient transformation is</p>
+<p><span id="eq-coefficient-transformation"><span class="math display">\[
+\beta_j = Q_j \Lambda_j^{-1/2}\tilde{\beta}_j
+\tag{4}\]</span></span></p>
+<p>Consequently,</p>
+<p><span class="math display">\[
+X_j \beta_j = \tilde{X}_j \tilde{\beta}_j,
+\]</span></p>
+<p>so the fitted contribution of the factor remains unchanged. If <span class="math inline">\(X_j\)</span> is rank deficient, we omit its zero eigenvalues and corresponding eigenvectors. The transformation model then operates in the lower-dimensional space of rank <span class="math inline">\(r_j\)</span> and <a href="#eq-coefficient-transformation" class="quarto-xref">Equation&nbsp;<span>4</span></a> maps the estimated coefficeints back to their original dimensions.</p>
+<p>However, we must distinguish preserving the fitted functions from preserving the original penalty. In general,</p>
+<p><span class="math display">\[
+\|\tilde{\beta}_j \|_2 = \frac{1}{\sqrt{n}} \|X_j \beta_j\|_2
+\]</span></p>
+<p>Penalizing orthonormalized coefficients is thus equivalent to penalizing the empirical norm of a group’s fitted contribution. The penalty is invariant under orthogonal transformations of an orthonormal group basis, because for any orthogonal <span class="math inline">\(R\)</span>,</p>
+<p><span class="math display">\[
+\|R^\top \tilde{\beta}_j \|_2 = \|\tilde{\beta}_j \|_2.
+\]</span></p>
+<p>The same invariance does not extend to arbitrary nonorthogonal transformations if the Euclidean coefficient penalty is left unchanged.</p>
+<div id="exm-orthonormalization" class="theorem example">
+<p><span class="theorem-title"><strong>Example 3</strong></span> Suppose our regression model contains one predictor represented by two basis functions</p>
+<p><span class="math display">\[
+f(x) = \beta_1 b_1(x) + \beta_2 b_2(x)
+\]</span></p>
+<p>For four observations, suppose these basis function give the following column vectors:</p>
+<p><span class="math display">\[
+u = \begin{pmatrix} 1 \\ 1 \\ -1 \\ -1 \end{pmatrix}, \quad v = \begin{pmatrix} 1 \\ -1 \\ 1 \\ -1 \end{pmatrix}
+\]</span></p>
+<p>The associated design matrix is</p>
+<p><span class="math display">\[
+X = \begin{pmatrix} 1 &amp; 1 \\ 1 &amp; -1 \\ -1 &amp; 1 \\ -1 &amp; -1 \end{pmatrix} = \begin{pmatrix} u &amp; v \end{pmatrix}
+\]</span></p>
+<p>For simplicity, assume the observations are centered so that we can omit the intercept. Suppose the coefficients are <span class="math inline">\(\beta = \begin{pmatrix} 2 \\ 1 \end{pmatrix}\)</span>. The fitted contribution of this group is</p>
+<p><span class="math display">\[
+X\beta= 2u + v = \begin{pmatrix} 3 \\ 1 \\ -1 \\ 3 \end{pmatrix}
+\]</span></p>
+<p>The group-lasso penalty is based on</p>
+<p><span class="math display">\[
+\|\beta \|_2 = \sqrt{2^2 + 1^2}  = \sqrt{5} \approx 2.236
+\]</span></p>
+<p>Now suppose we decide to use a different basis</p>
+<p><span class="math display">\[
+b^*_1 = b_1, \quad b^*_2 = b_1 + b_2
+\]</span></p>
+<p>In terms of design columns, our new basis is</p>
+<p><span class="math display">\[
+u^* = u, \quad v^* = u+ v
+\]</span></p>
+<p>Consequently,</p>
+<p><span class="math display">\[
+X^* = \begin{pmatrix} u &amp; u + v \end{pmatrix} = \begin{pmatrix} 1 &amp; 2 \\ 1 &amp; 0 \\ -1 &amp; 0 \\ -1 &amp; -2 \end{pmatrix}
+\]</span></p>
+<p>Notice that we have not introduced any new information: <span class="math inline">\(u\)</span> and <span class="math inline">\(u+v\)</span> span the same space as <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span>. The original function was</p>
+<p><span class="math display">\[
+f(x) = 2b_1(x) + b_2(x)
+\]</span></p>
+<p>We can rewrite it as</p>
+<p><span class="math display">\[
+f(x) = 1\times b_1^*(x) + 1\times b_2^*(x)
+\]</span></p>
+<p>because <span class="math inline">\(b^*_1 + b^*_2 = b_1 + (b_1 + b_2) = 2b_1 + b_2\)</span>.</p>
+<p>Therefore, the new coefficient vector is</p>
+<p><span class="math display">\[
+\beta^* = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
+\]</span></p>
+<p>Check the fitted values:</p>
+<p><span class="math display">\[
+X^* \beta^* = \begin{pmatrix} 3 \\ 1 \\ -1 \\ 3 \end{pmatrix} = X\beta
+\]</span></p>
+<p>The two representations are exactly equivalent in terms of predictions. However, their Euclidean norms are different:</p>
+<p><span class="math display">\[
+\|\beta^* \|_2 = \sqrt{1^2 + 1^2} = \sqrt{2} \approx 1.414
+\]</span></p>
+<p><span class="math display">\[
+\|\beta \|_2 = \sqrt{2^2 + 1^2} = \sqrt{5} \approx 2.236
+\]</span></p>
+<p>If we use the group-lasso penalty <span class="math inline">\(\lambda \| \beta \|_2\)</span>, we penalize exactly the same function by two different amounts depending on how we choose the basis. That means our arbitrary choice of coordinates can affect which group gets selected.</p>
+<p>To address the problem, we can use an orthonormal basis, which ensures that the penalty is invariant to the choice of coordinates. For a group with <span class="math inline">\(n\)</span> observations, we want</p>
+<p><span class="math display">\[
+\frac{1}{n} X^T X = I
+\]</span></p>
+<p>This equation imposes two requirements:</p>
+<ol type="1">
+<li>Different columns must have zero inner product (orthogonality)</li>
+<li>Every column must have squared length <span class="math inline">\(n\)</span> (normalization)</li>
+</ol>
+<p>Now we check those basis vectors:</p>
+<p><span class="math display">\[
+\frac{1}{4} X^T X = \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{pmatrix}
+\]</span></p>
+<p>The columns of <span class="math inline">\(X\)</span> are orthonormal, satisfying both requirements.</p>
+<p><span class="math display">\[
+\frac{1}{4} (X^*)^\top X^* = \begin{pmatrix} 1 &amp; 1 \\ 1 &amp; 2 \end{pmatrix} \neq I
+\]</span></p>
+<p>For the second design matrix, the columns are not orthonormal. Now we perform the eigendecomposition. We already calculated <span class="math inline">\(G = \frac{1}{4} (X^*)^\top X^*\)</span> above. Our goal is to find a transformation that makes this matrix euqla to identity.</p>
+<p>The eigenvalues of <span class="math inline">\(G\)</span> satisfy</p>
+<p><span class="math display">\[
+\det(G - \lambda I) = \det\left(\begin{pmatrix} 1 &amp; 1 \\ 1 &amp; 2 \end{pmatrix} - \lambda \begin{pmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{pmatrix}\right) = (1-\lambda)(2-\lambda) - 1 = \lambda^2 - 3\lambda + 1 = 0
+\]</span></p>
+<p>Therefore, <span class="math inline">\(\lambda = \frac{3 \pm \sqrt{5}}{2}\)</span>. The corresponding eigendecomposition is</p>
+<p><span class="math display">\[
+G = Q \Lambda Q^\top,
+\]</span></p>
+<p>where, approximate</p>
+<p><span class="math display">\[
+Q = \begin{pmatrix} \frac{2}{\sqrt{10 + 2\sqrt{5}}} &amp; \frac{2}{\sqrt{10 - 2\sqrt{5}}} \\ \frac{1+\sqrt{5}}{\sqrt{10 + 2\sqrt{5}}} &amp; \frac{1-\sqrt{5}}{\sqrt{10 + 2\sqrt{5}}} \end{pmatrix}, \quad \Lambda = \begin{pmatrix} \frac{3-\sqrt{5}}{2} &amp; 0 \\ 0 &amp; \frac{3+\sqrt{5}}{2} \end{pmatrix}
+\]</span></p>
+<p>Remeber the meaning of this decomposition:</p>
+<ul>
+<li><span class="math inline">\(Q\)</span> rotates the coefficeint-coordinate system into orthogonal eigenvector directions.</li>
+<li><span class="math inline">\(\Lambda\)</span> describes the squared scales in those directions.</li>
+<li><span class="math inline">\(\Lambda^{-1/2}\)</span> rescales those directions to have unit normalized squared length.</li>
+</ul>
+<p>Hence, the orthonormalized design matrix is</p>
+<p><span class="math display">\[
+\tilde X = X^* Q \Lambda^{-1/2} =
+\begin{pmatrix}
+\dfrac{2+\sqrt5}{\sqrt{5+2\sqrt5}}&amp;
+\dfrac{2-\sqrt5}{\sqrt{5-2\sqrt5}}\\[10pt]
+\dfrac{1}{\sqrt{5+2\sqrt5}}&amp;
+\dfrac{1}{\sqrt{5-2\sqrt5}}\\[10pt]
+-\dfrac{1}{\sqrt{5+2\sqrt5}}&amp;
+-\dfrac{1}{\sqrt{5-2\sqrt5}}\\[10pt]
+-\dfrac{2+\sqrt5}{\sqrt{5+2\sqrt5}}&amp;
+-\dfrac{2-\sqrt5}{\sqrt{5-2\sqrt5}}
+\end{pmatrix}.
+\]</span></p>
+<p>We started with the second representation <span class="math inline">\(X^*\beta^*\)</span> with <span class="math inline">\(\beta^* = \begin{pmatrix} 1 \\ 1 \end{pmatrix}\)</span>. After orthonormalization, we need a new coefficient vector <span class="math inline">\(\tilde{\beta}\)</span> such that</p>
+<p><span class="math display">\[
+X^* \beta^* = \tilde X \tilde \beta
+\]</span></p>
+<p>Substituting the numbers (at 2A.M) gives</p>
+<p><span class="math display">\[
+\tilde \beta \approx \begin{pmatrix} -0.2008 \\ 2.2270 \end{pmatrix}
+\]</span></p>
+<p>Its norm is</p>
+<p><span class="math display">\[
+\|\tilde \beta\|_2 \approx 2.237 = \sqrt 5
+\]</span></p>
+</div>
+<div id="3f351840" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Four observations, two basis functions</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.array([</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    [ <span class="dv">1</span>,  <span class="dv">1</span>],</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    [ <span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>],</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    [<span class="op">-</span><span class="dv">1</span>,  <span class="dv">1</span>],</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    [<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>], dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> X.shape[<span class="dv">0</span>]</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>beta <span class="op">=</span> np.array([<span class="fl">2.</span>, <span class="fl">1.</span>])</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> X <span class="op">@</span> beta</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Change coordinates:</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># new basis = (u, u + v)</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> np.array([[<span class="fl">1.</span>, <span class="fl">1.</span>],</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>              [<span class="fl">0.</span>, <span class="fl">1.</span>]])</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>X_star <span class="op">=</span> X <span class="op">@</span> A</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>beta_star <span class="op">=</span> np.linalg.solve(A, beta)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Eigenvalue-based orthonormalization</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>G <span class="op">=</span> X_star.T <span class="op">@</span> X_star <span class="op">/</span> n</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>eigenvalues, Q <span class="op">=</span> np.linalg.eigh(G)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>D_inv_sqrt <span class="op">=</span> np.diag(<span class="dv">1</span> <span class="op">/</span> np.sqrt(eigenvalues))</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>D_sqrt <span class="op">=</span> np.diag(np.sqrt(eigenvalues))</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>X_tilde <span class="op">=</span> X_star <span class="op">@</span> Q <span class="op">@</span> D_inv_sqrt</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>beta_tilde <span class="op">=</span> D_sqrt <span class="op">@</span> Q.T <span class="op">@</span> beta_star</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Same fitted values:"</span>,</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>      np.allclose(X <span class="op">@</span> beta, X_star <span class="op">@</span> beta_star))</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Normalized Gram matrix:"</span>)</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.<span class="bu">round</span>(X_tilde.T <span class="op">@</span> X_tilde <span class="op">/</span> n, <span class="dv">5</span>))</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original coefficient norm:"</span>, np.linalg.norm(beta))</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Changed basis norm:"</span>, np.linalg.norm(beta_star))</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Orthonormalized norm:"</span>, np.linalg.norm(beta_tilde))</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Empirical function norm:"</span>, np.linalg.norm(y) <span class="op">/</span> np.sqrt(n))</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Group selection at lambda = 3</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>lam <span class="op">=</span> <span class="fl">3.0</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>score_original <span class="op">=</span> np.linalg.norm(X.T <span class="op">@</span> y <span class="op">/</span> n)</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>score_changed <span class="op">=</span> np.linalg.norm(X_star.T <span class="op">@</span> y <span class="op">/</span> n)</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>score_normalized <span class="op">=</span> np.linalg.norm(X_tilde.T <span class="op">@</span> y <span class="op">/</span> n)</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Group selected? (True means nonzero)"</span>)</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original:"</span>, score_original <span class="op">&gt;</span> lam)</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Changed basis:"</span>, score_changed <span class="op">&gt;</span> lam)</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Orthonormalized:"</span>, score_normalized <span class="op">&gt;</span> lam)</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualization</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">5</span>))</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel 1: basis vectors in the same 2D function space</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">0</span>]</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>vectors <span class="op">=</span> [</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>    ((<span class="dv">1</span>, <span class="dv">0</span>), <span class="st">"u"</span>),</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>    ((<span class="dv">0</span>, <span class="dv">1</span>), <span class="st">"v"</span>),</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>    ((<span class="dv">1</span>, <span class="dv">1</span>), <span class="st">"u + v"</span>),</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>    ((<span class="dv">2</span>, <span class="dv">1</span>), <span class="st">"2u + v"</span>)</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> vec, label <span class="kw">in</span> vectors:</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>    ax.annotate(</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>        <span class="st">""</span>, xy<span class="op">=</span>vec, xytext<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>        arrowprops<span class="op">=</span><span class="bu">dict</span>(arrowstyle<span class="op">=</span><span class="st">"-&gt;"</span>, lw<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>    ax.annotate(label, vec, xytext<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">5</span>),</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>                textcoords<span class="op">=</span><span class="st">"offset points"</span>)</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="dv">0</span>, lw<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>ax.axvline(<span class="dv">0</span>, lw<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="op">-</span><span class="fl">0.3</span>, <span class="fl">2.8</span>)</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="op">-</span><span class="fl">0.3</span>, <span class="fl">1.8</span>)</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">"equal"</span>)</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"u direction"</span>)</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"v direction"</span>)</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Same fitted vector, different basis"</span>)</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a><span class="co"># Panel 2: zero-selection regions</span></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">1</span>]</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>theta <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">2</span><span class="op">*</span>np.pi, <span class="dv">500</span>)</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a><span class="co"># Original design: r1^2 + r2^2 &lt;= lambda^2</span></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>circle_x <span class="op">=</span> lam <span class="op">*</span> np.cos(theta)</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>circle_y <span class="op">=</span> lam <span class="op">*</span> np.sin(theta)</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a><span class="co"># Changed design:</span></span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a><span class="co"># r1^2 + (r1 + r2)^2 &lt;= lambda^2</span></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>ellipse_x <span class="op">=</span> lam <span class="op">*</span> np.cos(theta)</span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>ellipse_y <span class="op">=</span> lam <span class="op">*</span> (np.sin(theta) <span class="op">-</span> np.cos(theta))</span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>ax.fill(circle_x, circle_y, alpha<span class="op">=</span><span class="fl">0.12</span>)</span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>ax.plot(circle_x, circle_y, lw<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>        label<span class="op">=</span><span class="st">"Orthonormal basis: zero region"</span>)</span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>ax.fill(ellipse_x, ellipse_y, alpha<span class="op">=</span><span class="fl">0.12</span>)</span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>ax.plot(ellipse_x, ellipse_y, lw<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>        label<span class="op">=</span><span class="st">"Changed basis: zero region"</span>)</span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>ax.scatter([<span class="dv">2</span>], [<span class="dv">1</span>], s<span class="op">=</span><span class="dv">85</span>, marker<span class="op">=</span><span class="st">"x"</span>,</span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>           linewidths<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">"Observed score (2, 1)"</span>)</span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="dv">0</span>, lw<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>ax.axvline(<span class="dv">0</span>, lw<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>ax.set_aspect(<span class="st">"equal"</span>)</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>ax.set_xlim(<span class="op">-</span><span class="fl">4.7</span>, <span class="fl">4.7</span>)</span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="op">-</span><span class="fl">4.7</span>, <span class="fl">4.7</span>)</span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Score along u"</span>)</span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Score along v"</span>)</span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Which groups are set to zero?"</span>)</span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>ax.legend(fontsize<span class="op">=</span><span class="dv">8</span>, loc<span class="op">=</span><span class="st">"upper right"</span>)</span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Same fitted values: True
+Normalized Gram matrix:
+[[ 1. -0.]
+ [-0.  1.]]
+Original coefficient norm: 2.23606797749979
+Changed basis norm: 1.4142135623730951
+Orthonormalized norm: 2.2360679774997894
+Empirical function norm: 2.23606797749979
+
+Group selected? (True means nonzero)
+Original: False
+Changed basis: True
+Orthonormalized: False</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="18_files/figure-html/cell-3-output-2.png" width="1086" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="optimality-conditions-group-thresholding-and-descent-algorithm" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="optimality-conditions-group-thresholding-and-descent-algorithm"><span class="header-section-number">2</span> Optimality conditions, group thresholding, and descent algorithm</h2>
+<section id="the-karush-kuhn-tucker-conditions" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="the-karush-kuhn-tucker-conditions"><span class="header-section-number">2.1</span> The Karush-Kuhn-Tucker conditions</h3>
+<p>Having established the group-lasso objective, we next examine why it can set an entire coefficient vector to zero. Consider</p>
+<p><span class="math display">\[
+Q(\beta) = \frac{1}{2} \|y - X\beta\|_2^2 + \lambda \sum_{j=1}^J w_j \| \beta_j \|_2
+\]</span></p>
+<p>The loss is differentiable, but the group norm is not differentiable at <span class="math inline">\(\beta_j=\mathbf 0\)</span>. Therefore, ordinary gradient equations are insufficient; we need subgradient optimality conditions.</p>
+<p>For the smooth component,</p>
+<p><span class="math display">\[
+\nabla_{\beta_j} \left(\frac{1}{2} \|Y-X\beta \|_2^2  \right) = -\frac{1}{n} X_j^\top (Y- X\beta)
+\]</span></p>
+<p>For the group norm, its subdifferential is</p>
+<p><span class="math display">\[
+\partial \| \beta_j\|_2 = \begin{cases}\left\{\frac{\beta_j}{\|\beta_j\|_2} \right\}, \quad \beta_j \neq \mathbf 0, \\ \{v: \|v\|_2 \leq 1\}, \beta_j \neq \mathbf 0 \end{cases}
+\]</span></p>
+<div id="prp-lasso-optimality-conditions" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 1 (Group-lasso optimality conditions; <span class="citation" data-cites="yuanModelSelectionEstimation2006">Yuan and Lin (<a href="../references.html#ref-yuanModelSelectionEstimation2006" role="doc-biblioref">2006</a>)</span>)</strong></span> A coefficient vector <span class="math inline">\(\hat \beta\)</span> minimizes <span class="math inline">\(Q\)</span> iff, for every group <span class="math inline">\(j\)</span>,</p>
+<p><span id="eq-lasso-optimality-conditions"><span class="math display">\[
+- \frac{1}{n} X_j^\top (Y- X\hat \beta) + \lambda w_j \frac{\hat \beta_j}{\|\hat \beta_j \|}=0 \quad \forall \hat \beta_j \neq 0
+\tag{5}\]</span></span></p>
+<p>and</p>
+<p><span id="eq-group-lasso-optimality"><span class="math display">\[
+\| \frac{1}{n} X_j^\top (Y- X\hat \beta) \| \leq \lambda w_j \quad \forall \hat \beta_j = 0
+\tag{6}\]</span></span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>By the subgradient version of the Fermat optimality condition <span class="citation" data-cites="tuyenOptimalityConditionsInfinity2024">Tuyen et al. (<a href="../references.html#ref-tuyenOptimalityConditionsInfinity2024" role="doc-biblioref">2024</a>)</span>,</p>
+<p><span class="math display">\[
+\mathbf 0 \in \partial_{\beta_j} Q(\hat \beta)
+\]</span></p>
+<p>Subsituting the derivative of the squared-error loss and the subdifferential of the group norm gives</p>
+<p><span class="math display">\[
+\mathbf{0} \in - \frac{1}{n} X_j^\top (Y- X\hat \beta) + \lambda w_j \partial \| \hat \beta_j \|_2
+\]</span></p>
+<p>When <span class="math inline">\(\hat \beta_j \neq \mathbf{0}\)</span>, substituting the unique subgradient produces euqation <a href="#eq-lasso-optimality-conditions" class="quarto-xref">Equation&nbsp;<span>5</span></a>. When <span class="math inline">\(\hat \beta_j = \mathbf 0\)</span>, there must exist a vector <span class="math inline">\(v\)</span>, with <span class="math inline">\(\|v\|_2\leq 1\)</span>, satisfying</p>
+<p><span class="math display">\[
+\frac{1}{n} X_j^\top (Y-X\hat \beta) = \lambda w_j v
+\]</span></p>
+<p>Taking its Euclidean norm gives equation <a href="#eq-group-lasso-optimality" class="quarto-xref">Equation&nbsp;<span>6</span></a>. Converely, if <a href="#eq-group-lasso-optimality" class="quarto-xref">Equation&nbsp;<span>6</span></a> holds, such a subgradient exists. Because <span class="math inline">\(Q\)</span> is convex, these conditions are necessary and sufficient for global optimality.</p>
+</div>
+</section>
+<section id="deriving-multivariate-soft-thresholding" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="deriving-multivariate-soft-thresholding"><span class="header-section-number">2.2</span> Deriving multivariate soft-thresholding</h3>
+<p>Suppose the columns within group <span class="math inline">\(j\)</span> have been orthonormalized so that</p>
+<p><span class="math display">\[
+\frac{1}{n} X_j^\top X_j = I
+\]</span></p>
+<p>Fix all coefficeint groups except <span class="math inline">\(\beta_j\)</span>. Define the partial residual</p>
+<p><span id="eq-partial-residual"><span class="math display">\[
+r_{-j} = Y- \sum_{l\neq j} X_l \beta_l
+\tag{7}\]</span></span></p>
+<p>The optimization with respect to <span class="math inline">\(\beta_j\)</span> is</p>
+<p><span class="math display">\[
+\min_{\beta_j} \left\{\frac{1}{2n} \|r_{-j} - X_j \beta_j\|_2^2 + \lambda w_j \| \beta_j \|_2 \right\}
+\]</span></p>
+<p>Expanding the squared loss,</p>
+<p><span class="math display">\[
+\frac{1}{2n} \|r_{-j} - X_j\beta_j \|_2^2 = \frac{1}{2n} r_{-j}^\top r_{-j} - \frac{1}{n} r_{-j}^\top X_j \beta_j + \frac{1}{2n} \beta_j^\top X_j^\top X_j \beta_j
+\]</span></p>
+<p>By groupwise orthonormality, the final term becomes <span class="math inline">\(\frac{1}{2} \|\beta_j \|_2^2\)</span>. After completing the square and discarding terms independent of <span class="math inline">\(\beta_j\)</span>, the problem reduces to</p>
+<p><span class="math display">\[
+\min_{\beta_j} \left\{\frac{1}{2} \|\beta_j  - \frac{1}{n} X_j^\top r_{-j} \|_2^2+ \lambda w_j \| \beta_j \|_2 \right\}
+\]</span></p>
+<p>The original multivariate regression problem has now been reduced to a particularly simple regularized least-squares problem. For a nonzero, differentiation gives</p>
+<p><span class="math display">\[
+\beta_j - \frac{1}{n} X_j^\top r_{-j} + \lambda w_j \frac{\beta_j}{\|\beta_j\|_2} = 0
+\]</span></p>
+<p>Rearranging,</p>
+<p><span class="math display">\[
+\frac{1}{n} X_j^\top r_{-j}= \left(1+ \frac{\lambda w_j }{\|\beta_j \|_2}\right) \beta_j
+\]</span></p>
+<p>Hence <span class="math inline">\(\beta_j\)</span> must have the same direction as <span class="math inline">\(z_j\)</span>. Only its magnitude changes. Taking norms,</p>
+<p><span class="math display">\[
+\| \beta_j \|_2 = \| \frac{1}{n} X_j^\top r_{-j}\|_2 - \lambda w_j
+\]</span></p>
+<p>whenever the solution is nonzero. If <span class="math inline">\(\|z_j\|_2 \leq \lambda w_j\)</span>, the subgradient condition implies that the solution is zero. Combining the cases gives the central group-lasso update:</p>
+<p><span id="eq-central-group-lasso-update"><span class="math display">\[
+\hat \beta_j = \left(1- \frac{\lambda w_j}{\|\frac{1}{n} X_j^\top r_{-j}\|_2}\right)_{+} \frac{1}{n} X_j^\top r_{-j}
+\tag{8}\]</span></span></p>
+<p>where <span class="math inline">\((a)_+ = \max(a, 0)\)</span>, with the expression defined as zero when <span class="math inline">\(\frac{1}{n} X_j^\top r_{-j}=\mathbf 0\)</span>.</p>
+<div id="exm-numerical" class="theorem example">
+<p><span class="theorem-title"><strong>Example 4</strong></span> Suppose we have three orthonormal coefficeint groups with equal weights <span class="math inline">\(w_j=1\)</span>, and <span class="math inline">\(z = \frac{1}{n} X_j^\top r_{-j}\)</span> with</p>
+<p><span class="math display">\[
+z_A = \begin{pmatrix} 2\\ 1 \end{pmatrix}, \quad z_B = \begin{pmatrix} 0.3 \\ 0.4 \end{pmatrix}, \quad z_C = \begin{pmatrix} 1 \\ 1 \end{pmatrix}
+\]</span></p>
+<p>Let <span class="math inline">\(\lambda = 1\)</span>. For group A, <span class="math inline">\(\| z_A \|_2 = \sqrt{5}\)</span>, and thus</p>
+<p><span class="math display">\[
+\hat \beta_A =  \left(1-\frac{1}{\sqrt{5}}\right) \begin{pmatrix} 2\\ 1 \end{pmatrix} \approx \begin{pmatrix} 1.106 \\ 0.553 \end{pmatrix}
+\]</span></p>
+<p>For group B, <span class="math inline">\(\| z_B \|_2 = \sqrt{0.25} = 0.5 &lt; 1\)</span>, and thus</p>
+<p><span class="math display">\[
+\hat \beta_B = \mathbf 0
+\]</span></p>
+<p>Finally, group <span class="math inline">\(C\)</span> satisfies <span class="math inline">\(\| z_C \|_2 = \sqrt{2} \approx 1.414 &gt; 1\)</span>, and thus</p>
+<p><span class="math display">\[
+\hat \beta_C =  \left(1-\frac{1}{\sqrt{2}}\right) \begin{pmatrix} 1 \\ 1 \end{pmatrix} \approx \begin{pmatrix} 0.293 \\ 0.293 \end{pmatrix}
+\]</span></p>
+</div>
+</section>
+<section id="groupwise-coordinate-descent" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="groupwise-coordinate-descent"><span class="header-section-number">2.3</span> Groupwise coordinate descent</h3>
+<p>The thresholding expression provides an efficient way to fit the complete model. In ordinary coordinate descent, we fix all coefficients except one and minimize the objective with respect to that coordinate.</p>
+<p>If <span class="math inline">\(r= Y - X\beta\)</span> denotes the current residual, the partial residual statistic satisfies</p>
+<p><span class="math display">\[
+z_j = \frac{1}{n}X_j^\top r_{-j} = \frac{1}{n} X_j^\top (r + X_j \beta_j) = \frac{1}{n} X_j^\top r + \beta_j
+\]</span></p>
+<p>This eliminates the need to reconstruct the partial residual from scratch during each update.</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Algorithm 1. Groupwise descent for linear group lasso
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<pre><code>Initialize beta = 0 and r = y
+
+Repeat until convergence:
+    for j = 1, ..., J:
+        z_j = X_j.T @ r / n + beta_j
+
+        beta_new = S(z_j, lambda * w_j)
+
+        r = r - X_j @ (beta_new - beta_j)
+
+        beta_j = beta_new
+
+Return beta</code></pre>
+</div>
+</div>
+<p>Because <a href="#eq-central-group-lasso-update" class="quarto-xref">Equation&nbsp;<span>8</span></a> gives the exact solution to every orthonormalized block subproblem, each update cannot increase the objective</p>
+<p><span class="math display">\[
+Q(\beta^{(m+1)}) \leq Q(\beta^{(m)})
+\]</span></p>
+<p>For convex group lasso, convergence to an optimal solution follows under the usual block-coordinates descent conditions. For nonorthonomal groups, <a href="#eq-central-group-lasso-update" class="quarto-xref">Equation&nbsp;<span>8</span></a> may not hold. One must either orthonormalize the blocks with the intended penalty transformation or use an optimization method that accomodates general Gram matrices.</p>
+</section>
+<section id="understanding-the-regularization-path" class="level3" data-number="2.4">
+<h3 data-number="2.4" class="anchored" data-anchor-id="understanding-the-regularization-path"><span class="header-section-number">2.4</span> Understanding the regularization path</h3>
+<p>Rather than fitting the model at one fixed <span class="math inline">\(\lambda\)</span>, it is usually more informative to examine a sequence of solutions</p>
+<p><span class="math display">\[
+\{\hat \beta(\lambda): \lambda \geq 0\}
+\]</span></p>
+<p>The collection is called the <em>regularization path</em>. At sufficiently large <span class="math inline">\(\lambda\)</span>, all penalized groups are zero. As <span class="math inline">\(\lambda\)</span> decreases, groups may enter the model and their coefficeint vectors are allowed to increase in magnitude.</p>
+<p>From the KKT conditions, the smallest regularization value at which the all-zero coefficient vector is optimal is</p>
+<p><span class="math display">\[
+\lambda_{\min} = \max_{j: w_j &gt; 0} \frac{\| X_j^\top Y/n \|_2}{w_j},
+\]</span></p>
+<p>provided the response the predictors are centered and no other unpenalized variables are present. If unpenalized predictors are included, <span class="math inline">\(Y\)</span> in this expression is replaced by the residual from the model containing those unpenalized predictors.</p>
+<p>For every <span class="math inline">\(\lambda \geq \lambda_\text{max}\)</span>, the zero coefficient vector satisfies all groupwise KKT inequalites. We begin at <span class="math inline">\(\lambda_\max\)</span>, then gradually decrease <span class="math inline">\(\lambda\)</span>, using the previous solution to initialize the next optimization. This technique is called a <em>warm start</em>. As we will see, however, the shape of this path is substantially more complicated than the ordinary lasso path.</p>
+</section>
+<section id="a-synthetic-example" class="level3" data-number="2.5">
+<h3 data-number="2.5" class="anchored" data-anchor-id="a-synthetic-example"><span class="header-section-number">2.5</span> A synthetic example</h3>
+<div id="94d2cd5f" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">6400</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">180</span> </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>sizes <span class="op">=</span> [<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">3</span>]</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>groups <span class="op">=</span> []</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>X_blocks <span class="op">=</span> []</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>shared <span class="op">=</span> rng.normal(size<span class="op">=</span>(n, <span class="dv">2</span>))</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> p_j <span class="kw">in</span> sizes:</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> rng.normal(size<span class="op">=</span>(n, p_j))</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    A <span class="op">+=</span> <span class="fl">0.35</span> <span class="op">*</span> shared <span class="op">@</span> rng.normal(size<span class="op">=</span>(<span class="dv">2</span>, p_j)) <span class="op">/</span> np.sqrt(<span class="dv">2</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    A <span class="op">-=</span> A.mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># orthonormalize within each group </span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    Q, _ <span class="op">=</span> np.linalg.qr(A) </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    X_blocks.append(np.sqrt(n) <span class="op">*</span> Q) </span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.column_stack(X_blocks)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>start <span class="op">=</span> <span class="dv">0</span> </span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> p_j <span class="kw">in</span> sizes:</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    groups.append(np.arange(start, start<span class="op">+</span> p_j))</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    start <span class="op">+=</span> p_j</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co"># group 1: signal; group 2: noise; group3: signal; group4: weak signal</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>beta_true <span class="op">=</span> np.array([</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="fl">1.5</span>, <span class="op">-</span><span class="fl">1.0</span>, <span class="co"># G1</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>,  <span class="co">#G2</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    <span class="fl">0.95</span>, <span class="op">-</span><span class="fl">0.8</span>, <span class="fl">0.6</span>, <span class="op">-</span><span class="fl">0.4</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="co"># G3</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="fl">0.45</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span> <span class="co"># G4 </span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>], dtype<span class="op">=</span><span class="bu">float</span>)</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> X <span class="op">@</span> beta_true <span class="op">+</span> rng.normal(<span class="dv">0</span>, <span class="fl">0.75</span>, n)</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>y <span class="op">-=</span> y.mean()</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> np.sqrt(sizes) <span class="co"># w_j = sqrt(p_j)</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="co"># compute exact lambda_max from groupwise KKT conditions </span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>lambda_max_group <span class="op">=</span> <span class="bu">max</span>(np.linalg.norm(X[:, g].T <span class="op">@</span> y <span class="op">/</span>n) <span class="op">/</span> w <span class="cf">for</span> g, w <span class="kw">in</span> <span class="bu">zip</span>(groups, weights))</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>lambda_max_lasso <span class="op">=</span> np.<span class="bu">max</span>(np.<span class="bu">abs</span>(X.T <span class="op">@</span> y <span class="op">/</span> n))</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Group-lasso lambda_max: </span><span class="sc">{</span>lambda_max_group<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Lasso lambda_max: </span><span class="sc">{</span>lambda_max_lasso<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Group-lasso lambda_max: 1.14
+Lasso lambda_max: 1.32</code></pre>
+</div>
+</div>
+<div id="fef0cf6d" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> group_lasso_path(X, y, groups, weights, lambdas,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                     max_iter<span class="op">=</span><span class="dv">2500</span>, tol<span class="op">=</span><span class="fl">1e-10</span>):</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Minimize ||y-Xb||^2/(2n) + lam * sum_j w_j ||b_j||_2.</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">       Requires X_j.T @ X_j / n = I for each group."""</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    n, p <span class="op">=</span> X.shape</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> np.zeros(p)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    residual <span class="op">=</span> y.copy()</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> []</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> lam <span class="kw">in</span> lambdas:         <span class="co"># from large to small</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(max_iter):</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>            largest_change <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> g, w <span class="kw">in</span> <span class="bu">zip</span>(groups, weights):</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                old <span class="op">=</span> beta[g].copy()</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Partial residual excluding this group</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                residual <span class="op">+=</span> X[:, g] <span class="op">@</span> old</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>                z <span class="op">=</span> X[:, g].T <span class="op">@</span> residual <span class="op">/</span> n</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Group soft-thresholding</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>                z_norm <span class="op">=</span> np.linalg.norm(z)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> z_norm <span class="op">&lt;=</span> lam <span class="op">*</span> w:</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>                    new <span class="op">=</span> np.zeros_like(z)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>                    new <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> lam <span class="op">*</span> w <span class="op">/</span> z_norm) <span class="op">*</span> z</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>                beta[g] <span class="op">=</span> new</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>                residual <span class="op">-=</span> X[:, g] <span class="op">@</span> new</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>                largest_change <span class="op">=</span> <span class="bu">max</span>(</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>                    largest_change, np.<span class="bu">max</span>(np.<span class="bu">abs</span>(new <span class="op">-</span> old))</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> largest_change <span class="op">&lt;</span> tol:</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>            <span class="cf">raise</span> <span class="pp">RuntimeError</span>(<span class="st">"Group-lasso solver did not converge"</span>)</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>        path.append(beta.copy())       <span class="co"># next lambda uses warm start</span></span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(path)</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> lasso_path(X, y, lambdas, max_iter<span class="op">=</span><span class="dv">2500</span>, tol<span class="op">=</span><span class="fl">1e-10</span>):</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Minimize ||y-Xb||^2/(2n) + lam * ||b||_1.</span></span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a><span class="co">       Assumes columns satisfy X_k.T @ X_k / n = 1."""</span></span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>    n, p <span class="op">=</span> X.shape</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>    beta <span class="op">=</span> np.zeros(p)</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>    residual <span class="op">=</span> y.copy()</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> []</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> lam <span class="kw">in</span> lambdas:</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(max_iter):</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>            largest_change <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(p):</span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>                old <span class="op">=</span> beta[k]</span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>                residual <span class="op">+=</span> X[:, k] <span class="op">*</span> old</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>                z <span class="op">=</span> X[:, k] <span class="op">@</span> residual <span class="op">/</span> n</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a>                new <span class="op">=</span> np.sign(z) <span class="op">*</span> <span class="bu">max</span>(<span class="bu">abs</span>(z) <span class="op">-</span> lam, <span class="fl">0.0</span>)</span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>                beta[k] <span class="op">=</span> new</span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>                residual <span class="op">-=</span> X[:, k] <span class="op">*</span> new</span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>                largest_change <span class="op">=</span> <span class="bu">max</span>(largest_change, <span class="bu">abs</span>(new <span class="op">-</span> old))</span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> largest_change <span class="op">&lt;</span> tol:</span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span></span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>            <span class="cf">raise</span> <span class="pp">RuntimeError</span>(<span class="st">"Lasso solver did not converge"</span>)</span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a>        path.append(beta.copy())</span>
+<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div id="26e77be1" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fractions <span class="op">=</span> np.geomspace(<span class="fl">1.0</span>, <span class="fl">0.025</span>, <span class="dv">100</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>group_path <span class="op">=</span> group_lasso_path(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    X, y, groups, weights, lambda_max_group <span class="op">*</span> fractions</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>lasso_path_values <span class="op">=</span> lasso_path(</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    X, y, lambda_max_lasso <span class="op">*</span> fractions</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>group_norms <span class="op">=</span> np.column_stack([</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    np.linalg.norm(group_path[:, g], axis<span class="op">=</span><span class="dv">1</span>) <span class="cf">for</span> g <span class="kw">in</span> groups</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>lasso_group_norms <span class="op">=</span> np.column_stack([</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    np.linalg.norm(lasso_path_values[:, g], axis<span class="op">=</span><span class="dv">1</span>) <span class="cf">for</span> g <span class="kw">in</span> groups</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="6ea390ed" class="cell" data-execution_count="6">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">13</span>, <span class="fl">9.5</span>), sharex<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>fig.subplots_adjust(wspace<span class="op">=</span><span class="fl">0.27</span>, hspace<span class="op">=</span><span class="fl">0.29</span>, top<span class="op">=</span><span class="fl">0.91</span>, bottom<span class="op">=</span><span class="fl">0.10</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>fig.suptitle(<span class="st">"Regularization paths: group lasso versus ordinary lasso"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>             fontsize<span class="op">=</span><span class="dv">16</span>, weight<span class="op">=</span><span class="st">"bold"</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>names <span class="op">=</span> [</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"G1: 2 (signal)"</span>, <span class="st">"G2: 4 (noise)"</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"G3: 8 (signal)"</span>, <span class="st">"G4: 3 (weak signal)"</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Upper left: group lasso norms</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">0</span>, <span class="dv">0</span>]</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(groups)):</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    ax.plot(fractions, group_norms[:, j], lw<span class="op">=</span><span class="fl">2.3</span>, label<span class="op">=</span>names[j])</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"A. Group lasso: whole-group magnitudes"</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="vs">r"</span><span class="dv">$</span><span class="ch">\|</span><span class="er">\</span><span class="vs">hat</span><span class="dv">\b</span><span class="vs">eta_j</span><span class="kw">(</span><span class="er">\</span><span class="vs">lambda</span><span class="kw">)</span><span class="ch">\|</span><span class="vs">_2</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>ax.legend(fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>ax.grid(alpha<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Upper right: the same group norms under ordinary lasso</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(groups)):</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    ax.plot(fractions, lasso_group_norms[:, j], lw<span class="op">=</span><span class="fl">2.3</span>, label<span class="op">=</span>names[j])</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"B. Ordinary lasso: grouped magnitudes"</span>)</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="vs">r"</span><span class="dv">$</span><span class="ch">\|</span><span class="er">\</span><span class="vs">hat</span><span class="dv">\b</span><span class="vs">eta_j</span><span class="kw">(</span><span class="er">\</span><span class="vs">lambda</span><span class="kw">)</span><span class="ch">\|</span><span class="vs">_2</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>ax.grid(alpha<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Bottom left: individual coefficient paths inside group G3</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">1</span>, <span class="dv">0</span>]</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>chosen <span class="op">=</span> groups[<span class="dv">2</span>]  <span class="co"># dimension 8</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, column <span class="kw">in</span> <span class="bu">enumerate</span>(chosen):</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    ax.plot(fractions, group_path[:, column], lw<span class="op">=</span><span class="fl">1.7</span>,</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>            label<span class="op">=</span><span class="vs">rf"</span><span class="dv">$\b</span><span class="vs">eta_</span><span class="ch">{{</span><span class="vs">3,</span><span class="sc">{</span>k<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ch">}}</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="dv">0</span>, lw<span class="op">=</span><span class="fl">0.8</span>, linestyle<span class="op">=</span><span class="st">":"</span>)</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"C. Group lasso: coefficients inside G3 (p=8)"</span>)</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="vs">r"</span><span class="dv">$</span><span class="er">\</span><span class="vs">hat</span><span class="dv">\b</span><span class="vs">eta_{3,k}</span><span class="kw">(</span><span class="er">\</span><span class="vs">lambda</span><span class="kw">)</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>ax.legend(ncol<span class="op">=</span><span class="dv">4</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>ax.grid(alpha<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Bottom right: group sizes create jumps in active coefficient count</span></span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> axes[<span class="dv">1</span>, <span class="dv">1</span>]</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>threshold <span class="op">=</span> <span class="fl">1e-7</span></span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>active_gl <span class="op">=</span> np.<span class="bu">sum</span>(np.<span class="bu">abs</span>(group_path) <span class="op">&gt;</span> threshold, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>active_l1 <span class="op">=</span> np.<span class="bu">sum</span>(np.<span class="bu">abs</span>(lasso_path_values) <span class="op">&gt;</span> threshold, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>ax.step(fractions, active_gl, where<span class="op">=</span><span class="st">"post"</span>, lw<span class="op">=</span><span class="fl">2.3</span>,</span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>        label<span class="op">=</span><span class="st">"Group lasso: active coefficients"</span>)</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>ax.step(fractions, active_l1, where<span class="op">=</span><span class="st">"post"</span>, lw<span class="op">=</span><span class="fl">2.3</span>,</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>        label<span class="op">=</span><span class="st">"Lasso: active coefficients"</span>)</span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"D. Number of nonzero coefficients"</span>)</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Number of nonzero coefficients"</span>)</span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>ax.legend(fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>ax.grid(alpha<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes.flat:</span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>    ax.set_xlim(<span class="fl">1.02</span>, <span class="fl">0.02</span>)  <span class="co"># lambda decreases left -&gt; right</span></span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>    ax.set_xticks([<span class="dv">1</span>, <span class="fl">0.8</span>, <span class="fl">0.6</span>, <span class="fl">0.4</span>, <span class="fl">0.2</span>, <span class="fl">0.05</span>])</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="vs">r"</span><span class="dv">$</span><span class="er">\</span><span class="vs">lambda/</span><span class="er">\</span><span class="vs">lambda_{</span><span class="dv">\m</span><span class="vs">ax}</span><span class="dv">$</span><span class="vs">   </span><span class="kw">(</span><span class="vs">decreasing </span><span class="dv">$</span><span class="er">\</span><span class="vs">lambda</span><span class="dv">$</span><span class="vs"> →</span><span class="kw">)</span><span class="vs">"</span>)</span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>    ax.axvline(<span class="dv">1</span>, lw<span class="op">=</span><span class="dv">1</span>, ls<span class="op">=</span><span class="st">"--"</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="18_files/figure-html/cell-7-output-1.png" width="1065" height="863" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="4a0fa9fd" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j, name <span class="kw">in</span> <span class="bu">enumerate</span>(names):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    entered <span class="op">=</span> np.flatnonzero(group_norms[:, j] <span class="op">&gt;</span> threshold)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    first <span class="op">=</span> fractions[entered[<span class="dv">0</span>]] <span class="cf">if</span> <span class="bu">len</span>(entered) <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">: first nonzero at lambda/lambda_max = </span><span class="sc">{</span>first<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>G1: 2 (signal): first nonzero at lambda/lambda_max = 0.9634242550165211
+G2: 4 (noise): first nonzero at lambda/lambda_max = 0.04212054159870943
+G3: 8 (signal): first nonzero at lambda/lambda_max = 0.4244282124234106
+G4: 3 (weak signal): first nonzero at lambda/lambda_max = 0.23382204685388586</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="solution-paths-group-lars-and-model-selection" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="solution-paths-group-lars-and-model-selection"><span class="header-section-number">3</span> Solution paths, group LARS, and model selection</h2>
+<section id="why-group-lasso-paths-are-not-piecewise-linear" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="why-group-lasso-paths-are-not-piecewise-linear"><span class="header-section-number">3.1</span> Why group-lasso paths are not piecewise linear</h3>
+<p>One of the reasons ordinary lasso became computationally attractive was the discovery that its least-squares solution path is piecewise linear. This property allows algorithms such as least angle regression (LARS) to construct entire solution paths through a sequence of linear segments.</p>
+<p>It is tempting to expect the same behavior from group lasso because its single-group update is a simple extension of soft-thresholding. The difference appears when predictors are correlated across groups.</p>
+<p>Suppose, for a moment, that the entire design matrix is orthonormal:</p>
+<p><span class="math display">\[
+\frac{1}{n} X^\top X = I_p
+\]</span></p>
+<p>This is stronger than groupwise orthonormality because it also requires different groups to be mutually orthogonal. Then the groups can be optimized independently, and <span class="math inline">\(z_j = \frac{1}{n} X_j^\top Y\)</span> does not depend on the other coefficient groups. Thus,</p>
+<p><span class="math display">\[
+\hat \beta_j(\lambda) = \left(1- \frac{\lambda w_j}{\|z_j\|_2}\right)_+  z_j
+\]</span></p>
+<p>Because <span class="math inline">\(z_j\)</span> is fixed, the expression is linear in <span class="math inline">\(\lambda\)</span>. But when groups are correlated, the partial residual (<a href="#eq-partial-residual" class="quarto-xref">Equation&nbsp;<span>7</span></a>) changes as the other coefficients change. Consequently,</p>
+<p><span class="math display">\[
+z_j(\lambda) = \frac{1}{n} X_j^\top r_{-j} (\lambda)
+\]</span></p>
+<p>may change both in magnitude and in direction. The group-lasso KKT condition involves <span class="math inline">\(\frac{\beta_j}{\|\beta_j\|_2}\)</span>, and this direction isn’t remain constant along the solution path. Therefore, even between changes in the set of selected groups, the coefficient path can be curved.</p>
+<div id="exm-correlated-group" class="theorem example">
+<p><span class="theorem-title"><strong>Example 5</strong></span> Consider a regression model with two groups <span class="math inline">\(G_1 = \{x_1, x_2\}\)</span> and <span class="math inline">\(G_2 = \{x_3\}\)</span>. Suppose their standardized Gram matrix is</p>
+<p><span class="math display">\[
+\frac{X^\top X}{n} = \begin{pmatrix}
+1 &amp; 0 &amp; 0.8 \\
+0 &amp; 1 &amp; 0 \\
+0.8 &amp; 0 &amp; 1
+\end{pmatrix}
+\]</span></p>
+<p>Here, <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_2\)</span> are orthogonal within the first group, but <span class="math inline">\(x_1\)</span> and <span class="math inline">\(x_3\)</span> have correlation 0.8. Suppose also that</p>
+<p><span class="math display">\[
+z = \frac{X^\top y}{n} = \begin{pmatrix}
+0.7 \\
+0.9 \\
+1.6
+\end{pmatrix}
+\]</span></p>
+<p>For simplicity, use <span class="math inline">\(w_1=w_2=1\)</span>. We minimize</p>
+<p><span class="math display">\[
+\frac{1}{2n} \|y-X\beta\|^2_2 + \lambda \left(\sqrt{\beta_1^2 + \beta_2^2} + |\beta_3|\right)
+\]</span></p>
+<p>The starting regularization parameter is</p>
+<p><span class="math display">\[
+\lambda_{\max} = \max\left\{\sqrt{0.7^2 + 0.9^2}, |1.6|\right\} = 1.6
+\]</span></p>
+<p>Initially, ever coefficient is zero. The singleton group <span class="math inline">\(G_2\)</span> enters first. While <span class="math inline">\(G_1\)</span> remains zero,</p>
+<p><span class="math display">\[
+\hat \beta_3(\lambda) = 1.6 - \lambda
+\]</span></p>
+<p>The partial-residual correlation for <span class="math inline">\(G_1\)</span> therefore becomes</p>
+<p><span class="math display">\[
+z_1(\lambda) = \begin{pmatrix} 0.7 \\ 0.9 \end{pmatrix} - \begin{pmatrix} 0.8 \\ 0 \end{pmatrix} (1.6 - \lambda) = \begin{pmatrix} -0.58 + 0.8 \lambda \\ 0.9 \end{pmatrix}
+\]</span></p>
+<p>Notice that the first coordinate changes while the second remains fixed. The direction of the residual-correlation vector therefore rotates as <span class="math inline">\(\lambda\)</span> decreases.</p>
+<p>The first group enters when</p>
+<p><span class="math display">\[
+\sqrt{(-0.58 + 0.8 \lambda)^2 + 0.9^2} = \lambda \implies \lambda \approx 0.9124
+\]</span></p>
+<p>After that, both groups are active, but their coefficients continue to interact. This is where we can observe a curved group-lasso path.</p>
+<div id="fe951481" class="cell" data-execution_count="8">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Sufficient statistics of the synthetic regression problem</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>G <span class="op">=</span> np.array([</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">1.0</span>, <span class="fl">0.0</span>, <span class="fl">0.8</span>],</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.0</span>, <span class="fl">1.0</span>, <span class="fl">0.0</span>],</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.8</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>]</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>z <span class="op">=</span> np.array([<span class="fl">0.7</span>, <span class="fl">0.9</span>, <span class="fl">1.6</span>])</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>lambda_max <span class="op">=</span> <span class="bu">max</span>(np.linalg.norm(z[:<span class="dv">2</span>]), <span class="bu">abs</span>(z[<span class="dv">2</span>]))</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>lambdas <span class="op">=</span> np.linspace(lambda_max, <span class="dv">0</span>, <span class="dv">641</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Group-lasso path using warm-start block coordinate descent</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>beta <span class="op">=</span> np.zeros(<span class="dv">3</span>)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> []</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> lam <span class="kw">in</span> lambdas:</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> iteration <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3000</span>):</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>        old <span class="op">=</span> beta.copy()</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Group 1: two-dimensional group soft threshold</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>        partial <span class="op">=</span> z[:<span class="dv">2</span>] <span class="op">-</span> G[:<span class="dv">2</span>, <span class="dv">2</span>] <span class="op">*</span> beta[<span class="dv">2</span>]</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>        r <span class="op">=</span> np.linalg.norm(partial)</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> r <span class="op">&lt;=</span> lam:</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>            beta[:<span class="dv">2</span>] <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>            beta[:<span class="dv">2</span>] <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> lam <span class="op">/</span> r) <span class="op">*</span> partial</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Group 2: singleton soft threshold</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>        partial3 <span class="op">=</span> z[<span class="dv">2</span>] <span class="op">-</span> G[<span class="dv">2</span>, :<span class="dv">2</span>] <span class="op">@</span> beta[:<span class="dv">2</span>]</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>        beta[<span class="dv">2</span>] <span class="op">=</span> np.sign(partial3) <span class="op">*</span> <span class="bu">max</span>(</span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a>            <span class="bu">abs</span>(partial3) <span class="op">-</span> lam, <span class="dv">0</span></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> np.<span class="bu">max</span>(np.<span class="bu">abs</span>(beta <span class="op">-</span> old)) <span class="op">&lt;</span> <span class="fl">1e-12</span>:</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>    path.append(beta.copy())</span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>path <span class="op">=</span> np.array(path)</span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparison: globally orthogonal design</span></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>z1 <span class="op">=</span> z[:<span class="dv">2</span>]</span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>orthogonal <span class="op">=</span> np.array([</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>    <span class="bu">max</span>(<span class="dv">0</span>, <span class="dv">1</span> <span class="op">-</span> lam <span class="op">/</span> np.linalg.norm(z1)) <span class="op">*</span> z1</span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> lam <span class="kw">in</span> lambdas</span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">5</span>))</span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Coefficient paths as lambda decreases</span></span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].plot(lambdas, path[:, <span class="dv">0</span>], label<span class="op">=</span><span class="vs">r"</span><span class="dv">$\b</span><span class="vs">eta_1</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].plot(lambdas, path[:, <span class="dv">1</span>], label<span class="op">=</span><span class="vs">r"</span><span class="dv">$\b</span><span class="vs">eta_2</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].plot(lambdas, path[:, <span class="dv">2</span>], label<span class="op">=</span><span class="vs">r"</span><span class="dv">$\b</span><span class="vs">eta_3</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].invert_xaxis()</span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_xlabel(<span class="vs">r"</span><span class="dv">$</span><span class="er">\</span><span class="vs">lambda</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_ylabel(<span class="st">"Coefficient value"</span>)</span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].set_title(<span class="st">"Coefficient paths"</span>)</span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].legend()</span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">0</span>].grid(alpha<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Geometry of the first group's path</span></span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].plot(</span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a>    path[:, <span class="dv">0</span>], path[:, <span class="dv">1</span>],</span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a>    linewidth<span class="op">=</span><span class="fl">2.5</span>, label<span class="op">=</span><span class="st">"Correlated groups"</span></span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].plot(</span>
+<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a>    orthogonal[:, <span class="dv">0</span>], orthogonal[:, <span class="dv">1</span>],</span>
+<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a>    <span class="st">"--"</span>, linewidth<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a>    label<span class="op">=</span><span class="st">"Orthogonal groups"</span></span>
+<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> lam <span class="kw">in</span> [<span class="fl">0.8</span>, <span class="fl">0.5</span>, <span class="fl">0.2</span>]:</span>
+<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a>    i <span class="op">=</span> np.argmin(np.<span class="bu">abs</span>(lambdas <span class="op">-</span> lam))</span>
+<span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a>    b1, b2 <span class="op">=</span> path[i, :<span class="dv">2</span>]</span>
+<span id="cb12-79"><a href="#cb12-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">1</span>].scatter(b1, b2, s<span class="op">=</span><span class="dv">45</span>)</span>
+<span id="cb12-81"><a href="#cb12-81" aria-hidden="true" tabindex="-1"></a>    ax[<span class="dv">1</span>].annotate(</span>
+<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a>        <span class="vs">rf"</span><span class="dv">$</span><span class="er">\</span><span class="vs">lambda=</span><span class="sc">{</span>lam<span class="sc">}</span><span class="dv">$</span><span class="vs">"</span>, (b1, b2),</span>
+<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a>        xytext<span class="op">=</span>(<span class="dv">5</span>, <span class="dv">8</span>), textcoords<span class="op">=</span><span class="st">"offset points"</span></span>
+<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-85"><a href="#cb12-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-86"><a href="#cb12-86" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_xlabel(<span class="vs">r"</span><span class="dv">$\b</span><span class="vs">eta_1</span><span class="kw">(</span><span class="er">\</span><span class="vs">lambda</span><span class="kw">)</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb12-87"><a href="#cb12-87" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_ylabel(<span class="vs">r"</span><span class="dv">$\b</span><span class="vs">eta_2</span><span class="kw">(</span><span class="er">\</span><span class="vs">lambda</span><span class="kw">)</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].set_title(<span class="st">"Group coefficient trajectory"</span>)</span>
+<span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].axis(<span class="st">"equal"</span>)</span>
+<span id="cb12-90"><a href="#cb12-90" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].legend()</span>
+<span id="cb12-91"><a href="#cb12-91" aria-hidden="true" tabindex="-1"></a>ax[<span class="dv">1</span>].grid(alpha<span class="op">=</span><span class="fl">0.2</span>)</span>
+<span id="cb12-92"><a href="#cb12-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-93"><a href="#cb12-93" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb12-94"><a href="#cb12-94" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="18_files/figure-html/cell-9-output-1.png" width="1143" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As we can see, the first group enter near 0.9124. Its two coefficients then follow smooth, nonlinear trajectories. Instead of plotting each coefficient separately, we can also plot <span class="math inline">\(\lambda \mapsto (\beta_1(\lambda), \beta_2(\lambda))\)</span>. With globally orthogonal predictors, the group follows a straight ray. With correlated groups, it follows a visibly curved trajectory.</p>
+<p>For <span class="math inline">\(\lambda \in [0.2, 0.8]\)</span>, both groups are active and <span class="math inline">\(\beta_3&gt;0\)</span>. Let <span class="math inline">\(R= \sqrt{\beta_1^2 +\beta_2^2}\)</span>. The KKT conditions are</p>
+<p><span class="math display">\[
+\begin{aligned}
+\beta_1 + 0.8 \beta_3 + \lambda \frac{\beta_1}{R} &amp;= 0.7 \\
+\beta_2 + \lambda \frac{\beta_2}{R} &amp;= 0.9 \\
+0.8 \beta_1 + \beta_3 + \lambda &amp;= 1.6
+\end{aligned}
+\]</span></p>
+<p>Substituting (3) into the first equation gives</p>
+<p><span class="math display">\[
+\begin{aligned}
+\left(0.36 + \frac{\lambda}{R}\right)\beta_1 &amp;= -0.58 + 0.8\lambda\\
+\left(1+\frac{\lambda}{R}\right) \beta_2 &amp;= 0.9  
+\end{aligned}
+\]</span></p>
+<p>So here <span class="math inline">\(R\)</span> itself depends on <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span>, and therefore on <span class="math inline">\(\lambda\)</span>. Unlike the ordinary linear equation in <span class="math inline">\(\lambda\)</span>, the coefficients feed back into their own shrinkage term through <span class="math inline">\(R\)</span>. Compare this with the globally orthogonal case:</p>
+<p><span class="math display">\[
+\hat \beta_{G_1}(\lambda)= \left(1-\frac{\lambda}{\sqrt{0.7^2+0.9^2}}\right)_{+} \begin{pmatrix} 0.7\\0.9\end{pmatrix}
+\]</span></p>
+<p>For an active group, this is just</p>
+<p><span class="math display">\[
+\hat \beta_{G_1}(\lambda) = \begin{pmatrix} 0.7\\0.9\end{pmatrix} - \lambda \frac{\begin{pmatrix} 0.7\\0.9\end{pmatrix}}{\sqrt{0.7^2+0.9^2}}
+\]</span></p>
+<p>The intercept vector and slope vector are fixed. Therefore the coefficient path is linear, and its direction never changes.</p>
+</div>
+<p>Yun and Lin characterize the special situation in which this difficulty disappears.</p>
+<div id="thm-piecewise-linearity-of-group-lasso-path" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1 (Piecewise Linearity of Group Lasso Path; <span class="citation" data-cites="yuanModelSelectionEstimation2006">Yuan and Lin (<a href="../references.html#ref-yuanModelSelectionEstimation2006" role="doc-biblioref">2006</a>)</span>)</strong></span> Under the paper’s least-squares setting, the group-lasso solution path is piecewise linear if and only if every solution on that path can be expressed as</p>
+<p><span id="eq-piecewise-linearity"><span class="math display">\[
+\hat \beta_j = c_j \beta_j^{LS}, \quad j = 1, \ldots, J,
+\tag{9}\]</span></span></p>
+<p>for scalars <span class="math inline">\(c_1, \ldots c_J\)</span>, where <span class="math inline">\(\beta^{LS}\)</span> is the full least-squares solution.</p>
+</div>
+<p>The condition means that the coefficient vector within every group remains on the line through the origin and its corresponding least-squares coefficient vector.</p>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Forst suppose the representation in <a href="#eq-piecewise-linearity" class="quarto-xref">Equation&nbsp;<span>9</span></a> holds. Substituting <span class="math inline">\(\beta_j = c_j \beta_j^{LS}\)</span> into the group-lasso objective gives</p>
+<p><span class="math display">\[
+\frac{1}{2} \left\|Y - \sum_{j=1}^J c_j X_j \beta_j^{LS} \right\|_2^2 + \lambda\sum_{j=1}^J |c_j| \| \beta_j^{LS}\|_{K_J}
+\]</span></p>
+<p>This is an ordinary weighted lasso problem in the scalar coefficients <span class="math inline">\(c_j\)</span>. Its least-squares solution path is piecewise linear.</p>
+<p>For the converse, the paper first proves a geometric lemma: if two distinct group-lasso solutions are joined by a straight line and every point on that line is also a solution along the path, then their corresponding nonzero coefficient vectors must be proportional within each group. Applying this lemma to the linear segments of a piecewise-linear path, ending at the least-squares solutoin, establishes the required representation.</p>
+</div>
+<p>A consequence is that group lasso has a piecewise-linear path when the entire design is orthonormal. The property also holds for ordinary lasso, where every group is a singleton. For general correlated groups of dimension greater than one, it is restrictive and does not usually hold. This motivates alternative algorithms that exploit group structure without requiring the exact group-lasso path to be piecewise linear.</p>
+</section>
+<section id="group-least-angle-regression" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="group-least-angle-regression"><span class="header-section-number">3.2</span> Group least angle regression</h3>
+<p>LARS provides a way to construct a regularization path by progressively introducing predictors according to their association with the residual. For ordinary LARS, a variable enters the active set when its absolute correlation with the current residual equals that of the currently active variables. <span class="citation" data-cites="yuanModelSelectionEstimation2006">Yuan and Lin (<a href="../references.html#ref-yuanModelSelectionEstimation2006" role="doc-biblioref">2006</a>)</span> extend this principle by measuring association with an entire predictor subspace rather than a single column.</p>
+<p>For a groupwise orthonormal design with <span class="math inline">\(X_j^\top X_j = I\)</span>, let <span class="math inline">\(\theta(r, X_j)\)</span> denote the angle between the residual vector <span class="math inline">\(r\)</span> and the subspace spanned by <span class="math inline">\(X_j\)</span>. Then</p>
+<p><span class="math display">\[
+\cos^2\theta(r, X_j) = \frac{||X_j^\top r||^2}{||r||^2}
+\]</span></p>
+<p>This measures the proportion of the residual sum of squares explained by projecting the residual onto the space associated with group <span class="math inline">\(j\)</span>. To account for different group dimensions, the group LARS procedure compares</p>
+<p><span id="eq-group-lars-comparison"><span class="math display">\[
+\frac{\|X_j^\top r\|^2}{p_j}
+\tag{10}\]</span></span></p>
+<p>Initally, all coefficient groups are zero, so <span class="math inline">\(r=Y\)</span>. The group with the largest value in <a href="#eq-group-lars-comparison" class="quarto-xref">Equation&nbsp;<span>10</span></a> enters first.</p>
+<p>Once a group is active, the procedure moves the fitted coefficients in the least-squares projection direction associated with the active groups. It continues until another group reaches the same normalized residual association.</p>
+<p>Let <span class="math inline">\(A\)</span> denote the active set. The direction of movement is determined through</p>
+<p><span class="math display">\[
+\gamma_A = (X_A^\top X_A)^{-} X_A^\top r,
+\]</span></p>
+<p>where the inverse is an ordinary matrix inverse when possible and a generalized inverse when necessary. Coefficients outside <span class="math inline">\(A\)</span> have zero direction. For an inactive group <span class="math inline">\(j\)</span>, the next entry time is determined by solving</p>
+<p><span class="math display">\[
+\frac{\|X_j^\top (r- \alpha X \gamma) \|_2^2}{p_j} = \frac{\| X_{j'}^\top (r- \alpha X \gamma) \|_2^2}{p_{j'}}
+\]</span></p>
+<p>where <span class="math inline">\(j'\)</span> is an active group and <span class="math inline">\(\alpha \in [0,1]\)</span>. Both sides are quadractic in <span class="math inline">\(\alpha\)</span>, so the candidate step lengths can be obtained by solving quadratic equations.</p>
+<p>The algorithm takes the smallest admissible entry step, updates the active set, and repeats. In the original full-rank setting, it utimately reaches the least-squares fit. Unlike group lasso, this procedure constructs a piecewise-linear coefficient path by design.</p>
+<p>For an entirely orthonormal design, the paths of group LARS and group lasso coincide. With correlated groups, however, they differ: group LARS is a related factor-selection procedure rather than an replacement for group lasso.</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Algorithm 2. Group LARS
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<pre><code>Initialize beta = 0, r = y, A = {}
+
+# Select the first group
+A = {argmax_j ||X_j.T @ r||² / p_j}
+
+Repeat:
+    # Compute direction using active groups
+    gamma = 0
+    gamma_A = solve(X_A.T @ X_A, X_A.T @ r)
+
+    d = X @ gamma
+
+    # Find when the next group enters
+    for j not in A:
+        Find smallest alpha_j in (0, 1] such that
+
+            ||X_j.T @ (r - alpha_j * d)||² / p_j
+            =
+            ||X_a.T @ (r - alpha_j * d)||² / p_a
+
+        where a is any group in A
+
+    # Take the smallest step
+    alpha = min(1, min_j alpha_j)
+
+    beta = beta + alpha * gamma
+    r = r - alpha * d
+
+    if alpha == 1:
+        break
+
+    # Add the next group
+    A = A union {argmin_j alpha_j}
+
+Return beta, path</code></pre>
+</div>
+</div>
+</section>
+<section id="group-non-negative-garrotte" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="group-non-negative-garrotte"><span class="header-section-number">3.3</span> Group non-negative garrotte</h3>
+<p>A second group-selection method starts with the least-squares solution and then shrinks its group contributions. Suppose <span class="math inline">\(\beta_j^{LS}\)</span> is the least-squares coefficient vector for group <span class="math inline">\(j\)</span>. Write</p>
+<p><span class="math display">\[
+\beta_j = d_j \beta_j^{LS},\quad d_j \geq 0
+\]</span></p>
+<p>The scalar <span class="math inline">\(d_j\)</span> controls the contribution of the entire group. Define</p>
+<p><span class="math display">\[
+Z_j = X_j \beta_j^{LS}, \quad Z = (Z_1, \ldots, Z_J).
+\]</span></p>
+<p>Notice that each <span class="math inline">\(Z_j\)</span> is an <span class="math inline">\(n\)</span>-dimensional vector containing the fitted contribution of group <span class="math inline">\(j\)</span>. The <strong>group non-negative garrotte</strong> solves</p>
+<p><span class="math display">\[
+\hat d(\delta) = \arg\min_{d_j\geq 0} \left\{\frac{1}{2} \|Y - Zd\|_2^2 + \lambda \sum_{j=1}^J p_j d_j \right\}
+\]</span></p>
+<p>The final coefficients are</p>
+<p><span class="math display">\[
+\hat \beta_j = \hat d_j \beta_j^{LS}
+\]</span></p>
+<p>Thus, each group is either eliminated when <span class="math inline">\(d_j=0\)</span> or retained with its least-squares coefficient vector multiplied by a common nonnegative factor. Because <span class="math inline">\(Z\)</span> is fixed, the optimization problem is a nonnegative weighted lasso in the <span class="math inline">\(d_j\)</span>. Its solution path is piecewise linear. When the entire design is orthonormal, the solutoin takes the form</p>
+<p><span class="math display">\[
+\hat \beta_j = \left(1- \frac{\lambda p_j}{\|X_j^\top Y\|_2^2}\right)_+ X_j^\top Y,
+\]</span></p>
+<p>using the <span class="math inline">\(X^\top X=I\)</span> normalization.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-brehenyGroupDescentAlgorithms2015" class="csl-entry" role="listitem">
+Breheny, Patrick, and Jian Huang. 2015. <span>“Group Descent Algorithms for Nonconvex Penalized Linear and Logistic Regression Models with Grouped Predictors.”</span> <em>Statistics and Computing</em> 25 (2): 173–87. <a href="https://doi.org/10.1007/s11222-013-9424-2">https://doi.org/10.1007/s11222-013-9424-2</a>.
+</div>
+<div id="ref-tuyenOptimalityConditionsInfinity2024" class="csl-entry" role="listitem">
+Tuyen, Nguyen Van, Kwan Deok Bae, and Do Sang Kim. 2024. <em>Optimality Conditions at Infinity for Nonsmooth Minimax Programming</em>. arXiv:2405.09869. arXiv. <a href="https://doi.org/10.48550/arXiv.2405.09869">https://doi.org/10.48550/arXiv.2405.09869</a>.
+</div>
+<div id="ref-yangFastUnifiedAlgorithm2015" class="csl-entry" role="listitem">
+Yang, Yi, and Hui Zou. 2015. <span>“A Fast Unified Algorithm for Solving Group-Lasso Penalize Learning Problems.”</span> <em>Statistics and Computing</em> 25 (6): 1129–41. <a href="https://doi.org/10.1007/s11222-014-9498-5">https://doi.org/10.1007/s11222-014-9498-5</a>.
+</div>
+<div id="ref-yuanModelSelectionEstimation2006" class="csl-entry" role="listitem">
+Yuan, Ming, and Yi Lin. 2006. <span>“Model Selection and Estimation in Regression with Grouped Variables.”</span> <em>Journal of the Royal Statistical Society Series B (Statistical Methodology)</em> 68 (1): 49–67. <a href="https://doi.org/10.1111/j.1467-9868.2005.00532.x">https://doi.org/10.1111/j.1467-9868.2005.00532.x</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+(() => {
+  "use strict";
+
+  const boxSelector = ".theorem, .example, .callout";
+  const displayMathSelector = 'mjx-container[display="true"]';
+  let fitFrame = 0;
+  let fittingStarted = false;
+
+  function fitDisplayMath(displayMath) {
+    // Measure at the normal MathJax size every time so equations can grow
+    // back after their container becomes wider.
+    displayMath.style.removeProperty("font-size");
+    displayMath.removeAttribute("data-math-fit-scale");
+
+    const wrapper = displayMath.closest(".math.display") || displayMath.parentElement;
+    // Quarto may configure MathJax's SVG or CHTML renderer. Both express
+    // their natural width relative to the container's font size.
+    const renderedMath = displayMath.querySelector("mjx-math, svg");
+
+    if (!wrapper || !renderedMath) {
+      return;
+    }
+
+    const wrapperStyle = window.getComputedStyle(wrapper);
+    const horizontalPadding =
+      Number.parseFloat(wrapperStyle.paddingLeft) +
+      Number.parseFloat(wrapperStyle.paddingRight);
+    const availableWidth = wrapper.clientWidth - horizontalPadding;
+    const naturalWidth = renderedMath.getBoundingClientRect().width;
+
+    if (availableWidth <= 0 || naturalWidth <= availableWidth) {
+      return;
+    }
+
+    // Leave a small margin so sub-pixel rounding does not create a scrollbar.
+    const scale = (availableWidth / naturalWidth) * 0.98;
+    displayMath.style.fontSize = `${scale * 100}%`;
+    displayMath.dataset.mathFitScale = scale.toFixed(3);
+  }
+
+  function fitAllBoxMath() {
+    document.querySelectorAll(boxSelector).forEach((box) => {
+      box.querySelectorAll(displayMathSelector).forEach(fitDisplayMath);
+    });
+  }
+
+  function scheduleFit() {
+    window.cancelAnimationFrame(fitFrame);
+    fitFrame = window.requestAnimationFrame(() => {
+      // Use a second frame so layout reflects the reset to normal size.
+      window.requestAnimationFrame(fitAllBoxMath);
+    });
+  }
+
+  async function startFitting() {
+    if (fittingStarted) {
+      return;
+    }
+    fittingStarted = true;
+
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
+    scheduleFit();
+
+    if ("ResizeObserver" in window) {
+      const resizeObserver = new ResizeObserver(scheduleFit);
+      document.querySelectorAll(boxSelector).forEach((box) => resizeObserver.observe(box));
+    } else {
+      window.addEventListener("resize", scheduleFit, {passive: true});
+    }
+
+    // Also handle equations inserted later by notebook or Quarto components.
+    const mutationObserver = new MutationObserver((mutations) => {
+      if (
+        mutations.some((mutation) =>
+          [...mutation.addedNodes].some(
+            (node) =>
+              node.nodeType === Node.ELEMENT_NODE &&
+              (node.matches?.(displayMathSelector) || node.querySelector?.(displayMathSelector))
+          )
+        )
+      ) {
+        scheduleFit();
+      }
+    });
+
+    mutationObserver.observe(document.body, {childList: true, subtree: true});
+  }
+
+  const mathJaxReady = window.MathJax?.startup?.promise;
+
+  if (mathJaxReady && typeof mathJaxReady.then === "function") {
+    // Plotly outputs can load their own MathJax renderer and cause the shared
+    // startup promise to reject even though the page equations were rendered.
+    // Fit in either case.
+    mathJaxReady.then(startFitting, startFitting);
+  }
+
+  // Always keep the ordinary page-load event as a fallback. Some embedded
+  // widgets replace window.MathJax and leave an earlier startup promise pending.
+  if (document.readyState === "complete") {
+    startFitting();
+  } else {
+    window.addEventListener("load", startFitting, {once: true});
+  }
+})();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../weeks/17.html" class="pagination-link" aria-label="Interactions: Foundations">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Interactions: Foundations</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../references.html" class="pagination-link" aria-label="References">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>14&nbsp; Interactions: Foundations – DS 6400 Weekly Writing</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../weeks/18.html" rel="next">
+<link href="../weeks/16.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-5ccb035bea26c1e21f80f44cf7c27909.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script>
+window.MathJax = {
+  loader: {
+    load: ["[tex]/mathtools"]
+  },
+  tex: {
+    packages: {"[+]": ["mathtools"]},
+    macros: {
+      R: "\\mathbb{R}",
+      N: "\\mathbb{N}",
+      Z: "\\mathbb{Z}",
+      Q: "\\mathbb{Q}",
+      C: "\\mathbb{C}",
+      E: "\\mathbb{E}",
+      Var: "\\operatorname{Var}",
+      Cov: "\\operatorname{Cov}",
+      Corr: "\\operatorname{Corr}",
+      argmin: "\\operatorname*{arg\\,min}",
+      argmax: "\\operatorname*{arg\\,max}",
+      ind: "\\mathbb{1}",
+      Err: "\\operatorname{Err}",
+      err: "\\operatorname{err}",
+      var: "\\operatorname{var}",
+      indep: "\\perp\\!\\!\\!\\perp",
+      PD: "\\operatorname{PD}",
+      ALE: "\\operatorname{ALE}",
+      mg: "\\operatorname{mg}",
+      av: "\\operatorname{av}",
+      PE: "\\operatorname{PE}",
+      mr: "\\operatorname{mr}",
+      rmg: "\\operatorname{rmg}",
+      sd: "\\operatorname{sd}",
+      P: "\\mathbb{P}", 
+      rank: "\\operatorname{rank}",
+      dim: "\\operatorname{dim}",
+      V: "\\mathcal{V}",
+      W: "\\mathcal{W}",
+      U: "\\mathcal{U}",
+    }
+  }
+};
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/17.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Interactions: Foundations</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">DS 6400 Weekly Writing</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Weekly Writing</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">From Apparent Error to Modern Error: Efron’s Optimism and Evaluation of Predictive Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">40 years of Predictive Performance Estimation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Accumulated Local Effects Plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Are the Forests really Random?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Comparison Under Complexity and Tuning Constraints</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Regression Splines</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Comparing Nonlinear Regression Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">High-Dimensional Regression in Python</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Ridge Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Lasso Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Computational Exploration of Regularization in High-Dimensional Regression</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Introduction to Survival Analysis and Parametric Survival Models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Interactions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/17.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Interactions: Foundations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Group Lasso</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/ols-cv-independence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">OLS, Linear Invariance, and Conditional Independence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../appendices/linear-algebra-revision.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">Linear Algebra Review</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#distributional-structure-and-the-meaning-of-interaction" id="toc-distributional-structure-and-the-meaning-of-interaction" class="nav-link active" data-scroll-target="#distributional-structure-and-the-meaning-of-interaction"><span class="header-section-number">1</span> Distributional Structure and the Meaning of Interaction</a>
+  <ul class="collapse">
+  <li><a href="#from-additivity-of-effects-to-additivity-of-distributions" id="toc-from-additivity-of-effects-to-additivity-of-distributions" class="nav-link" data-scroll-target="#from-additivity-of-effects-to-additivity-of-distributions"><span class="header-section-number">1.1</span> From additivity of effects to additivity of distributions</a></li>
+  <li><a href="#quantile-representations-and-distributional-interaction" id="toc-quantile-representations-and-distributional-interaction" class="nav-link" data-scroll-target="#quantile-representations-and-distributional-interaction"><span class="header-section-number">1.2</span> Quantile representations and distributional interaction</a></li>
+  <li><a href="#transformations-and-variance-stabilization" id="toc-transformations-and-variance-stabilization" class="nav-link" data-scroll-target="#transformations-and-variance-stabilization"><span class="header-section-number">1.3</span> Transformations and variance stabilization</a></li>
+  <li><a href="#beyond-the-first-order-variance-approximation" id="toc-beyond-the-first-order-variance-approximation" class="nav-link" data-scroll-target="#beyond-the-first-order-variance-approximation"><span class="header-section-number">1.4</span> Beyond the first-order variance approximation</a></li>
+  </ul></li>
+  <li><a href="#the-mathematical-structure-and-scientific-roles-of-interaction" id="toc-the-mathematical-structure-and-scientific-roles-of-interaction" class="nav-link" data-scroll-target="#the-mathematical-structure-and-scientific-roles-of-interaction"><span class="header-section-number">2</span> The Mathematical Structure and Scientific Roles of Interaction</a>
+  <ul class="collapse">
+  <li><a href="#classifying-explanatory-variables" id="toc-classifying-explanatory-variables" class="nav-link" data-scroll-target="#classifying-explanatory-variables"><span class="header-section-number">2.1</span> Classifying explanatory variables</a></li>
+  <li><a href="#treatment-by-treatment-interaction-and-additive-separability" id="toc-treatment-by-treatment-interaction-and-additive-separability" class="nav-link" data-scroll-target="#treatment-by-treatment-interaction-and-additive-separability"><span class="header-section-number">2.2</span> Treatment-by-treatment interaction and additive separability</a></li>
+  <li><a href="#ordinal-and-order-based-interactions" id="toc-ordinal-and-order-based-interactions" class="nav-link" data-scroll-target="#ordinal-and-order-based-interactions"><span class="header-section-number">2.3</span> Ordinal and order-based interactions</a></li>
+  <li><a href="#interaction-does-not-establish-a-causal-mechanism" id="toc-interaction-does-not-establish-a-causal-mechanism" class="nav-link" data-scroll-target="#interaction-does-not-establish-a-causal-mechanism"><span class="header-section-number">2.4</span> Interaction does not establish a causal mechanism</a></li>
+  <li><a href="#treatment-by-intrinsic-interaction-and-generalization" id="toc-treatment-by-intrinsic-interaction-and-generalization" class="nav-link" data-scroll-target="#treatment-by-intrinsic-interaction-and-generalization"><span class="header-section-number">2.5</span> Treatment-by-intrinsic interaction and generalization</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../weeks/01.html">Weekly Writing</a></li><li class="breadcrumb-item"><a href="../weeks/17.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Interactions: Foundations</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Interactions: Foundations</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<blockquote class="blockquote">
+<p><em>Can the effect of one explanatory variable be understood independently of the values of other variables?</em></p>
+</blockquote>
+<p>In the simplest regression model, the effects of explanatory variables are assumed to combine additively. Such a representation allows a complicated response surface to be described through a collection of simpler function. However, when one variable modifed the effect of another, this additive representation becomes inadequate. The resulting departure from additivity is described as an <em>interaction</em>.</p>
+<p>The meaning of interaction is nevertheless subtler than the presence of a product term in a regression equation. Interaction depends on the scale on which the response is measured, on the scientific roles assigned to explanatory variables, and on the structure of the experimental or observational data.</p>
+<section id="distributional-structure-and-the-meaning-of-interaction" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="distributional-structure-and-the-meaning-of-interaction"><span class="header-section-number">1</span> Distributional Structure and the Meaning of Interaction</h2>
+<section id="from-additivity-of-effects-to-additivity-of-distributions" class="level3" data-number="1.1">
+<h3 data-number="1.1" class="anchored" data-anchor-id="from-additivity-of-effects-to-additivity-of-distributions"><span class="header-section-number">1.1</span> From additivity of effects to additivity of distributions</h3>
+<p>Statistical interaction is usually formulated in terms of the conditional expected response. However, two treatments can produe the same difference in average response while having considerably different effects on variability, skewness, or other features. To understand this distinction, suppose that a response <span class="math inline">\(Y\)</span> is observed under two treatments, with cummulative distribution functions</p>
+<p><span class="math display">\[
+F_1(y) = \P(Y\leq y \mid T=1), \quad F_2(y) = \P(Y\leq y \mid T=2)
+\]</span></p>
+<p>Assume initially that treatment 2 changes the response from treatment 1 by a constant amount <span class="math inline">\(\tau\)</span>, regardless of the experimental unit. If <span class="math inline">\(Y_1\)</span> denotes the response under the first treatment, this assumption can be represented by</p>
+<p><span class="math display">\[
+Y_2 = Y_1 + \tau.
+\]</span></p>
+<p>Consequently,</p>
+<p><span class="math display">\[
+F_2(y) = \P(Y_2 \leq y) = \P(Y_1 + \tau \leq y ) = \P(Y_1 \leq y-\tau)
+\]</span></p>
+<p>Therefore,</p>
+<p><span id="eq-1-1"><span class="math display">\[
+F_2(y) = F_1(y-\tau)
+\tag{1}\]</span></span></p>
+<p>This is the distributional additivity condition corresponding to equation (2.1) of <span class="citation" data-cites="coxInteraction1984">Cox (<a href="../references.html#ref-coxInteraction1984" role="doc-biblioref">1984</a>)</span>. It asserts that the two distributions differ only by a translation. A notable consequence is</p>
+<p><span class="math display">\[
+\E(Y_2) = \E(Y_1) + \tau, \quad \Var(Y_2) = \Var(Y_1 + \tau ) = \Var(Y_1)
+\]</span></p>
+<p>More generally, the centered distributions must be identical. Translation changes the location but not the shape of a distribution. Hence, constant variance, constant skewness, and constant higher standardized moments are all consequences of this strong additive assumption. Hence:</p>
+<blockquote class="blockquote">
+<p><strong>Additivity of distributions is a stronger requirement than additivity of expectations.</strong></p>
+</blockquote>
+</section>
+<section id="quantile-representations-and-distributional-interaction" class="level3" data-number="1.2">
+<h3 data-number="1.2" class="anchored" data-anchor-id="quantile-representations-and-distributional-interaction"><span class="header-section-number">1.2</span> Quantile representations and distributional interaction</h3>
+<p>A useful way to examine distributional additivity is through the quantile functions</p>
+<p><span class="math display">\[
+Q_1(p) = F_1^{-1}(p),\quad Q_2(p) = F_2^{-1}(p), \quad 0&lt;p&lt;1
+\]</span></p>
+<p>Under the translation model <a href="#eq-1-1" class="quarto-xref">Equation&nbsp;<span>1</span></a>,</p>
+<p><span class="math display">\[
+F_2(y) = F_1(y - \tau) \implies Q_2(p) = Q_1(p) + \tau.
+\]</span></p>
+<p>Thus,</p>
+<p><span class="math display">\[
+Q_2(p) - Q_1(p) = \tau
+\]</span></p>
+<p>for every quantile level <span class="math inline">\(p\)</span>. If corresponding quantiles are plotted against one another, the points should lie on a straight line with slope one and intercept <span class="math inline">\(\tau\)</span>. This provides the motivation for using a quantile-quantile plot to assess distributional additivity. Q</p>
+<p>When this condition is violated, the displacement may instead depend on the response level. Define</p>
+<p><span class="math display">\[
+F_2(y) = F_1\{y-\tau(y)\}
+\]</span></p>
+<p>Provided the distribution functions are suitably invertible,</p>
+<p><span class="math display">\[
+\tau(y) = y - F_1^{-1}\{F_2(y)\}
+\]</span></p>
+<p>This quantity is the displacement required to match the distribution under treatment 2 to the corresponding position under treatment 1. If <span class="math inline">\(\tau(y)\)</span> is constant, a translation model is appropriate. If it varies systematically with <span class="math inline">\(y\)</span>, the treatment effect is different effect is different at different parts of the response distribution.</p>
+<p>For example, a treatment might produce only a small improvement among units with initially low responses but a much larger improvement among units with high responses. Even if the average treatment effect can be represented by a single number, that number does not describe the distribution change.</p>
+<div id="212ee3e9" class="cell" data-execution_count="1">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">6400</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">3000</span> </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>Y1 <span class="op">=</span> rng.normal(<span class="dv">10</span>, <span class="dv">2</span>, n)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># treatment 2a: pure location shift </span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>Y2_additive <span class="op">=</span> rng.normal(<span class="dv">15</span>, <span class="dv">2</span>, n)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># treatment 2b: location and variance both change </span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>Y2_nonadditive <span class="op">=</span> rng.normal(<span class="dv">15</span>, <span class="dv">4</span>, n)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> np.linspace(<span class="fl">0.01</span>, <span class="fl">0.99</span>, <span class="dv">100</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>q1 <span class="op">=</span> np.quantile(Y1, p)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>q2a <span class="op">=</span> np.quantile(Y2_additive, p)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>q2b <span class="op">=</span> np.quantile(Y2_nonadditive, p)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>plt.plot(q1, q2a, label <span class="op">=</span><span class="st">"Constant shift"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>plt.plot(q1, q2b, label<span class="op">=</span><span class="st">"Changing spread"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>plt.plot(q1, q1<span class="op">+</span><span class="dv">5</span>, <span class="st">"k--"</span>, label<span class="op">=</span><span class="st">"Unit-slope reference"</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Treatment 1 quantiles"</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Treatment 2 quantiles"</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Distributional additivity"</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="17_files/figure-html/cell-2-output-1.png" width="673" height="451" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The first treatment comparison produces points approximately following the unit-slope reference line. The second comparison produces a steeper relationship because the upper quantiles increase more strongly while the lower quantiles increases less strongly.</p>
+</section>
+<section id="transformations-and-variance-stabilization" class="level3" data-number="1.3">
+<h3 data-number="1.3" class="anchored" data-anchor-id="transformations-and-variance-stabilization"><span class="header-section-number">1.3</span> Transformations and variance stabilization</h3>
+<p>When the distributions cannot be described by a common translation, one possibility is to transform the response.</p>
+<p>Let <span class="math inline">\(h\)</span> be a monotonic transformation and consider the transformed response <span class="math inline">\(h(Y)\)</span>. The objective may be to find a transformation under which the distributions become approximately additive or, more precisely, have nearly constant variance.</p>
+<p>Suppose that</p>
+<p><span class="math display">\[
+\E(Y) = \mu, \quad \Var(Y) = v(\mu)
+\]</span></p>
+<p>where the variance is determined by the mean through a positive function <span class="math inline">\(v\)</span>.</p>
+<p>A first-order Taylor expansion around <span class="math inline">\(\mu\)</span> gives</p>
+<p><span class="math display">\[
+h(Y) \approx h(\mu) + h'(\mu)(Y-\mu).
+\]</span></p>
+<p>Taking the variance on both sides yields the delta-method approximation</p>
+<p><span class="math display">\[
+\Var\{h(Y)\} \approx [h'(\mu)]^2 v(\mu)
+\]</span></p>
+<p>To obtain a transformed response with approximately unit variance, we require <span class="math inline">\([h'(\mu)]^2 v(\mu)=1.\)</span> For a monotone increasing transformation, choose</p>
+<p><span class="math display">\[
+h'(\mu) = \frac{1}{\sqrt{v(\mu)}}.
+\]</span></p>
+<p>Integrating gives</p>
+<p><span class="math display">\[
+h(y) = \int^y_0 \frac{dx}{\sqrt{v(x)}}.
+\]</span></p>
+<p>The condition that variance be determined by the mean is central. If two populations have the same mean but different variances, a single smooth transformation based only on the response level cannot stabilize both variances through this first order argument.</p>
+<p>Several familiar transformations follow from this expression.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Mean-variance relationship</th>
+<th>Variance-stabilizing transformation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(v(\mu) = \sigma^2\)</span></td>
+<td><span class="math inline">\(h(y) \propto y\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(v(\mu) = \mu\)</span></td>
+<td><span class="math inline">\(h(y) = 2\sqrt{y}\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(v(\mu) = \mu^2\)</span></td>
+<td><span class="math inline">\(h(y) = \log y\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(v(\mu) = \mu(1-\mu)\)</span></td>
+<td><span class="math inline">\(h(y) = 2\arcsin\sqrt{y}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The last example is appropriate to a binomial proportion under its usual mean-variance relationship, up to the binomial sample-size scaling. These are leading-order variance stabilizing transformations.</p>
+<p>The logarithmic transformation can be explained as follows. Suppose the expected response satisfies</p>
+<p><span class="math display">\[
+\E(Y\mid x_1, x_2) = \exp\{\alpha + f_1(x_1) + f_2(x_2)\}.
+\]</span></p>
+<p>On the original scale, the two factors combine multiplicatively:</p>
+<p><span class="math display">\[
+\E(Y\mid x_1, x_2) = e^\alpha e^{f_1(x_1)}e^{f_2(x_2)}
+\]</span></p>
+<p>However, the log of the conditional mean is additive:</p>
+<p><span class="math display">\[
+\log \E(Y\mid x_1, x_2) = \alpha + f_1(x_1) + f_2(x_2)
+\]</span></p>
+<p>There is no interaction on the log-mean scale, even though interaction may be present on the original mean scale. Notice that <span class="math inline">\(\log \E(Y)\)</span> is not equal to <span class="math inline">\(\E(\log Y)\)</span>; the log-link representation and a transformation of individual observations are distinct operations.</p>
+</section>
+<section id="beyond-the-first-order-variance-approximation" class="level3" data-number="1.4">
+<h3 data-number="1.4" class="anchored" data-anchor-id="beyond-the-first-order-variance-approximation"><span class="header-section-number">1.4</span> Beyond the first-order variance approximation</h3>
+<p>The delta method is only a local approximation. It may fail when the response is strongly skewed or when the trannsformation has substantial curvature relative to the variability of <span class="math inline">\(Y\)</span>.</p>
+<p>Let <span class="math inline">\(\rho_{Y, 3}(\mu)\)</span> denote the standardized third cumulant, or skewness of <span class="math inline">\(Y\)</span>. A higher-order approximation discussed by <span class="citation" data-cites="coxInteraction1984">Cox (<a href="../references.html#ref-coxInteraction1984" role="doc-biblioref">1984</a>)</span> is</p>
+<p><span id="eq-higher-order-approximation"><span class="math display">\[
+\Var\{h(Y)\} \approx v(\mu)[h'(\mu)]^2 + \rho_{Y, 3} (\mu) [v(\mu)]^{3/2} h'(\mu) h''(\mu).
+\tag{2}\]</span></span></p>
+<p>This expression shows that variance stabilization depends not only on the original variance but also on skewness and the curvature of the transformation.</p>
+<p>For the first-order choice</p>
+<p><span class="math display">\[
+h'(\mu) = v(\mu)^{-1/2},
+\]</span></p>
+<p>differentiation gives</p>
+<p><span class="math display">\[
+h''(\mu) = -\frac{v'(\mu)}{2[v(\mu)]^{3/2}}
+\]</span></p>
+<p>Substituting into <a href="#eq-higher-order-approximation" class="quarto-xref">Equation&nbsp;<span>2</span></a>,</p>
+<p><span class="math display">\[
+\Var\{h(Y)\} \approx 1 - \frac{1}{2}\frac{\rho_{Y, 3}(\mu)v'(u)}{\sqrt{v(\mu)}}
+\]</span></p>
+<p>This equation provides a way to assess whether the first-order approximation is likely to be adequate. Even if the varianec is successfully stabilized, changes in the transformed distribution’s skewness may remain. Cox gives a further approximation</p>
+<p><span class="math display">\[
+\rho_{h(Y), 3}(\mu) \approx \rho_{Y, 3}(\mu) - \frac{3v'(\mu)}{4\sqrt{v(\mu)}} \{\rho_{Y, 4} (\mu) - \rho^2_{Y, 3}(\mu) + 2\},
+\]</span></p>
+<p>where <span class="math inline">\(\rho_{Y, 4}\)</span> is the standardized fourth cumulant. These higher-order formulae are approximations under the moment-expansion assumptions.</p>
+<p>The broader conclusion is that a suitable scale can sometimes remove apparent nonadditivity, but neither constant variance nor a transformed additive mean guarantees complete distributional additivity. For multivariate responses, the problem becomes more difficult. If a response vector has mean <span class="math inline">\(\boldsymbol\mu\)</span> and covariance matrix <span class="math inline">\(\Omega(\boldsymbol\mu)\)</span>, finding a vector transformation <span class="math inline">\(\mathbf{h}(\mathbf{Y})\)</span> with constant covariance requires compatibility conditions that generally will not hold.</p>
+</section>
+</section>
+<section id="the-mathematical-structure-and-scientific-roles-of-interaction" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="the-mathematical-structure-and-scientific-roles-of-interaction"><span class="header-section-number">2</span> The Mathematical Structure and Scientific Roles of Interaction</h2>
+<section id="classifying-explanatory-variables" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="classifying-explanatory-variables"><span class="header-section-number">2.1</span> Classifying explanatory variables</h3>
+<p>Before defining interaction between explanatory factors, it is useful to distinguish their roles in the investigation. Let the response <span class="math inline">\(Y\)</span> depend on three collections of explanatory variables:</p>
+<p><span class="math display">\[
+\mathbf{x} = (x_1, \ldots, x_t), \quad  \mathbf{z} = (z_1, \ldots, z_q), \quad \mathbf{u} = (u_1, \ldots, u_r)
+\]</span></p>
+<p>The conditional expectation is written as</p>
+<p><span class="math display">\[
+\E(Y) = \eta(\mathbf{x}, \mathbf{z}, \mathbf{u})
+\]</span></p>
+<p>The variables <span class="math inline">\(\mathbf x\)</span> represent <strong>treatment factors</strong>: characteristics whose effects form the principal object of study. In a designed experiment these can be assigned or controlled by the investigator. In an observational study they are variables that might, in principle, be intervened upon.</p>
+<p>The variables <span class="math inline">\(\mathbf z\)</span> represent <strong>intrinsic factors</strong>. These describe characterisitcs of the subjects or environments that are not manipulated in the investigation. Age, baseline measurements, inherent subject characteristics, and certain environmental conditions can play this role.</p>
+<p>Finally, the variables <span class="math inline">\(\mathbf u\)</span> represent <strong>nonspecific factors</strong>, such as blocks, replicates, or groups whose individual identities are not of intrinsic scientific interest. Such factors are often introduced to represent unexplained heterogeneity or to account for the experimental design.</p>
+<p>The classification is contextual. A particular characteristic may be a treatment factor in one experiment but an intrinsic or nonspecific factor in another. This leads to three scientifically distinct types of two-factor interaction:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Mathematical pairing</th>
+<th>Principal interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Treatment <span class="math inline">\(\times\)</span> treatment</td>
+<td><span class="math inline">\(x_1\times x_2\)</span></td>
+<td>Whether one treatment modifies the effect of another</td>
+</tr>
+<tr class="even">
+<td>Treatment <span class="math inline">\(\times\)</span> intrinsic</td>
+<td><span class="math inline">\(x\times z\)</span></td>
+<td>Whether a treatment effect varies across individuals or environments</td>
+</tr>
+<tr class="odd">
+<td>Treatment <span class="math inline">\(\times\)</span> nonspecific</td>
+<td><span class="math inline">\(x\times u\)</span></td>
+<td>Whether a treatment effect varies across blocks or replicates, potentially contributing to error</td>
+</tr>
+</tbody>
+</table>
+<p>Although the mathematical definition of nonadditivity is similar across these types, their scientific interpretation and their role in inference differ substantially.</p>
+</section>
+<section id="treatment-by-treatment-interaction-and-additive-separability" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="treatment-by-treatment-interaction-and-additive-separability"><span class="header-section-number">2.2</span> Treatment-by-treatment interaction and additive separability</h3>
+<p>Consider two treatment variables <span class="math inline">\(x_1\)</span>, <span class="math inline">\(x_2\)</span> and write</p>
+<p><span class="math display">\[
+\eta(x_1, x_2) = \E(Y\mid x_1, x_2)
+\]</span></p>
+<p>There is no interaction on the chosen mean scale when the expected response can be expressed as</p>
+<p><span class="math display">\[
+\eta(x_1, x_2) = \eta^{(1)}(x_1) + \eta^{(2)}(x_2)
+\]</span></p>
+<p>A constant term may be included without changing the definition. This representation is called <em>additive separability</em>. It means that the contribution of <span class="math inline">\(x_1\)</span> is unaffected by <span class="math inline">\(x_2\)</span>, and vice versa.</p>
+<p>To see this formally, consider the change in expected response when <span class="math inline">\(x_1\)</span> changes from <span class="math inline">\(a\)</span> to <span class="math inline">\(b\)</span>, while <span class="math inline">\(x_2\)</span> is fixed at <span class="math inline">\(c\)</span>:</p>
+<p><span class="math display">\[
+\Delta_{x_1}(c) = \eta(b, c) - \eta(a, c)
+\]</span></p>
+<p>Under the additive model,</p>
+<p><span class="math display">\[
+\Delta_{x_1}(c) = \eta^{(1)} (b) + \eta^{(2)}(c) - \eta^{(1)} (a) - \eta^{(2)} (c) = \eta^{(1)}(b) - \eta^{(1)} (a)
+\]</span></p>
+<p>The dependence on <span class="math inline">\(c\)</span> disappears. Hence, the effect of changing <span class="math inline">\(x_1\)</span> is constant across the level of <span class="math inline">\(x_2\)</span>. This principle can be expressed without committing to a particular parametric form.</p>
+<p><strong>Additivity through contrasts.</strong> For any two levels <span class="math inline">\(a, b\)</span> of the first factor and <span class="math inline">\(c, d\)</span> of the second, define</p>
+<p><span class="math display">\[
+\Delta = \eta(b, d) - \eta(a, d) - \eta(b, c) + \eta(a, c)
+\]</span></p>
+<p>This is the difference of differences, or an elementary interaction contrast. If the mean function is additive, then <span class="math inline">\(\Delta =0\)</span> for every possible choice of <span class="math inline">\(a, b, c, d\)</span>. Conversely, if all such contrasts vanish over a product domain, the mean function is additively separable.</p>
+<p>To establish the converse, fix reference values <span class="math inline">\(a_0, c_0\)</span>. Since the interaction contrast is zero,</p>
+<p><span class="math display">\[
+\eta(x_1, x_2) - \eta(x_1, c_0) - \eta(a_0, x_2) + \eta(a_0, c_0) = 0
+\]</span></p>
+<p>Rearranging,</p>
+<p><span class="math display">\[
+\eta(x_1, x_2) = \underbrace{\eta(x_1, c_0)}_{\eta^{(1)}} + \underbrace{\eta(a_0, x_2) + \eta(a_0, c_0)}_{\eta^{(2)(x_2)}} \
+\]</span></p>
+<p>This proves the additive representation. For continuously differentiable quantitative factors, there is a related differential characterization. When <span class="math inline">\(\eta\)</span> is twice continuously is twice continuously differentiable on a rectangular domain,</p>
+<p><span class="math display">\[
+\frac{\partial^2\eta(x_1, x_2)}{\partial x_1\partial x_2} = 0 \Longleftrightarrow \eta(x_1, x_2) = \eta^{(1)}(x_1)+ \eta^{(2)}(x_2)
+\]</span></p>
+<p>The mixed partial derivative measures how the marginal effect of one variable changes with the other. If it vanishes everywhere, the effect of one factor is invariant to the other.</p>
+<p>In the familiar bilinear regression model,</p>
+<p><span class="math display">\[
+\eta(x_1, x_2) = \beta_0 + \beta_1x_1 + \beta_2 x_2 + \beta_{12}x_1 x_2
+\]</span></p>
+<p>we have</p>
+<p><span class="math display">\[
+\frac{\partial \eta}{\partial x_1} = \beta_1 + \beta_{12}x_2, \quad \frac{\partial^2 \eta}{\partial x_1 \partial x_2} = \beta_{12}
+\]</span></p>
+<p>Thus, within this particular model, the interaction coefficient measures the change in the slope of <span class="math inline">\(x_1\)</span> per unit change in <span class="math inline">\(x_2\)</span>.</p>
+</section>
+<section id="ordinal-and-order-based-interactions" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="ordinal-and-order-based-interactions"><span class="header-section-number">2.3</span> Ordinal and order-based interactions</h3>
+<p>Consider a treatment effect that changes in magnitude but not in direction. For example, suppose treatment <span class="math inline">\(x=1\)</span> improves the response by 5 units in one environment and 15 units in another. There is an interaction because the treatmetn effects differ, but treatment 1 remains preferable in both environments. A mmore substantial interaction occurs when the ordering of treatment responses changes, and is called <strong>order-based interaction</strong> in <span class="citation" data-cites="coxInteraction1984">Cox (<a href="../references.html#ref-coxInteraction1984" role="doc-biblioref">1984</a>)</span>.</p>
+<p>For example, consider the following expected responses:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Intrinsic group</th>
+<th>Treatment 0</th>
+<th>Treatment 1</th>
+<th>Effect of treatment 1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Group A</td>
+<td>100</td>
+<td>120</td>
+<td>+20</td>
+</tr>
+<tr class="even">
+<td>Group B</td>
+<td>90</td>
+<td>80</td>
+<td>-10</td>
+</tr>
+</tbody>
+</table>
+<p>Treatment 1 has a favorable effect in group A but an favorable effect in group B. The interaction contrast is</p>
+<p><span class="math display">\[
+\Delta = (120-100) - (80-90) = 30
+\]</span></p>
+<p>As we can see, <span class="math inline">\(\eta(1, A) &gt; \eta(0, A)\)</span> but <span class="math inline">\(\eta(1, B) &lt; \eta(0, B)\)</span>. This phenomenon cannot be removed by a strictly increasing response transformation. If <span class="math inline">\(h\)</span> is strictly increasing, the ordering of the means under a transformation of the mean surface is preserved:</p>
+<p><span class="math display">\[
+a&gt; b \Longleftrightarrow h(a) &gt; h(b)
+\]</span></p>
+<p>Therefore, changing the scale of an ordered mean response cannot eliminate such a reversal. This argument concerns monotone transformations of the mean surface; the ordering of <span class="math inline">\(\E\{h(Y)\}\)</span> is not determined by the ordering of <span class="math inline">\(\E(Y)\)</span>.</p>
+<div id="d57010c8" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>View Python code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># data</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>treatment <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">1</span>])</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>group_a <span class="op">=</span> [<span class="dv">100</span>, <span class="dv">120</span>]</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>group_b <span class="op">=</span> [<span class="dv">90</span>, <span class="dv">80</span>]</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Figure</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">7</span>))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot group responses</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>ax.plot(treatment, group_a, label<span class="op">=</span><span class="st">"Group A"</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>ax.plot(treatment, group_b, label<span class="op">=</span><span class="st">"Group B"</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Axes</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>ax.set_xticks([<span class="dv">0</span>, <span class="dv">1</span>])</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>ax.set_xticklabels([])</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="dv">68</span>, <span class="dv">132</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>ax.set_yticks([<span class="dv">70</span>, <span class="dv">85</span>, <span class="dv">100</span>, <span class="dv">115</span>, <span class="dv">130</span>])</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>ax.set_axisbelow(<span class="va">True</span>)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove spines</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> spine <span class="kw">in</span> ax.spines.values():</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    spine.set_visible(<span class="va">False</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Titles</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>fig.text(<span class="fl">0.08</span>, <span class="fl">0.94</span>, <span class="st">"A treatment effect that reverses across groups"</span>,fontsize<span class="op">=</span><span class="dv">20</span>, fontweight<span class="op">=</span><span class="st">"bold"</span>, ha<span class="op">=</span><span class="st">"left"</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>fig.text(<span class="fl">0.08</span>, <span class="fl">0.88</span>,<span class="st">"Synthetic expected responses, following the numerical example in Cox (1984)."</span>, fontsize<span class="op">=</span><span class="dv">15</span>, color<span class="op">=</span><span class="st">"#666666"</span>, ha<span class="op">=</span><span class="st">"left"</span>)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Legend below plot</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>ax.legend(loc<span class="op">=</span><span class="st">"upper center"</span>, bbox_to_anchor<span class="op">=</span>(<span class="fl">0.5</span>, <span class="op">-</span><span class="fl">0.12</span>), ncol<span class="op">=</span><span class="dv">2</span>, frameon<span class="op">=</span><span class="va">False</span>, fontsize<span class="op">=</span><span class="dv">14</span>, handlelength<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>plt.subplots_adjust(left<span class="op">=</span><span class="fl">0.10</span>, right<span class="op">=</span><span class="fl">0.93</span>, top<span class="op">=</span><span class="fl">0.80</span>, bottom<span class="op">=</span><span class="fl">0.20</span>)</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="17_files/figure-html/cell-3-output-1.png" width="1010" height="628" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="interaction-does-not-establish-a-causal-mechanism" class="level3" data-number="2.4">
+<h3 data-number="2.4" class="anchored" data-anchor-id="interaction-does-not-establish-a-causal-mechanism"><span class="header-section-number">2.4</span> Interaction does not establish a causal mechanism</h3>
+<p>The statistical definition of interaction concerns the form of the repsonse funciton. It does not, by itself, demonstrate that two factors are causually dependent. <span class="citation" data-cites="coxInteraction1984">Cox (<a href="../references.html#ref-coxInteraction1984" role="doc-biblioref">1984</a>)</span> illustrates this with a model of the form</p>
+<p><span class="math display">\[
+\eta(x_1, x_2) = \eta_1(x_1) + e^{-x_2} \eta_2(x_1), \quad x_2 \geq 0
+\]</span></p>
+<p>The response approaches <span class="math inline">\(\eta_1(x_1)\)</span> as <span class="math inline">\(x_2\)</span> increases. The factor <span class="math inline">\(x_2\)</span> controls the rate at which the response transitions, while both limiting levels may be governed by <span class="math inline">\(x_1\)</span>. The mixed derivative is</p>
+<p><span class="math display">\[
+\frac{\partial^2 \eta}{\partial x_1 \partial x_2} = -e^{-x_2}\eta_2'(x_1),
+\]</span></p>
+<p>which is generally nonzero. Thus, the function displays statistical interaction despite admitting a relatively simple physical description in terns of separate roles.</p>
+<p>This distinction is important in observational studies. A statisitical interaction can describe effect heterogeneity or associations, but a causual interpretation requires additional assumptions about treatment assignment, confounding, and the identification of causal effects.</p>
+</section>
+<section id="treatment-by-intrinsic-interaction-and-generalization" class="level3" data-number="2.5">
+<h3 data-number="2.5" class="anchored" data-anchor-id="treatment-by-intrinsic-interaction-and-generalization"><span class="header-section-number">2.5</span> Treatment-by-intrinsic interaction and generalization</h3>
+<p>Suppose <span class="math inline">\(x\)</span> represents a treatment and <span class="math inline">\(z\)</span> an intrinsic characteristic. The absence of interaction is represented by</p>
+<p><span class="math display">\[
+\eta(x, z) = \eta_1(x) + \eta_2(z)
+\]</span></p>
+<p>Mathematically, this is identical to the additive representation for two treatments. Scientifically, it has a different meaning. If the treatment effect is</p>
+<p><span class="math display">\[
+\tau(z) = \eta(1, z) - \eta(0, z)
+\]</span></p>
+<p>then under additivity,</p>
+<p><span class="math display">\[
+\tau(z) = \eta_1(1) - \eta_1(0),
+\]</span></p>
+<p>which is independent of <span class="math inline">\(z\)</span>.</p>
+<p>This makes the effect of treatment transferable across populations with different compositions of the intrinsic variable, provided the underlying model remains applicable. When <span class="math inline">\(\tau(z)\)</span> varies, treatment selection may need to depend on individual characteristics or environmental conditions. A single population-average effect may then hide several heterogeneity.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-coxInteraction1984" class="csl-entry" role="listitem">
+Cox, D. R. 1984. <span>“Interaction.”</span> <em>International Statistical Review / Revue Internationale De Statistique</em> 52 (1): 1–24. <a href="https://doi.org/10.2307/1403235">https://doi.org/10.2307/1403235</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script>
+(() => {
+  "use strict";
+
+  const boxSelector = ".theorem, .example, .callout";
+  const displayMathSelector = 'mjx-container[display="true"]';
+  let fitFrame = 0;
+  let fittingStarted = false;
+
+  function fitDisplayMath(displayMath) {
+    // Measure at the normal MathJax size every time so equations can grow
+    // back after their container becomes wider.
+    displayMath.style.removeProperty("font-size");
+    displayMath.removeAttribute("data-math-fit-scale");
+
+    const wrapper = displayMath.closest(".math.display") || displayMath.parentElement;
+    // Quarto may configure MathJax's SVG or CHTML renderer. Both express
+    // their natural width relative to the container's font size.
+    const renderedMath = displayMath.querySelector("mjx-math, svg");
+
+    if (!wrapper || !renderedMath) {
+      return;
+    }
+
+    const wrapperStyle = window.getComputedStyle(wrapper);
+    const horizontalPadding =
+      Number.parseFloat(wrapperStyle.paddingLeft) +
+      Number.parseFloat(wrapperStyle.paddingRight);
+    const availableWidth = wrapper.clientWidth - horizontalPadding;
+    const naturalWidth = renderedMath.getBoundingClientRect().width;
+
+    if (availableWidth <= 0 || naturalWidth <= availableWidth) {
+      return;
+    }
+
+    // Leave a small margin so sub-pixel rounding does not create a scrollbar.
+    const scale = (availableWidth / naturalWidth) * 0.98;
+    displayMath.style.fontSize = `${scale * 100}%`;
+    displayMath.dataset.mathFitScale = scale.toFixed(3);
+  }
+
+  function fitAllBoxMath() {
+    document.querySelectorAll(boxSelector).forEach((box) => {
+      box.querySelectorAll(displayMathSelector).forEach(fitDisplayMath);
+    });
+  }
+
+  function scheduleFit() {
+    window.cancelAnimationFrame(fitFrame);
+    fitFrame = window.requestAnimationFrame(() => {
+      // Use a second frame so layout reflects the reset to normal size.
+      window.requestAnimationFrame(fitAllBoxMath);
+    });
+  }
+
+  async function startFitting() {
+    if (fittingStarted) {
+      return;
+    }
+    fittingStarted = true;
+
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
+    scheduleFit();
+
+    if ("ResizeObserver" in window) {
+      const resizeObserver = new ResizeObserver(scheduleFit);
+      document.querySelectorAll(boxSelector).forEach((box) => resizeObserver.observe(box));
+    } else {
+      window.addEventListener("resize", scheduleFit, {passive: true});
+    }
+
+    // Also handle equations inserted later by notebook or Quarto components.
+    const mutationObserver = new MutationObserver((mutations) => {
+      if (
+        mutations.some((mutation) =>
+          [...mutation.addedNodes].some(
+            (node) =>
+              node.nodeType === Node.ELEMENT_NODE &&
+              (node.matches?.(displayMathSelector) || node.querySelector?.(displayMathSelector))
+          )
+        )
+      ) {
+        scheduleFit();
+      }
+    });
+
+    mutationObserver.observe(document.body, {childList: true, subtree: true});
+  }
+
+  const mathJaxReady = window.MathJax?.startup?.promise;
+
+  if (mathJaxReady && typeof mathJaxReady.then === "function") {
+    // Plotly outputs can load their own MathJax renderer and cause the shared
+    // startup promise to reject even though the page equations were rendered.
+    // Fit in either case.
+    mathJaxReady.then(startFitting, startFitting);
+  }
+
+  // Always keep the ordinary page-load event as a fallback. Some embedded
+  // widgets replace window.MathJax and leave an earlier startup promise pending.
+  if (document.readyState === "complete") {
+    startFitting();
+  } else {
+    window.addEventListener("load", startFitting, {once: true});
+  }
+})();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../weeks/16.html" class="pagination-link" aria-label="Interactions">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Interactions</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../weeks/18.html" class="pagination-link" aria-label="Group Lasso">
+        <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Group Lasso</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

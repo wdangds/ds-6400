@@ -329,6 +329,18 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Interactions</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Interactions: Foundations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Group Lasso</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -396,7 +408,10 @@ window.Quarto = {
   <li><a href="#mean-survival-and-the-effects-of-incomplete-follow-up" id="toc-mean-survival-and-the-effects-of-incomplete-follow-up" class="nav-link" data-scroll-target="#mean-survival-and-the-effects-of-incomplete-follow-up"><span class="header-section-number">3.6</span> Mean survival and the effects of incomplete follow-up</a></li>
   <li><a href="#alternative-nonparametric-estimates" id="toc-alternative-nonparametric-estimates" class="nav-link" data-scroll-target="#alternative-nonparametric-estimates"><span class="header-section-number">3.7</span> Alternative nonparametric estimates</a></li>
   </ul></li>
-  <li><a href="#parametric-survival-distributions" id="toc-parametric-survival-distributions" class="nav-link" data-scroll-target="#parametric-survival-distributions"><span class="header-section-number">4</span> Parametric survival distributions</a></li>
+  <li><a href="#parametric-survival-distributions" id="toc-parametric-survival-distributions" class="nav-link" data-scroll-target="#parametric-survival-distributions"><span class="header-section-number">4</span> Parametric survival distributions</a>
+  <ul class="collapse">
+  <li><a href="#from-the-cummulative-hazard-to-a-parametric-distribution" id="toc-from-the-cummulative-hazard-to-a-parametric-distribution" class="nav-link" data-scroll-target="#from-the-cummulative-hazard-to-a-parametric-distribution"><span class="header-section-number">4.1</span> From the cummulative hazard to a parametric distribution</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -1186,7 +1201,7 @@ d_j(1- q_j) = (r_j - d_j) q_j,
 \hat{S}(5.4) = \frac{7}{8}\frac{4}{5}\frac{3}{4} = 0.525
 \]</span></p>
 <p>This calculation illustrates a fundamental property: <em>a censored observation contributes to the risk set up to its censoring time, rather than being treated as either an observed failure or an individual who survives indefintely</em>.</p>
-<div id="69900fab" class="cell" data-execution_count="1">
+<div id="1553f7b2" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1354,6 +1369,26 @@ d_j(1- q_j) = (r_j - d_j) q_j,
 </section>
 <section id="parametric-survival-distributions" class="level2" data-number="4">
 <h2 data-number="4" class="anchored" data-anchor-id="parametric-survival-distributions"><span class="header-section-number">4</span> Parametric survival distributions</h2>
+<section id="from-the-cummulative-hazard-to-a-parametric-distribution" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="from-the-cummulative-hazard-to-a-parametric-distribution"><span class="header-section-number">4.1</span> From the cummulative hazard to a parametric distribution</h3>
+<p>The survival-hazard identity derived earlier states that</p>
+<p><span class="math display">\[
+S(t) = e^{-H(t)}
+\]</span></p>
+<p>where <span class="math inline">\(H(t)\)</span> is a nonnegative, nondecreasing functions satisfying <span class="math inline">\(H(0) =0\)</span> for an absolutely continuous survival distribution beginning at time zero.</p>
+<p>Equivalently,</p>
+<p><span class="math display">\[
+F(t) = 1-e^{-H(t)}
+\]</span></p>
+<p>This representation suggests a general approach to constructing parametric survival distributions: rather than specifying the probaiblity density directly, we can specify a convenient function for cumulative hazard.</p>
+<p>If <span class="math inline">\(H(t;\theta)\)</span> satisfies the appropriate conditions, then</p>
+<p><span class="math display">\[
+S(t;\theta) = e^{-H(t; \theta)}
+\]</span></p>
+<p>defines a survival model, and the corresponding density is</p>
+<p><span class="math display">\[
+f
+\]</span></p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
@@ -1367,6 +1402,7 @@ Kaplan, E. L., and Paul Meier. 1958. <span>“Nonparametric Estimation from Inco
 Weibull, Waloddi. 1951. <span>“A Statistical Distribution Function of Wide Applicability.”</span> <em>Journal of Applied Mechanics</em> 18 (3): 293–97. <a href="https://doi.org/10.1115/1.4010337">https://doi.org/10.1115/1.4010337</a>.
 </div>
 </div>
+</section>
 </section>
 
 </main> <!-- /main -->

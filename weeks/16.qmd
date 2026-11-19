@@ -629,3 +629,5 @@ print(np.round(R).astype(int))
 
 print("Z = XR:",np.allclose(np.asarray(X) @ R, np.asarray(Z)))
 ```
+
+

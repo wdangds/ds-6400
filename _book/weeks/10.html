@@ -332,6 +332,18 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Interactions</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Interactions: Foundations</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../weeks/18.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Group Lasso</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -665,7 +677,7 @@ S(z, \tau) = \mathrm{sign}(z)(|z| - \tau)_{+}.
 \hat \beta_j^{\text{ridge}} = \frac{\hat \beta_j^{\text{OLS}}}{1+\lambda_2}
 \]</span></p>
 <p>Ridge regression scales all the coefficeints by the same multiplicative factor. The lasso instead subtracts a common threshold from their absolute values and truncates coefficients that become nonpositive.</p>
-<div id="767475f8" class="cell" data-execution_count="1">
+<div id="46f43e49" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
@@ -722,7 +734,7 @@ X^\top (y-X\hat \beta^{\text{OLS}}) = 0
 \]</span></p>
 <p>defines a circular region.</p>
 <p>In both methods, the constrained solution is the point where the smallest attainable least-squares ellipsoid intersects the feasible region. The lasso diamond has corners at which one or more coefficients are zero. Consequently, an ellipsodial contour can first contact the region at a corner, producing a sparse solution. The ridge region has a smooth boundary, making an exact zero less likely.</p>
-<div id="1c9094d2" class="cell" data-execution_count="2">
+<div id="ed165e7c" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>b1 <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">1.5</span>, <span class="fl">3.5</span>, <span class="dv">400</span>)</span>
@@ -937,7 +949,7 @@ S(c/a, \tau/a) = \frac{S(c, \tau)}{a}, \quad a&gt; 0
 \]</span></p>
 <p>Coordinate descent repeatedly updates the coefficients until convergence. Each iteration minimizes the objective with respect to one coordinate, and the objective cannot increase after an exact update. Convexity ensures that a coordinatewise optinum satisfying the subgradient conditions is globally optimal.</p>
 <p>The approach is efficient for sparse solutions because inactive coefficients can frequently remain at zero. The piecewise-linear coefficeint paths provide another way to compute the lasso. Starting from a sufficiently large penalty, where every coefficient is zero, a path-following algorithm reduces <span class="math inline">\(\lambda\)</span>. Predictors enter when their residual correlation reaches the active threshold, and coefficients may leave when they return when they return to zero.</p>
-<div id="ab12fd1c" class="cell" data-execution_count="3">
+<div id="4de8c0d0" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
@@ -1101,7 +1113,7 @@ p(\beta)\propto \exp\left[-\frac{1}{b} \sum_{j=1}^{p}|\beta_j|\right].
 \lambda = \frac{2\sigma^2}{b}
 \]</span></p>
 <p>The Laplace density has a sharper peak at zero and heavier tails than a Gaussian density with comparable scale. This reflects the lasso’s tendency to suppress weak coefficients while permitting some larger coefficients.</p>
-<div id="f80ff32a" class="cell" data-execution_count="4">
+<div id="84329748" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
@@ -1176,7 +1188,7 @@ J_{\alpha}(\beta) = (1-\alpha)||\beta||_1 + \alpha||\beta||_2^2
 \]</span></p>
 <p>This is the mixing convention using in <span class="citation" data-cites="zouRegularizationVariableSelection2005">Zou and Hastie (<a href="../references.html#ref-zouRegularizationVariableSelection2005" role="doc-biblioref">2005</a>)</span>: <span class="math inline">\(\alpha=0\)</span> corresponds to the lasso penalty and <span class="math inline">\(\alpha=1\)</span> to the ridge penalty. Some modern software packages use the opposite interpretation of their mixing parameter.</p>
 <p>For <span class="math inline">\(0&lt; \alpha&lt; 1\)</span>, the penalty is nondifferentiable whenever a coordiante is zero, owing to the <span class="math inline">\(L_1\)</span>-component, and strictly convex because of the positive quadratic component. Strict convexity improves uniqueness and stability, while nondifferentiability permits exact zeros.</p>
-<div id="33b228cc" class="cell" data-execution_count="5">
+<div id="a2b7cfb2" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
@@ -1394,7 +1406,7 @@ L(\lambda_1, \lambda_2, \hat \beta) \leq L(\lambda_1, \lambda_2, 0) = \|y\|_2^2
 </div>
 <p>If two positively correlated predictors have nonzero coefficients of the same sign, the difference between their estimated coefficients is bounded by a quantity approaching zero as <span class="math inline">\(\rho \to 1\)</span>.</p>
 <p>The lasso, corresponding to <span class="math inline">\(\lambda_2=0\)</span> does not possess this bound. The theorem is proved for the naive estimator; after the original elastic net rescaling, the coefficient difference and its upper bound are both multiplied by <span class="math inline">\(1+ \lambda_2\)</span>.</p>
-<div id="e96f8e08" class="cell" data-execution_count="6">
+<div id="90c5a7d7" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
@@ -1693,6 +1705,12 @@ X_A^*\top X_A^* = \frac{X_A^\top X_A+\lambda_2 I}{1 + \lambda_2}
 \beta_j^\text{new} = \frac{S(x_j^\top r_j, \lambda_1/2)}{1+\lambda_2}
 \]</span></p>
 <p>This resembles the lasso coordinate update, but incorporates an additional quadratic term in the denominator. After convergence, the original corrected elastic net is obtained by multiplying the naive coefficient vector by <span class="math inline">\(1+\lambda_2\)</span>.</p>
+<p>The elastic net also introduces an additional parameter selection problem. The <span class="math inline">\(L_1\)</span>-parameter determines the degree of sparsity, while the quadratic paraemter determines the degree of stabilization and grouping. <span class="citation" data-cites="zouRegularizationVariableSelection2005">Zou and Hastie (<a href="../references.html#ref-zouRegularizationVariableSelection2005" role="doc-biblioref">2005</a>)</span> describe several possible path parameterizations, including the <span class="math inline">\(L_1\)</span>-norm fraction and the number of LARS-EN algorithmic steps.</p>
+<p>In general, a cross-validation procedure can select both tuning parameters by minimizing</p>
+<p><span class="math display">\[
+(\hat \lambda_1, \hat \lambda_2) = \arg\min_{\lambda_1, \lambda_2} CV(\lambda_1, \lambda_2)
+\]</span></p>
+<p>One strategy is to choose a grid of candidate values of <span class="math inline">\(\lambda_2\)</span>. For each candidate, the solution path is computed over a range of <span class="math inline">\(\lambda_1\)</span>, and cross validation is used to select the preferred combination.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">

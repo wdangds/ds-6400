@@ -1375,3 +1375,30 @@ This is consistent with the fact that $\hat \beta^*(k) \to 0$. An estimator that
 
 Therefore, excessive regularization may produce an estimator with very small variance but considerable bias. 
 
+### The existence of a ridge estimator with smaller mean square error 
+
+We now arrive at the central theoretical result of ridge regression. 
+
+The existence theorem establishes that, under the full-column-rank linear model, there is always a positive value of $k$ for which ridge regression has smaller coefficient mean square error than OLS. 
+
+::: {#thm-existence-theorem-for-ridge-regression}
+
+## Existence theorem for ridge regression 
+
+Suppose $X$ has full column rank and $\sigma^2>0$. For every fixed finite $\beta$, there exists $k>0$ such that 
+
+$$
+\E[L^2(k)] < \E[L^2(0)]
+$$
+
+Thus, there exists a ridge estimator having smaller mean square error than OLS. 
+
+:::
+
+
+::: {.proof}
+
+From @thm-mean-square-error-decomposition, 
+
+
+:::

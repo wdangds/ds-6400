@@ -1741,3 +1741,13 @@ $$
 $$
 
 This resembles the lasso coordinate update, but incorporates an additional quadratic term in the denominator. After convergence, the original corrected elastic net is obtained by multiplying the naive coefficient vector by $1+\lambda_2$. 
+
+The elastic net also introduces an additional parameter selection problem. The $L_1$-parameter determines the degree of sparsity, while the quadratic paraemter determines the degree of stabilization and grouping. @zouRegularizationVariableSelection2005 describe several possible path parameterizations, including the $L_1$-norm fraction and the number of LARS-EN algorithmic steps. 
+
+In general, a cross-validation procedure can select both tuning parameters by minimizing 
+
+$$
+(\hat \lambda_1, \hat \lambda_2) = \arg\min_{\lambda_1, \lambda_2} CV(\lambda_1, \lambda_2)
+$$
+
+One strategy is to choose a grid of candidate values of $\lambda_2$. For each candidate, the solution path is computed over a range of $\lambda_1$, and cross validation is used to select the preferred combination. 
