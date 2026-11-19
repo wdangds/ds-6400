@@ -404,7 +404,9 @@ window.Quarto = {
   <li><a href="#why-group-lasso-paths-are-not-piecewise-linear" id="toc-why-group-lasso-paths-are-not-piecewise-linear" class="nav-link" data-scroll-target="#why-group-lasso-paths-are-not-piecewise-linear"><span class="header-section-number">3.1</span> Why group-lasso paths are not piecewise linear</a></li>
   <li><a href="#group-least-angle-regression" id="toc-group-least-angle-regression" class="nav-link" data-scroll-target="#group-least-angle-regression"><span class="header-section-number">3.2</span> Group least angle regression</a></li>
   <li><a href="#group-non-negative-garrotte" id="toc-group-non-negative-garrotte" class="nav-link" data-scroll-target="#group-non-negative-garrotte"><span class="header-section-number">3.3</span> Group non-negative garrotte</a></li>
+  <li><a href="#selecting-the-regularization-parameter" id="toc-selecting-the-regularization-parameter" class="nav-link" data-scroll-target="#selecting-the-regularization-parameter"><span class="header-section-number">3.4</span> Selecting the regularization parameter</a></li>
   </ul></li>
+  <li><a href="#beyond-convex-group-lasso-group-mcp-and-group-scad" id="toc-beyond-convex-group-lasso-group-mcp-and-group-scad" class="nav-link" data-scroll-target="#beyond-convex-group-lasso-group-mcp-and-group-scad"><span class="header-section-number">4</span> Beyond convex group lasso: Group MCP and group SCAD</a></li>
   </ul>
 </nav>
     </div>
@@ -596,7 +598,7 @@ X_j = \begin{pmatrix} b_1(x_1) &amp; b_2(x_1) &amp; \cdots &amp; b_q(x_1) \\ b_1
 \]</span></p>
 <p>where <span class="math inline">\(t\geq 0\)</span> controls the size of the feasible set. For appropriate choices of <span class="math inline">\(t\)</span> and <span class="math inline">\(\lambda\)</span>, the constrained and penalized formulations have the same solutions. Smaller <span class="math inline">\(t\)</span> correponds to stronger regularization.</p>
 <p>As with ordinary lasso, sparsity aries when the least-squared loss is minimized on a nonsmooth portion of the constraint boundary. The difference is where the nonsmoothness occurs. Ordinary lasso has nonsmoothness at individual coefficient zero, while group lasso has nonsmoothness when an entire group norm vanishes.</p>
-<div id="c47f8260" class="cell" data-execution_count="1">
+<div id="19176db7" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -844,7 +846,7 @@ X^* \beta^* = \tilde X \tilde \beta
 \|\tilde \beta\|_2 \approx 2.237 = \sqrt 5
 \]</span></p>
 </div>
-<div id="3f351840" class="cell" data-execution_count="2">
+<div id="dfa31f8c" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1148,7 +1150,7 @@ Q(\beta^{(m+1)}) \leq Q(\beta^{(m)})
 </section>
 <section id="a-synthetic-example" class="level3" data-number="2.5">
 <h3 data-number="2.5" class="anchored" data-anchor-id="a-synthetic-example"><span class="header-section-number">2.5</span> A synthetic example</h3>
-<div id="94d2cd5f" class="cell" data-execution_count="3">
+<div id="1ec594ef" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np </span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt </span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1198,7 +1200,7 @@ Q(\beta^{(m+1)}) \leq Q(\beta^{(m)})
 Lasso lambda_max: 1.32</code></pre>
 </div>
 </div>
-<div id="fef0cf6d" class="cell" data-execution_count="4">
+<div id="87d34a60" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> group_lasso_path(X, y, groups, weights, lambdas,</span>
@@ -1274,7 +1276,7 @@ Lasso lambda_max: 1.32</code></pre>
 <span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(path)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="26e77be1" class="cell" data-execution_count="5">
+<div id="dd018cd4" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fractions <span class="op">=</span> np.geomspace(<span class="fl">1.0</span>, <span class="fl">0.025</span>, <span class="dv">100</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>group_path <span class="op">=</span> group_lasso_path(</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    X, y, groups, weights, lambda_max_group <span class="op">*</span> fractions</span>
@@ -1290,7 +1292,7 @@ Lasso lambda_max: 1.32</code></pre>
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    np.linalg.norm(lasso_path_values[:, g], axis<span class="op">=</span><span class="dv">1</span>) <span class="cf">for</span> g <span class="kw">in</span> groups</span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="6ea390ed" class="cell" data-execution_count="6">
+<div id="8c753449" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">13</span>, <span class="fl">9.5</span>), sharex<span class="op">=</span><span class="va">True</span>)</span>
@@ -1360,7 +1362,7 @@ Lasso lambda_max: 1.32</code></pre>
 </div>
 </div>
 </div>
-<div id="4a0fa9fd" class="cell" data-execution_count="7">
+<div id="e2bec3d8" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j, name <span class="kw">in</span> <span class="bu">enumerate</span>(names):</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    entered <span class="op">=</span> np.flatnonzero(group_norms[:, j] <span class="op">&gt;</span> threshold)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    first <span class="op">=</span> fractions[entered[<span class="dv">0</span>]] <span class="cf">if</span> <span class="bu">len</span>(entered) <span class="cf">else</span> <span class="va">None</span></span>
@@ -1432,7 +1434,7 @@ z_1(\lambda) = \begin{pmatrix} 0.7 \\ 0.9 \end{pmatrix} - \begin{pmatrix} 0.8 \\
 \sqrt{(-0.58 + 0.8 \lambda)^2 + 0.9^2} = \lambda \implies \lambda \approx 0.9124
 \]</span></p>
 <p>After that, both groups are active, but their coefficients continue to interact. This is where we can observe a curved group-lasso path.</p>
-<div id="fe951481" class="cell" data-execution_count="8">
+<div id="60f1943f" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>View Python code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -1677,7 +1679,143 @@ Z_j = X_j \beta_j^{LS}, \quad Z = (Z_1, \ldots, Z_J).
 <p><span class="math display">\[
 \hat \beta_j = \left(1- \frac{\lambda p_j}{\|X_j^\top Y\|_2^2}\right)_+ X_j^\top Y,
 \]</span></p>
-<p>using the <span class="math inline">\(X^\top X=I\)</span> normalization.</p>
+<p>using the <span class="math inline">\(X^\top X=I\)</span> normalization. The group-non negative garrotte therefore shares the group-selection objective of group lasso, but its path and shrinkage factors are different. An important limitation is its dependence on the full least-squares estimate. When <span class="math inline">\(p&gt;n\)</span>, the full coefficient vector is not identifiable from OLS, making this formulation less suitable for high-dimensional problems.</p>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Algorithm 2. Group non-negative garrotte
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<pre><code>
+# Work with LS fitted group contributions
+Compute beta_LS from ordinary least squares
+Z_j = X_j @ beta_LS_j, for j = 1, ..., J
+Z = [Z_1, ..., Z_J]
+
+Initialize d = 0, r = y, C = {}
+
+# Use scalar correlations
+C = {argmax_j (Z_j.T @ r) / p_j}
+
+Repeat:
+    # Compute direction using active groups
+    gamma = 0
+    gamma_C = solve(Z_C.T @ Z_C, Z_C.T @ r)
+
+    v = Z @ gamma
+
+    # Find when the next group enters
+    for j not in C:
+        Find smallest positive alpha_enter[j] such that
+
+            Z_j.T @ (r - alpha_enter[j] * v) / p_j
+            =
+            Z_a.T @ (r - alpha_enter[j] * v) / p_a
+
+        where a is any group in C
+
+    # Check whether an active group leaves
+    for j in C:
+        if gamma_j &lt; 0:
+            alpha_drop[j] = -d_j / gamma_j
+        else:
+            alpha_drop[j] = infinity
+
+    # Take the smallest positive step
+    alpha = min(
+        1,
+        all positive alpha_enter,
+        all positive alpha_drop
+    )
+
+    d = d + alpha * gamma
+    r = r - alpha * v
+
+    if alpha == 1:
+        break
+
+    # Groups can enter OR leave
+    if alpha corresponds to alpha_enter[j]:
+        C = C union {j}
+
+    if alpha corresponds to alpha_drop[j]:
+        d_j = 0
+        C = C minus {j}
+
+# Recover the original coefficient vectors
+beta_j = d_j * beta_LS_j, for j = 1, ..., J
+
+Return beta, d, path</code></pre>
+</div>
+</div>
+</section>
+<section id="selecting-the-regularization-parameter" class="level3" data-number="3.4">
+<h3 data-number="3.4" class="anchored" data-anchor-id="selecting-the-regularization-parameter"><span class="header-section-number">3.4</span> Selecting the regularization parameter</h3>
+<p>One possibility is CV, which estimates prediction error on observations excluded from model fitting. <span class="citation" data-cites="yuanModelSelectionEstimation2006">Yuan and Lin (<a href="../references.html#ref-yuanModelSelectionEstimation2006" role="doc-biblioref">2006</a>)</span> develop an approximate <span class="math inline">\(C_p\)</span> criterion based on an estimate of effective degrees of freedom. For Gaussian regression, let</p>
+<p><span class="math display">\[
+\E[Y\mid X] = \mu, \quad \hat \mu = X\hat \beta
+\]</span></p>
+<p>Then the effective degrees of freedom are defined by</p>
+<p><span class="math display">\[
+\mathrm{df}_{\mu, \sigma^2} = \frac{1}{\sigma^2} \sum_{i=1}^n \Cov(\hat \mu_i, Y_i)
+\]</span></p>
+<p>This quantity mesures the sensitivity of the fitted model to the observed response. A model with more freely estimated parameters generally has larger degrees of freedom. But for penalized regression, counting the number of selected coefficients does not fully account for shrinkage.</p>
+<p>The corresponding Mallows criterion is</p>
+<p><span class="math display">\[
+C_p(\hat \mu) = \underbrace{\frac{\|Y-\hat \mu\|_2^2}{\sigma^2}}_{\text{goodness of fit}} - \underbrace{(n - 2\hat{\mathrm{df}})}_{\text{model complexity}}
+\]</span></p>
+<p>For the group-lasso estimator, Yuan and Lin propose</p>
+<p><span class="math display">\[
+\hat{\mathrm{df}} = \underbrace{\sum_{j=1}^J \mathbf I(\|\hat \beta_j\|_2 &gt; 0)}_{\text{number of selected groups}} + \underbrace{\sum_{j=1}^J \frac{\|\hat \beta_j\|_2}{\|\beta_j\|_2}(p_j - 1)}_{\text{shrinkage}}
+\]</span></p>
+<p>For an active group, let <span class="math inline">\(s_j = \frac{\|\hat \beta_j\|_2}{\|\beta_j\|_2}\)</span>. Under an orthonormal design, <span class="math inline">\(0&lt; s_j\leq 1\)</span>. The group’s effective degrees of freedom are</p>
+<p><span class="math display">\[
+1+ s_j(p_j-1)
+\]</span></p>
+<p>If the group is barely active, <span class="math inline">\(s_j\)</span> is close to zero, and its complexity contribution is near one. As the group approaches its unpenalized estimate, <span class="math inline">\(s_j \to 1\)</span>, and its contribution approahces <span class="math inline">\(p_j\)</span>.</p>
+<p>For completeness, <span class="citation" data-cites="yuanModelSelectionEstimation2006">Yuan and Lin (<a href="../references.html#ref-yuanModelSelectionEstimation2006" role="doc-biblioref">2006</a>)</span> provides degrees-of-freedom estimates for the two related group-selection procedures. At a turning point <span class="math inline">\(\beta^{[k]}\)</span> on the group LARS path, the proposed estimator is</p>
+<p><span class="math display">\[
+\widehat{df}_{LARS,k}
+=
+\sum_j \mathbf{I}(\|\beta_j^{[k]}\|_2&gt;0)
++
+\sum_j (p_j-1)
+\frac{
+\sum_{\ell&lt;k}
+\|\beta_j^{[\ell+1]}-\beta_j^{[\ell]}\|_2
+}{
+\sum_{\ell&lt;J}
+\|\beta_j^{[\ell+1]}-\beta_j^{[\ell]}\|_2
+},
+\]</span></p>
+<p>with zero contribution grom groups whose total path length is zero. For the group non-negative garrotte,</p>
+<p><span class="math display">\[
+\widehat{df}_{NG}
+=
+2\sum_{j=1}^{J}I(d_j&gt;0)
++\sum_{j=1}^{J}d_j(p_j-2).
+\]</span></p>
+<p>These expressions lead to the following result.</p>
+<div id="thm-unbiased-estimation-of-degrees-of-freedom" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 2 (Unbiased estimation of degrees of freedom; <span class="citation" data-cites="yuanModelSelectionEstimation2006">Yuan and Lin (<a href="../references.html#ref-yuanModelSelectionEstimation2006" role="doc-biblioref">2006</a>)</span>)</strong></span> If the full design matrix is orthonormal, then for an estimate on the solution path of group lasso, group LARS, or the group non-negative garrotte,</p>
+<p><span class="math display">\[
+\mathrm{df} = \E[\hat{\mathrm{df}}]
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>WIP</p>
+</div>
+<p>Outside the fully orthonormal setting, the paper treats the formulas as approximations. In simulations, the approximate <span class="math inline">\(C_p\)</span> criterion performed comparably to 5-fold CV, with a smaller computational cost.</p>
+</section>
+</section>
+<section id="beyond-convex-group-lasso-group-mcp-and-group-scad" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="beyond-convex-group-lasso-group-mcp-and-group-scad"><span class="header-section-number">4</span> Beyond convex group lasso: Group MCP and group SCAD</h2>
+<p><span class="citation" data-cites="brehenyGroupDescentAlgorithms2015">Breheny and Huang (<a href="../references.html#ref-brehenyGroupDescentAlgorithms2015" role="doc-biblioref">2015</a>)</span> investigate two nonconvex alternatives design to retain strong group selection near zero while reducing shrinkage for larger groups: the minimax concave penalty (MCP) and the smoothly clipped absolute deviation penalty (SCAD).</p>
+<p>WIP.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
@@ -1694,7 +1832,6 @@ Yang, Yi, and Hui Zou. 2015. <span>“A Fast Unified Algorithm for Solving Group
 Yuan, Ming, and Yi Lin. 2006. <span>“Model Selection and Estimation in Regression with Grouped Variables.”</span> <em>Journal of the Royal Statistical Society Series B (Statistical Methodology)</em> 68 (1): 49–67. <a href="https://doi.org/10.1111/j.1467-9868.2005.00532.x">https://doi.org/10.1111/j.1467-9868.2005.00532.x</a>.
 </div>
 </div>
-</section>
 </section>
 
 </main> <!-- /main -->

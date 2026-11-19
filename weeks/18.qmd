@@ -1455,4 +1455,158 @@ $$
 \hat \beta_j = \left(1- \frac{\lambda p_j}{\|X_j^\top Y\|_2^2}\right)_+ X_j^\top Y,
 $$
 
-using the $X^\top X=I$ normalization.  
+using the $X^\top X=I$ normalization. The group-non negative garrotte therefore shares the group-selection objective of group lasso, but its path and shrinkage factors are different. An important limitation is its dependence on the full least-squares estimate. When $p>n$, the full coefficient vector is not identifiable from OLS, making this formulation less suitable for high-dimensional problems.
+
+::: {.callout-note icon=false}
+### Algorithm 2. Group non-negative garrotte
+
+```
+
+# Work with LS fitted group contributions
+Compute beta_LS from ordinary least squares
+Z_j = X_j @ beta_LS_j, for j = 1, ..., J
+Z = [Z_1, ..., Z_J]
+
+Initialize d = 0, r = y, C = {}
+
+# Use scalar correlations
+C = {argmax_j (Z_j.T @ r) / p_j}
+
+Repeat:
+    # Compute direction using active groups
+    gamma = 0
+    gamma_C = solve(Z_C.T @ Z_C, Z_C.T @ r)
+
+    v = Z @ gamma
+
+    # Find when the next group enters
+    for j not in C:
+        Find smallest positive alpha_enter[j] such that
+
+            Z_j.T @ (r - alpha_enter[j] * v) / p_j
+            =
+            Z_a.T @ (r - alpha_enter[j] * v) / p_a
+
+        where a is any group in C
+
+    # Check whether an active group leaves
+    for j in C:
+        if gamma_j < 0:
+            alpha_drop[j] = -d_j / gamma_j
+        else:
+            alpha_drop[j] = infinity
+
+    # Take the smallest positive step
+    alpha = min(
+        1,
+        all positive alpha_enter,
+        all positive alpha_drop
+    )
+
+    d = d + alpha * gamma
+    r = r - alpha * v
+
+    if alpha == 1:
+        break
+
+    # Groups can enter OR leave
+    if alpha corresponds to alpha_enter[j]:
+        C = C union {j}
+
+    if alpha corresponds to alpha_drop[j]:
+        d_j = 0
+        C = C minus {j}
+
+# Recover the original coefficient vectors
+beta_j = d_j * beta_LS_j, for j = 1, ..., J
+
+Return beta, d, path
+```
+:::
+
+### Selecting the regularization parameter 
+
+One possibility is CV, which estimates prediction error on observations excluded from model fitting. @yuanModelSelectionEstimation2006 develop an approximate $C_p$ criterion based on an estimate of effective degrees of freedom. For Gaussian regression, let 
+
+$$
+\E[Y\mid X] = \mu, \quad \hat \mu = X\hat \beta
+$$
+
+Then the effective degrees of freedom are defined by 
+
+$$
+\mathrm{df}_{\mu, \sigma^2} = \frac{1}{\sigma^2} \sum_{i=1}^n \Cov(\hat \mu_i, Y_i)
+$$
+
+This quantity mesures the sensitivity of the fitted model to the observed response. A model with more freely estimated parameters generally has larger degrees of freedom. But for penalized regression, counting the number of selected coefficients does not fully account for shrinkage. 
+
+The corresponding Mallows criterion is 
+
+$$
+C_p(\hat \mu) = \underbrace{\frac{\|Y-\hat \mu\|_2^2}{\sigma^2}}_{\text{goodness of fit}} - \underbrace{(n - 2\hat{\mathrm{df}})}_{\text{model complexity}}
+$$
+
+For the group-lasso estimator, Yuan and Lin propose 
+
+$$
+\hat{\mathrm{df}} = \underbrace{\sum_{j=1}^J \mathbf I(\|\hat \beta_j\|_2 > 0)}_{\text{number of selected groups}} + \underbrace{\sum_{j=1}^J \frac{\|\hat \beta_j\|_2}{\|\beta_j\|_2}(p_j - 1)}_{\text{shrinkage}}
+$$
+
+For an active group, let $s_j = \frac{\|\hat \beta_j\|_2}{\|\beta_j\|_2}$. Under an orthonormal design, $0< s_j\leq 1$. The group's effective degrees of freedom are 
+
+$$
+1+ s_j(p_j-1)
+$$
+
+If the group is barely active, $s_j$ is close to zero, and its complexity contribution is near one. As the group approaches its unpenalized estimate, $s_j \to 1$, and its contribution approahces $p_j$. 
+
+For completeness, @yuanModelSelectionEstimation2006 provides degrees-of-freedom estimates for the two related group-selection procedures. At a turning point $\beta^{[k]}$ on the group LARS path, the proposed estimator is 
+
+$$
+\widehat{df}_{LARS,k}
+=
+\sum_j \mathbf{I}(\|\beta_j^{[k]}\|_2>0)
++
+\sum_j (p_j-1)
+\frac{
+\sum_{\ell<k}
+\|\beta_j^{[\ell+1]}-\beta_j^{[\ell]}\|_2
+}{
+\sum_{\ell<J}
+\|\beta_j^{[\ell+1]}-\beta_j^{[\ell]}\|_2
+},
+$$
+
+with zero contribution grom groups whose total path length is zero. For the group non-negative garrotte, 
+
+$$
+\widehat{df}_{NG}
+=
+2\sum_{j=1}^{J}I(d_j>0)
++\sum_{j=1}^{J}d_j(p_j-2).
+$$
+
+These expressions lead to the following result. 
+
+::: {#thm-unbiased-estimation-of-degrees-of-freedom}
+
+## Unbiased estimation of degrees of freedom; @yuanModelSelectionEstimation2006
+
+If the full design matrix is orthonormal, then for an estimate on the solution path of group lasso, group LARS, or the group non-negative garrotte, 
+
+$$
+\mathrm{df} = \E[\hat{\mathrm{df}}]
+$$
+:::
+
+::: {.proof}
+WIP
+:::
+
+Outside the fully orthonormal setting, the paper treats the formulas as approximations. In simulations, the approximate $C_p$ criterion performed comparably to 5-fold CV, with a smaller computational cost. 
+
+## Beyond convex group lasso: Group MCP and group SCAD 
+
+@brehenyGroupDescentAlgorithms2015 investigate two nonconvex alternatives design to retain strong group selection near zero while reducing shrinkage for larger groups: the minimax concave penalty (MCP) and the smoothly clipped absolute deviation penalty (SCAD).
+
+WIP. 
